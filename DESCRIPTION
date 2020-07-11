@@ -1,0 +1,39 @@
+Package: growthPheno
+Version: 1.0-26
+Date: 2020-07-09
+Title: Plotting, Smoothing and Growth Trait Extraction for Longitudinal Data 
+Authors@R: person("Chris","Brien", role = c("aut","cre"),
+         comment = c(ORCID = "0000-0003-0581-1817"),
+         email = "chris.brien@adelaide.edu.au")
+Depends:
+    R (>= 3.5.0)
+Imports:
+    dae,
+    ggplot2,
+    stats,
+    stringi,
+    readxl,
+    Hmisc,
+    GGally,
+    RColorBrewer,
+    reshape,
+    grid
+Suggests: testthat, R.rsp
+VignetteBuilder: R.rsp
+Description: Assists in producing longitudinal or profile plots of measured 
+    traits. These allow checks to be made for anomalous data and growth patterns 
+    in the data to be explored. Smoothing of growth trends for individual plants 
+    using smoothing splines is available for removing transient effects. There 
+    are tools for diagnosing the adequacy of trait smoothing, either using this 
+    package or other packages, such as those that fit nonlinear growth models. 
+    A range of per-unit (pot, plant, plot) growth traits can be extracted from 
+    longitudinal data, including single time-point smoothed trait values and 
+    their growth rates, interval growth rates and other growth statistics, such 
+    as maximum growth. The package is particularly suited to preparing data from 
+    high-throughput phenotyping facilities, such as imaging data from a Lemna-Tec Scananalyzer 3D 
+    (see <https://www.youtube.com/watch?v=MRAF_mAEa7E/> for more 
+    information). The package 'growthPheno' can also be installed from 
+  <http://chris.brien.name/rpackages/>.
+License: GPL (>=2)
+URL: http://chris.brien.name
+RoxygenNote: 5.0.1

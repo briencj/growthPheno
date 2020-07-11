@@ -1,0 +1,55 @@
+export(anom,
+       anomPlot,
+       AGRdiff,
+       calcLagged,
+       calcTimes,
+       corrPlot,
+       cumulate,
+       designFactors,
+       fitSpline,
+       getDates,
+       getTimesSubset,
+       imagetimesPlot,
+       importExcel,
+       intervalGRaverage,
+       intervalGRdiff,
+       intervalPVA,
+       intervalValueCalculate,
+       intervalWUI,
+       longitudinalPrime,
+       longiPlot,
+       PGR,
+       plotAnom,
+       plotCorrmatrix,
+       plotDeviationsBoxes,
+       plotImagetimes,
+       plotLongitudinal,
+       plotMedianDeviations, 
+       probeDF,
+       probeSmoothing,
+       PVA,
+       RGRdiff,
+       rcontrib,
+       splitContGRdiff,
+       splitSplines,
+       splitValueCalculate,
+       twoLevelOpcreate,
+       WUI)
+importFrom(grid, grid.newpage)
+importFrom(grid, grid.layout)
+importFrom(grid, pushViewport)
+importFrom(grid, viewport)
+importFrom(stats, smooth.spline, IQR, median, weighted.mean)
+importFrom(stats, terms)
+importFrom(stats, as.formula)
+importFrom(stats, na.omit)
+importFrom(stats, predict)
+importFrom(stats, reshape)
+importFrom(stringi, stri_order)
+importFrom(grDevices, boxplot.stats)
+importFrom(Hmisc, rcorr)
+importFrom(GGally, ggpairs, putPlot)
+importFrom(reshape, melt)
+importFrom(utils, read.csv)
+import(dae, ggplot2, readxl, RColorBrewer)
+#S3method(predict, nscSpline)

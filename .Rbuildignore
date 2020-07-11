@@ -1,0 +1,7 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^.tests$
+^.archive$
+^.vignettes$
+^CRANlogs$
+^README.*$
