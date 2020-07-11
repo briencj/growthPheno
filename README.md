@@ -1,4 +1,13 @@
-# growthPheno
+---
+title: growthPheno
+output:
+  html_document:
+    keep_md: yes
+  pdf_document: default
+---
+
+
+
 
 [![Project Status: Active:  The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.5.0-6666ff.svg)](https://cran.r-project.org/)
@@ -11,7 +20,7 @@
 
 `growthPheno` is an R package that collects together functions that can be used to plot, smooth and extract growth traits for longitudinal data, as described by Brien et al. (2020). Many of the functions can be applied to longitudinal data in general.
 
-An overview can be obtained using `?growthPheno`. . 
+An overview can be obtained using `?growthPheno`.
 
 ## More information
 

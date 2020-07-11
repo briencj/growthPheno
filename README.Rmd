@@ -23,7 +23,7 @@ version <- as.vector(description[, 'Version'])
 
 `growthPheno` is an R package that collects together functions that can be used to plot, smooth and extract growth traits for longitudinal data, as described by Brien et al. (2020). Many of the functions can be applied to longitudinal data in general.
 
-An overview can be obtained using `?growthPheno`. . 
+An overview can be obtained using `?growthPheno`.
 
 ## More information
 
