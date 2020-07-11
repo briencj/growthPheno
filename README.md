@@ -1,0 +1,74 @@
+# growthPheno
+
+[![Project Status: Active:  The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![minimal R version](https://img.shields.io/badge/R%3E%3D-3.5.0-6666ff.svg)](https://cran.r-project.org/)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/growthPheno)](https://cran.r-project.org/package=growthPheno)
+[![packageversion](https://img.shields.io/badge/Package%20version-1.0--26-orange.svg?style=flat-square)](/commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2020--07--11-yellowgreen.svg)](/commits/master)
+[![Licence](https://img.shields.io/badge/license-GPL%20(%3E%3D2)-green.svg)](http://choosealicense.com/licenses/gpl-2.0/)
+[![Downloads](https://cranlogs.r-pkg.org/badges/last-week/growthPheno)](commits/master)
+
+
+`growthPheno` is an R package that collects together functions that can be used to plot, smooth and extract growth traits for longitudinal data, as described by Brien et al. (2020). Many of the functions can be applied to longitudinal data in general.
+
+An overview can be obtained using `?growthPheno`. . 
+
+## More information
+
+Two vignettes, `Tomato` and `Rice`, illustrate the process for smoothing and extraction of traits (SET), the former being the example presented in Brien et al. (2020). Use `vignette("Tomato", package = "growthPheno")` or `vignette("Rice", package = "growthPheno")` to access either of the vignettes.
+
+## Installing the package
+
+### From a repository using `drat`
+
+Windows binaries and source tarballs of the latest version of `growthPheno` are available for installation from my [repository](http://chris.brien.name/rpackages). Installation instructions are available there.
+
+### Directly from  GitHub
+
+`growthPheno` is an R package available on GitHub, so it can be installed from the RStudio console or an R command line session using the `devtools` command `install_github`. First, make sure `devtools` is installed, which, if you do not have it, can be done as follows:
+
+`install.packages("devtools")`
+
+Next, install `growthPheno` from GitHub by entering:
+
+`devtools::install_github("briencj/growthPheno")`.
+
+Version 2.0-12 of the package is available from CRAN so that you could first install it and its dependencies using:
+
+`install.packages("growthPheno")`
+
+
+If you have not previously installed `growthPheno` then you will need to install it dependencies:
+
+`install.packages(c("dae", "ggplot2", "stats", "stringi", "readxl", "Hmisc", "GGally", "RColorBrewer", "reshape", "grid")))`
+
+## What is does
+
+This package can be used to analyse growth data using splines to smooth the trend of individual plant traces over time and then to extract traits for further analysis. This process is called smoothing and extraction of traits (SET) by Brien et al. (2020), who detail the use of `growthPheno` for carrying out the method. 
+
+The package `growthPheno` has tools that aid in choosing the degree of smoothing and the selection of traits. There are also functions for importing and orgainizing the data that are generally applicable, although they do have defaults that  make them particularly adapted to data from a high-throughput phenotyping facility based on a Lemna-Tec Scananalyzer 3D system. 
+
+Data suitable for use with this package consists of columns of data obtained from a set of units (pots, carts or plots) over time. There should be a unique identifier for each unit, which by default is \code{Snapshot.ID.Tag}, and variable giving the Days after Planting for each measurement, by default {\code{Time.after.Planting..d.}}. In some cases, it is expected that there will be a column labelled \code{Snapshot.Time.Stamp}, which reflects the imaging time from which a particular data value was obtained. For imaging data, the carts/pots may be arranged in a grid of Lanes \eqn{\times}{x} Positions. 
+
+The content falls into the following natural groupings: 
+
+(i) Data 
+
+(ii) Plots
+
+(iii) Smoothing
+
+(iv) Growth rate and WUI calculation
+
+(v) Principal variates analysis (PVA)
+
+
+## What it needs  
+  
+It imports [dae](<https://CRAN.R-project.org/package=dae>), `ggplot2`, `stats`, [stringi](<https://CRAN.R-project.org/package=stringi>), [readxl](<https://CRAN.R-project.org/package=readxl>), [Hmisc](<https://CRAN.R-project.org/package=Hmisc>), [GGally](<https://CRAN.R-project.org/package=GGally>), [RColorBrewer](<https://CRAN.R-project.org/package=RColorBrewer>), [reshape](<https://CRAN.R-project.org/package=reshape>), `grid`.
+
+`ggplot2`, `graphics`, `methods`, [plyr](<https://CRAN.R-project.org/package=plyr>), `stats`.
+
+## License
+
+The `growthPheno` package is distributed under the [GPL (>= 2) licence](<https://opensource.org/licenses/GPL-2.0>).
