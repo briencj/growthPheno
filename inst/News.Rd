@@ -1,5 +1,9 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 1.0-27 (2020-07-21)}{
+  \itemize{
+   \item{Fix bug in splitValueCalculate, and hence intervalValueCaculate, where \code{which.levels} set to other than \code{NULL} was giving an error. Replace the \code{which.levels} argument with the argument \code{which.values}.}
+}}
 \section{growthPheno Version 1.0-26 (2020-07-09)}{
   \itemize{
    \item{Fix bug in intervalWUI such the WUI was incorrectly calculated for \code{include.total.water = FALSE}.}

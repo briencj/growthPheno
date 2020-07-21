@@ -224,17 +224,24 @@
 
 #Function to calculate a value for observations within an interval for a set of responses
 "intervalValueCalculate" <- function(response, weights=NULL, individuals = "Snapshot.ID.Tag", 
-                                     FUN = "max", which.obs = FALSE, which.levels = NULL, 
+                                     FUN = "max", which.obs = FALSE, which.values = NULL, 
                                      start.time=NULL, end.time=NULL, times.factor = "Days", 
                                      suffix.interval=NULL, data, sep=".", na.rm=TRUE, ...)
-{  #Check that response is in data
-   if (!all(c(response,individuals,times.factor) %in% names(data)))
-     stop("Some of the columns for response, indivduals and times.factor are not in data")
-   #Get data for the times
-   if (all(is.null(c(start.time, end.time))))
-     interval.resp <- data[c(individuals,response,times.factor)]
-   else
-  { times.vals <- unique(as.numfac(data[[times.factor]]))
+{  
+  #Trap which.levels and give message to replace it with which.values is not set
+  tempcall <- list(...)
+  if (length(tempcall) && "which.levels" %in% names(tempcall))
+    stop("replace which.levels with which.values")
+  
+  #Check that response is in data
+  if (!all(c(response,individuals,times.factor) %in% names(data)))
+    stop("Some of the columns for response, indivduals and times.factor are not in data")
+  #Get data for the times
+  if (all(is.null(c(start.time, end.time))))
+    interval.resp <- data[c(individuals,response,times.factor)]
+  else
+  { 
+    times.vals <- unique(as.numfac(data[[times.factor]]))
     if (is.null(start.time))
       times.vals <- times.vals[times.vals <= end.time]
     else
@@ -250,14 +257,23 @@
                              interval.resp)
   }
   
-   #Calculate a value within an interval for each individual
-   val.dat <- splitValueCalculate(response=response, weights=weights, individuals = individuals, 
-                                  FUN = FUN, which.obs = which.obs, which.levels = which.levels, 
-                                  data = interval.resp, na.rm=na.rm, sep=sep, ...)
+  #Calculate a value within an interval for each individual
+  val.dat <- splitValueCalculate(response=response, weights=weights, individuals = individuals, 
+                                 FUN = FUN, which.obs = which.obs, which.values = which.values, 
+                                 data = interval.resp, na.rm=na.rm, sep=sep, ...)
   if (!is.null(suffix.interval))
+  {
     names(val.dat)[match(paste(response,FUN,sep="."), names(val.dat))] <- 
-       paste(response,FUN,suffix.interval,sep=".")
-   return(val.dat)
+      paste(response,FUN,suffix.interval,sep=".")
+    if (which.obs)
+      names(val.dat)[match(paste(response,FUN,"obs",sep="."), names(val.dat))] <- 
+        paste(response,FUN,"obs",suffix.interval,sep=".")
+    if (!is.null(which.values))
+      names(val.dat)[match(paste(response,FUN,which.values,sep="."), names(val.dat))] <- 
+        paste(response,FUN,which.values,suffix.interval,sep=".")
+  }
+  
+  return(val.dat)
 }
 
 #Functions to calculate a single-valued function, including the observation has the value of the function
@@ -292,7 +308,7 @@
 }
 
 "splitValueCalculate" <- function(response, weights=NULL, individuals = "Snapshot.ID.Tag", 
-                                  FUN = "max", which.obs = FALSE, which.levels = NULL, 
+                                  FUN = "max", which.obs = FALSE, which.values = NULL, 
                                   data, na.rm=TRUE, sep=".", ...)
   #a function to compute a FUN from the response for each individual
   #response is a character string giving the name of the response in data
@@ -300,6 +316,11 @@
   #   for each of which a single value of funct is obtained from their observations
   #... allows for optional arguments to FUN
 { 
+  #Trap which.levels and give message to replace it with which.values is not set
+  tempcall <- list(...)
+  if (length(tempcall) && "which.levels" %in% names(tempcall))
+    stop("replace which.levels with which.values")
+ 
   funct <- get(FUN)
   funct <- match.fun(funct)
   #Check that response and individuals are in data
@@ -315,14 +336,16 @@
   if (is.null(weights))
     val.dat <- lapply(data, 
                        function(data, response, FUNC, na.rm, ...)
-                       { vals <- FUNC(x=data[[response]], na.rm=na.rm, ...) 
+                       { 
+                         vals <- FUNC(x=data[[response]], na.rm=na.rm, ...) 
                          return(vals)
                        },
                        response=response, FUNC=funct, na.rm=na.rm, ...)
   else
     val.dat <- lapply(data, 
                        function(data, response, weights, FUNC, na.rm, ...)
-                       { vals <- FUNC(x=data[[response]], w= data[[weights]], na.rm=na.rm, ...) 
+                       { 
+                         vals <- FUNC(x=data[[response]], w= data[[weights]], na.rm=na.rm, ...) 
                          return(vals)
                        },
                        response=response, weights=weights, FUNC=funct, na.rm=na.rm, ...)
@@ -332,7 +355,8 @@
   indices <- rownames(val.dat)
   indices <- strsplit(indices, split=sep, fixed=TRUE)
   for (fac in 1:length(individuals))
-  { val.dat[[individuals[fac]]] <- unlist(lapply(indices, 
+  { 
+    val.dat[[individuals[fac]]] <- unlist(lapply(indices, 
                                               function(x, fac)
                                                 { x[fac]}, 
                                               fac))
@@ -345,35 +369,62 @@
   val.dat <- val.dat[, c(2:length(val.dat),1)]
   
   #Get which observation is equal to each returned function value, if required
-  if (which.obs | !is.null(which.levels))
-  { kresp.val <- length(val.dat)
+  if (which.obs | !is.null(which.values))
+  { 
+    kresp.val <- length(val.dat)
     resp.val <- names(val.dat)[kresp.val]
     which.dat <- lapply(data, 
-                        function(x, response, FUNCT = NULL, na.rm = TRUE, ...)
-                        { w <- which.funct.value(x[[response]], FUNCT = FUNCT, na.rm = na.rm, ...)
+                        function(x, response, FUNCT = NULL, na.rm = TRUE, 
+                                 which.obs, which.values, ...)
+                        { 
+                          #Find which observation number corresponds to the value of FUNCT
+                          w <- which.funct.value(x[[response]], FUNCT = FUNCT, na.rm = na.rm, ...)
+                          #Match observation numbers with the corresponding values of the factor/numeric which.values
+                          if (!is.null(which.values))
+                          {
+                            val <- x[[which.values]][w]
+                            if (which.obs)
+                              w <- list(w,val)
+                            else
+                              w <- list(val)
+                          } else
+                            w <- list(w)
+                          return(w)
                         },
-                        response=response, FUNCT = FUN, na.rm = na.rm, ...)
-    which.dat <- as.data.frame(do.call(rbind, which.dat))
-    resp.which <- paste(resp.val,"obs",sep=".")
-    ntab <- length(which.dat)
-    names(which.dat) <-  c(resp.which)
-    which.dat[[ntab]][is.infinite(which.dat[[ntab]])] <- NA
-    val.dat <- data.frame(val.dat,which.dat[[ntab]])
-    kresp.val <- kresp.val + 1
-    names(val.dat)[kresp.val] <- resp.which
+                        response=response, FUNCT = FUN, na.rm = na.rm, 
+                        which.obs = which.obs, which.values = which.values, ...)
+    if (which.obs && !is.null(which.values))
+    {
+      which.dat <- do.call(rbind, 
+                           lapply(which.dat, 
+                                  function(x)
+                                  {
+                                    x <- data.frame(x)
+                                    names(x) <- c("V1","V2")
+                                    return(x)
+                                  }))
+      names(which.dat) <- paste(resp.val, c("obs", which.values), sep=".")
+      ntab <- length(which.dat)
+      which.dat[[ntab-1]][is.infinite(which.dat[[ntab-1]])] <- NA
+      which.dat[[ntab]][is.infinite(which.dat[[ntab]])] <- NA
+    } else
+    {
+      which.dat <- as.data.frame(unlist(which.dat))
+      if (!is.null(which.values))
+        resp.which <- paste(resp.val,which.values,sep=".") 
+      else
+        resp.which <- paste(resp.val,"obs",sep=".")
+      names(which.dat) <-  resp.which
+      ntab <- length(which.dat)
+      which.dat[[ntab]][is.infinite(which.dat[[ntab]])] <- NA
+      kresp.val <- kresp.val + 1
+    }
+    rownames(val.dat) <- rownames(which.dat) <- NULL
+    val.dat <- cbind(val.dat,which.dat)
   }
   
   #Put data frame into standard order
   val.dat <- val.dat[do.call(order, val.dat), ]
-  
-  #Match observation numbers with the corresponding levels of the factor which.levels
-  if (!is.null(which.levels))
-  { ndata <- dim(data)[1]
-    nval <- dim(val.dat)[1]
-    index <- ((1:nval - 1)*(ndata/nval) + val.dat[resp.which])[[1]]
-    resp.which <- paste(resp.which,which.levels,sep=".") 
-    val.dat[resp.which] <- data[which.levels][index,]             
-  }
   
   return(val.dat)
 }
