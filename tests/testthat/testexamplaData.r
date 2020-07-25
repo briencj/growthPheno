@@ -159,7 +159,7 @@ test_that("exampleData_splitValueCalculate", {
   testthat::expect_equal(ncol(tmp), 2)  
   testthat::expect_equal(nrow(tmp), 20)  
   testthat::expect_true(abs(tmp[1,2] - 42.82888) < 1e-03)  
-  testthat::expect_true("Area.smooth.AGR.max.Days" %in% names(tmp))
+  testthat::expect_true("Area.smooth.AGR.max" %in% names(tmp))
   tmp <- splitValueCalculate("Area.smooth.AGR", FUN="max", data=longi.dat, which.values = "Days")
   testthat::expect_equal(ncol(tmp), 3)  
   testthat::expect_equal(nrow(tmp), 20)  
@@ -176,7 +176,7 @@ test_that("exampleData_splitValueCalculate", {
   testthat::expect_equal(nrow(tmp), 20)  
   testthat::expect_true(all(c("Area.smooth.AGR.max.Days",
                               "Area.smooth.AGR.max.obs") %in% names(tmp)))
-  #Test numeric which.vales
+  #Test numeric which.values
   tmp <- splitValueCalculate("Area.smooth.AGR", FUN="max", data=longi.dat, 
                              which.values = "xDays", which.obs = T)
   testthat::expect_equal(ncol(tmp), 4)  
@@ -185,12 +185,23 @@ test_that("exampleData_splitValueCalculate", {
                               "Area.smooth.AGR.max.obs") %in% names(tmp)))
   testthat::expect_true(abs(tmp[1,4] - 6.5714286) < 1e-03)  
   
+  #Test quantile that involves the probs argument and is not an exact observed value
+  tmp <- splitValueCalculate("Area.smooth", FUN="quantile", data=longi.dat, 
+                             which.values = "Days", probs = 0.1)
+  tmp <- cbind(tmp, longi.dat$Area.smooth[longi.dat$Days == 28], 
+               longi.dat$Area.smooth[longi.dat$Days == 30])
+  names(tmp)[4:5] <- c("Area.smooth.28", "Area.smooth.30")
+  testthat::expect_equal(nrow(tmp), 20)  
+  #CHeck that Area.smooth.quantile is closer to Area.smooth.30 than to Area.smooth.28 
+  testthat::expect_true(all(with(tmp, (Area.smooth.28 - Area.smooth.quantile) <
+                                   (Area.smooth.30 - Area.smooth.quantile))))
+  
   #Test intervalValueCalculate
   tmp <- intervalValueCalculate("Area.smooth.AGR", FUN="max", data=longi.dat, which.obs=T)
   testthat::expect_equal(ncol(tmp), 3)  
   testthat::expect_equal(nrow(tmp), 20)  
-  testthat::expect_true(tmp[1,3] ==  42)  
-  testthat::expect_true("Area.smooth.AGR.max.Days" %in% names(tmp))
+  testthat::expect_true(tmp[1,3] ==  14)  
+  testthat::expect_true("Area.smooth.AGR.max.obs" %in% names(tmp))
   tmp <- intervalValueCalculate("Area.smooth.AGR", FUN="max", data=longi.dat, 
                                 which.obs = T, which.values = "Days")
   testthat::expect_equal(ncol(tmp), 4)  
@@ -212,7 +223,7 @@ test_that("exampleData_splitValueCalculate", {
   testthat::expect_true(AGR.max.dat[1,3] ==  5)  
   testthat::expect_true(AGR.max.dat[1,4] ==  35)  
   
-  #Test splitValueCalculate handling of which.levels
+  #Test splitValueCalculate handling of which.levels, a deprecaed argument
   testthat::expect_error(splitValueCalculate("Area.smooth.AGR", FUN="max", data=longi.dat, which.levels = "Days"))
 
   })

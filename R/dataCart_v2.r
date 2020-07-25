@@ -278,12 +278,17 @@
 
 #Functions to calculate a single-valued function, including the observation has the value of the function
 
-"which.funct.value" <- function(x, FUNCT = NULL, ...)
-{ funct <- get(FUNCT)
+"which.funct.value" <- function(x, FUNCT = NULL, na.rm = TRUE, ...)
+{ 
+  funct <- get(FUNCT)
   funct <- match.fun(funct)
-  k <- which(x==funct(x, ...))
+#  k <- which(x==funct(x, ...))
+  adiff <- abs(x - funct(x, ...))
+  k <- which(adiff == min(adiff, na.rm = na.rm))
   if (length(k) == 0)
     k <- NA
+  else if (length(k) > 1)
+    k <- k[1]
   return(k)
 }
 #Functions to calculate statistics for a profile

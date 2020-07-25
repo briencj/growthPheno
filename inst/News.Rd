@@ -1,5 +1,9 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 1.0-28 (2020-07-25)}{
+  \itemize{
+   \item{Modify splitValueCalculate, and hence intervalValueCaculate, so that \code{which.obs} gives the observarion number for the first observation that is closest to the value of the function results; \code{which.values} will return the value corresponding to \code{which.obs}.}
+}}
 \section{growthPheno Version 1.0-27 (2020-07-21)}{
   \itemize{
    \item{Fix bug in splitValueCalculate, and hence intervalValueCaculate, where \code{which.levels} set to other than \code{NULL} was giving an error. Replace the \code{which.levels} argument with the argument \code{which.values}.}

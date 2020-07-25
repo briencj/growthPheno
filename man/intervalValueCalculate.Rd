@@ -5,8 +5,8 @@
              individuals and applies a function that calculates a single 
              value from each individual's observations during a specified 
              time interval.  It includes the ability to calculate the 
-             observation number that corresponds to the calculated value of the 
-             function and the assocated values of a \code{factor} or 
+             observation number that is closest to the calculated value of 
+             the function and the assocated values of a \code{factor} or 
              \code{numeric}.}
 \usage{
 intervalValueCalculate(response, weights=NULL, individuals = "Snapshot.ID.Tag",
@@ -27,21 +27,29 @@ intervalValueCalculate(response, weights=NULL, individuals = "Snapshot.ID.Tag",
  \item{FUN}{A \code{\link{character}} giving the name of the \code{function} 
              that calculates the value for each subset.}
  \item{which.obs}{A \code{\link{logical}} indicating whether or not to determine 
-             the observation number corresponding to the value of the function, 
-             in addition to the value of the function itself. For this, \code{FUN} 
-             must return an observed value of the \code{reponse}, e.g. \code{max}.}
+             the observation number corresponding to the observed value that is 
+             closest to the value of the function, in addition to the value of 
+             the function itself. That is, \code{FUN} need not return an observed 
+             value of the \code{reponse}, e.g. \code{quantile}.}
  \item{which.values}{A \code{\link{character}} giving the name of the 
-             \code{\link{factor}} or \code{\link{numeric}} whose levels or values 
-             are associated with  the observation number whose \code{response} 
-             value corresponds to the value of the function. For this, \code{FUN} 
-             must return an observed value of the \code{reponse}, e.g. \code{max}.}
+             \code{\link{factor}} or \code{\link{numeric}} whose values are 
+             associated with the \code{response} values and whose value is to be 
+             returned for the observation number whose \code{response} value 
+             corresponds to the observed value closest to the value of the 
+             function. That is, \code{FUN} need not return an observed value of 
+             the \code{reponse}, e.g. \code{quantile}. In the case of multiple 
+             observed response values satisfying this condition, the value of 
+             the \code{which.values} vector for the first of these is 
+             returned.}
  \item{start.time}{A \code{\link{numeric}} giving the times, 
              in terms of levels of \code{times.factor}, that will give a 
              single value for each \code{Snapshot.ID.Tag} and that will 
              be taken as the observation at the start of the interval for 
              which the growth rate is to be calculated. If 
              \code{start.time} is \code{NULL}, the interval will start 
-             with the first observation.}
+             with the first observation. In the case of multiple 
+             observed response values satisfying this condition, the first is 
+             returned.}
  \item{end.time}{A \code{\link{numeric}} giving the times,
              in terms of levels of \code{times.factor}, that will give a 
              single value for each \code{Snapshot.ID.Tag} and that will be 
@@ -70,16 +78,16 @@ intervalValueCalculate(response, weights=NULL, individuals = "Snapshot.ID.Tag",
 \value{A \code{\link{data.frame}}, with the same number of rows as there are 
        \code{individuals}, containing a column for the \code{individuals} and 
        a column with the values of the function for the \code{individuals}. 
-       If the \code{FUN} yields observed \code{response} values then it 
-       is possible to obtain the origin of the \code{FUN} result, using 
-       either or both of \code{which.obs} and \code{which.values}. 
-       If \code{which.obs} is \code{TRUE}, a column with the observation 
-       numbers corresponding to the values of the function \code{FUN} for the 
-       \code{individuals} will be added to the \code{data.frame}. 
+       It is also possible to determine observaton numbers or the values of 
+       another column in \code{data} for the \code{response} values that are 
+       closest to the \code{FUN} results, using either or both of 
+       \code{which.obs} and \code{which.values}. If \code{which.obs} is 
+       \code{TRUE}, a column with observation numbers is included in the  
+       \code{\link{data.frame}}. 
        If \code{which.values} is set to the name of a \code{\link{factor}} or 
-       a \code{\link{numeric}}, the levels of that \code{\link{factor}} or the 
-       values of that \code{\link{numeric}} corresponding to each observation 
-       number will be added to the \code{data.frame}.
+       a \code{\link{numeric}},a column containing the levels of that 
+       \code{\link{factor}} or the values of that \code{\link{numeric}} is 
+       included in the  \code{\link{data.frame}}.
        
        The name of the column with the values of the function will be result of 
        concatenating the \code{response}, \code{FUN} and, if it is not 
