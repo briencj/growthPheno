@@ -14,6 +14,7 @@ export(anom,
        intervalGRaverage,
        intervalGRdiff,
        intervalPVA,
+       intervalPVA.data.frame,
        intervalValueCalculate,
        intervalWUI,
        longitudinalPrime,
@@ -28,8 +29,12 @@ export(anom,
        probeDF,
        probeSmoothing,
        PVA,
-       RGRdiff,
+       PVA.data.frame,
+       PVA.matrix,
        rcontrib,
+       rcontrib.data.frame,
+       rcontrib.matrix,
+       RGRdiff,
        splitContGRdiff,
        splitSplines,
        splitValueCalculate,
@@ -52,4 +57,8 @@ importFrom(GGally, ggpairs, putPlot)
 importFrom(reshape, melt)
 importFrom(utils, read.csv)
 import(dae, ggplot2, readxl, RColorBrewer)
-#S3method(predict, nscSpline)
+S3method(intervalPVA, data.frame)
+S3method(PVA, data.frame)
+S3method(PVA, matrix)
+S3method(rcontrib, data.frame)
+S3method(rcontrib, matrix)

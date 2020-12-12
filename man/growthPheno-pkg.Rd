@@ -143,12 +143,20 @@
     \cr
     (vi) Principal variates analysis (PVA)\cr\cr
     
-    \code{\link{intervalPVA}} 
-    \tab Selects a subset of variables observed within a\cr
-    \tab specified time interval using PVA.\cr
-    \code{\link{PVA}} 
-    \tab Selects a subset of variables using PVA.\cr
-    \code{\link{rcontrib}} 
+    \code{\link{intervalPVA.data.frame}} 
+    \tab Selects a subset of variables using PVA, based on \cr
+    \tab the observed values within a specified time interval\cr
+    \code{\link{PVA.data.frame}} 
+    \tab Selects a subset of variables stored in a data.frame \cr
+    \tab using PVA.\cr
+    \code{\link{PVA.matrix}} 
+    \tab Selects a subset of variables using PVA based on a \cr
+    \tab correlation matrix. \cr
+    \code{\link{rcontrib.data.frame}} 
+    \tab Computes a measure of how correlated each\cr
+    \tab variable in a set is with the other variable,\cr
+    \tab conditional on a nominated subset of them.\cr
+    \code{\link{rcontrib.matrix}} 
     \tab Computes a measure of how correlated each\cr
     \tab variable in a set is with the other variable,\cr
     \tab conditional on a nominated subset of them.\cr

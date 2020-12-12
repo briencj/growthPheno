@@ -15,14 +15,14 @@
              \code{plotCorrmatrix} being preferred.}
 }
 \usage{
-plotCorrmatrix(responses, data, which.plots = c("heatmap","matrixplot"), 
+plotCorrmatrix(data, responses, which.plots = c("heatmap","matrixplot"), 
                title = NULL, labels = NULL, labelSize = 4, 
                show.sig = FALSE, pairs.sets = NULL, ...)
 }
 \arguments{
+ \item{data}{A \code{\link{data.frame}} containing the columns of variables to be correlated.}
  \item{responses}{A \code{\link{character}} giving the names of the columns in 
              \code{data} containing the variables to be correlated.}
- \item{data}{A \code{\link{data.frame}} containing the columns of variables to be correlated.}
  \item{which.plots}{A \code{\link{character}} specifying the plots of the correlations to be 
                     produced.}
  \item{title}{Title for the plots.}
@@ -45,7 +45,7 @@ plotCorrmatrix(responses, data, which.plots = c("heatmap","matrixplot"),
 data(exampleData)
 responses <- c("Area","Area.SV","Area.TV", "Image.Biomass", "Max.Height","Centre.Mass",
                "Density", "Compactness.TV", "Compactness.SV")
-plotCorrmatrix(responses, longi.dat, pairs.sets=list(c(1:4),c(5:7)))
+plotCorrmatrix(longi.dat, responses, pairs.sets=list(c(1:4),c(5:7)))
 
 }}
 \keyword{hplot}

@@ -1,5 +1,5 @@
-\name{rcontrib}
-\alias{rcontrib}
+\name{rcontrib.matrix}
+\alias{rcontrib.matrix}
 \title{Computes a measure of how correlated each variable in a set is with the other variable, 
        conditional on a nominated subset of them}
 \description{A measure of how correlated a variable is with those in a set is given by the 
@@ -10,26 +10,31 @@
              for the subset, adjusting for those variables in \code{include}. This is useful 
              for manually deciding which of the variables not in \code{include} should next be 
              added to it.}
-\usage{rcontrib(obj, ...)}
+\usage{
+\method{rcontrib}{matrix}(obj, responses, include = NULL, ...)}
 \arguments{
- \item{obj}{A \code{\link{data.frame}} containing the columns of variables from which the 
+ \item{obj}{A \code{\link{matrix}} containing the correlations of the variables from which the 
              correlation measure is to be calculated.}
- \item{...}{allows passing of arguments to other functions}
+ \item{responses}{A \code{\link{character}} giving the names of the columns in 
+             \code{data} from which the correlation measure is to be calculated.}
+ \item{include}{A \code{\link{character}} giving the names of the columns in 
+             \code{data} for the variables for which other variables are to be adjusted.}
+ \item{...}{allows passing of arguments to other functions.}
 }
 \value{A \code{\link{numeric}} giving the correlation measures.
 }
-\details{\code{rcontrib} is the generic function for the \code{rcontrib} method. 
-         Use methods("rcontrib") to get all the methods for the rcontrib generic.
-
-\code{\link{rcontrib.data.frame}} is a method for a \code{\link{data.frame}}.
-
-\code{\link{rcontrib.matrix}} is a method for a \code{\link{matrix}}.
-}
 \author{Chris Brien}
-\seealso{\code{\link{PVA}}, \code{\link{intervalPVA}}}
+\seealso{\code{\link{rcontrib}}, \code{\link{rcontrib.data.frame}}, \code{\link{PVA}}, \code{\link{intervalPVA.data.frame}}}
 \references{
 Cumming, J. A. and D. A. Wooff (2007) Dimension reduction via principal variables. \emph{Computational Statistics
 and Data Analysis}, \bold{52}, 550--565.
+}
+\examples{
+data(exampleData)
+responses <- c("Area","Area.SV","Area.TV", "Image.Biomass", "Max.Height","Centre.Mass",
+               "Density", "Compactness.TV", "Compactness.SV")
+R <- Hmisc::rcorr(as.matrix(longi.dat[responses]))$r
+h <- rcontrib(R, responses, include = "Area")
 }
 \keyword{data}
 \keyword{manip}

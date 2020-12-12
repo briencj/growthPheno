@@ -132,7 +132,7 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
   
   #Sort data into cartId, Time.after.Planting..d. order and store
   # - may need to be reordered for analysis purposes
-  raw.dat <- raw.dat[order(raw.dat[cartId], raw.dat[timeAfterStart]), ]
+  raw.dat <- raw.dat[order(raw.dat[[cartId]], raw.dat[[timeAfterStart]]), ]
   return(raw.dat)
 }
 
@@ -267,7 +267,7 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
   out.vars <- c(out.posndatevars, idcolumns, imagevars)
   
   #Re-order rows and response columns
-  longi.prime.dat <- longi.prime.dat[order(longi.prime.dat[cartId], longi.prime.dat$Days), ]
+  longi.prime.dat <- longi.prime.dat[order(longi.prime.dat[[cartId]], longi.prime.dat$Days), ]
   longi.prime.dat <- longi.prime.dat[out.vars]
   return(longi.prime.dat)
 }
@@ -1091,7 +1091,7 @@ return(response.WUI)
     #   data[times.factor] <- with(data, eval(parse(text =x)))
     data[times.factor] <- factor(unlist(data[times.factor]), 
                                  labels = unique(data[times.factor])[
-                                   order(unique(data[times.factor])),])
+                                   order(unique(data[[times.factor]])),])
     
     #Get facet cols if have any
     facet.cols <- NULL
@@ -1545,7 +1545,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
   dat[times.factor] <- dat[xname]
   dat[times.factor] <- with(dat, eval(parse(text =x)))
   dat[times.factor] <- factor(unlist(dat[times.factor]), 
-                              labels = unique(dat[times.factor])[order(unique(dat[times.factor])),])
+                              labels = unique(dat[times.factor])[order(unique(dat[[times.factor]])),])
   
   ggfacet <- list()
   #Set up facet if have any

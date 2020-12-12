@@ -283,7 +283,7 @@
   funct <- get(FUNCT)
   funct <- match.fun(funct)
 #  k <- which(x==funct(x, ...))
-  adiff <- abs(x - funct(x, ...))
+  adiff <- abs(x - funct(x, na.rm = na.rm, ...))
   k <- which(adiff == min(adiff, na.rm = na.rm))
   if (length(k) == 0)
     k <- NA

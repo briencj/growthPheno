@@ -1,3 +1,9 @@
+#S3 method generics
+
+intervalPVA <- function(obj, ...) UseMethod("intervalPVA")
+PVA <- function(obj, ...) UseMethod("PVA")
+rcontrib <- function(obj, ...) UseMethod("rcontrib")
+
 #Deprecations
 
 getDates <- function(...)

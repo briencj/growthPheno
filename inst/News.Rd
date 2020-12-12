@@ -1,8 +1,20 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 1.0-30 (2020-12-12)}{
+  \itemize{
+   \item{Fix a bug in splitValueCalculate associated with the arguments \code{which.obs} and \code{which.values}.
+   \item{Fix a bug for R 4.1.0 in longitudinalPrime, importExcel and plotMedianDeviations.}}
+}}
+\section{growthPheno Version 1.0-29 (2020-11-10)}{
+  \itemize{
+   \item{Convert PVA into an S3 method with methods with PVA.data.frame and PVA.matrix. The argument \code{data} has been renamed to obj and placed first.}
+   \item{Convert rcontrib into an S3 method with methods with rcontrib.data.frame and rcontrib.matrix. The argument \code{data} has been renamed to obj and placed first.}
+   \item{Make intervalPVA into a method for \code{data.frame}s. The order of the arguments \code{data} and \code{responses} has been swapped in plotCorrmatrix.}
+   \item{The argument \code{data} has been renamed to obj and placed first.}
+}}
 \section{growthPheno Version 1.0-28 (2020-07-25)}{
   \itemize{
-   \item{Modify splitValueCalculate, and hence intervalValueCaculate, so that \code{which.obs} gives the observarion number for the first observation that is closest to the value of the function results; \code{which.values} will return the value corresponding to \code{which.obs}.}
+   \item{Modify splitValueCalculate, and hence intervalValueCaculate, so that \code{which.obs} gives the observation number for the first observation that is closest to the value of the function results; \code{which.values} will return the value corresponding to \code{which.obs}.}
 }}
 \section{growthPheno Version 1.0-27 (2020-07-21)}{
   \itemize{

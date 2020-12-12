@@ -23,22 +23,58 @@
   return(S22)
 }
 
-"PVA" <- function(responses, data, nvarselect = NULL, p.variance = 1, include = NULL, 
+"PVA.data.frame" <- function(obj, responses, nvarselect = NULL, p.variance = 1, include = NULL, 
                   plot = TRUE, ...)
-  #Automatically selects variables using Principla Variables Analysis (PVA)
+  #Automatically selects variables using Principal Variables Analysis (PVA)
   #nvarselect is the number of to variables to select, counting those in include.
   #It is possible to use several criteria to control the selection:
-  # 1) select all varaibles is increasing order of amount of information provided
+  # 1) select all variables is increasing order of amount of information provided
   # 2) select nvarselect variables (this will default to the number of variables in R)
   # 3) select just enough variables, up to a maximum of nvarselect variables, to explain at least 
-  #    p.variance*100 per cent of the total varaince  
+  #    p.variance*100 per cent of the total variance  
 { 
-  #Check response are in data
-  if (!all(responses %in% names(data)))
-    stop("At least one name in responses is not in data")
+  #Check response are in data.frame
+  if (!all(responses %in% names(obj)))
+    stop("At least one name in responses is not in the data.frame")
   
   #Get correlation matrix
-  R <- rcorr(as.matrix(data[responses]))$r
+  R <- rcorr(as.matrix(obj[responses]))$r
+  
+  #Carry out PVA on correlations matrix
+  p.var <- PVA(obj = R, responses = responses, nvarselect = nvarselect, p.variance = p.variance, 
+               include = include, plot = plot, ...)
+  
+  return(p.var)
+  
+}  
+  
+"PVA.matrix" <- function(obj, responses, nvarselect = NULL, p.variance = 1, include = NULL, 
+                         plot = TRUE, ...)
+  #Automatically selects variables using Principal Variables Analysis (PVA)
+  #nvarselect is the number of to variables to select, counting those in include.
+  #It is possible to use several criteria to control the selection:
+  # 1) select all variables is increasing order of amount of information provided
+  # 2) select nvarselect variables (this will default to the number of variables in R)
+  # 3) select just enough variables, up to a maximum of nvarselect variables, to explain at least 
+  #    p.variance*100 per cent of the total variance  
+{ 
+  
+  R <- obj
+  
+  #Check responses are in matrix
+  if (is.null(colnames(R)) || is.null(colnames(R)))
+    rownames(R) <- colnames(R) <- responses
+  else
+  {
+    if (!all(responses %in% rownames(obj)) && !all(responses %in% colnames(obj)))
+      stop("At least one name in responses is not in the matrix")
+  }
+  #Check iis a correlation matrix
+  if (!all(diag(obj) == 1) || (!(all(obj <= 1)) && !(all(obj >= -1))))
+    stop("obj is not a legal correlation matrix")
+  
+  #Get correlation matrix
+  R <- obj
   
   #Initialize
   nvar <- nrow(R)
@@ -154,12 +190,24 @@
   return(p.var)
 }
 
-"rcontrib" <- function(responses, data, include = NULL)
+"rcontrib.data.frame" <- function(obj, responses, include = NULL, ...)
   #Allows the manual selection of a set of variables
   #include specifies the set of variables
   #h is returned and from this you can decide which variable(s) to add to the include list
 { 
-  R <- Hmisc::rcorr(as.matrix(data[responses]))$r
+  R <- Hmisc::rcorr(as.matrix(obj[responses]))$r
+  
+  h <- rcontrib(obj = R, responses = responses, include = include)  
+
+  return(h)
+}
+  
+"rcontrib.matrix" <- function(obj, responses, include = NULL, ...)
+  #Allows the manual selection of a set of variables
+  #include specifies the set of variables
+  #h is returned and from this you can decide which variable(s) to add to the include list
+{ 
+  R <- obj
   
   if (is.null(include))
     h <- colSums(R*R)
@@ -197,14 +245,14 @@
   return(h)
 }
 
-"intervalPVA" <- function(responses, data, times.factor = "Days", start.time, end.time, 
+"intervalPVA.data.frame" <- function(obj, responses, times.factor = "Days", start.time, end.time, 
                           nvarselect = NULL, p.variance = 1, include = NULL, 
                           plot = TRUE, ...)
   #Call PVA to perform a PVA on all data in a time interval
 { 
-  d <- subset(data, data[[times.factor]] %in% as.character(start.time[1]:end.time[1]), 
+  d <- subset(obj, obj[[times.factor]] %in% as.character(start.time[1]:end.time[1]), 
               select=responses)
-  p.var <- PVA(responses, data=d, 
+  p.var <- PVA(obj = d, responses = responses, 
                nvarselect = nvarselect, p.variance = p.variance, include = include, 
                plot=plot, ...)
   return(p.var)
@@ -223,7 +271,7 @@
 }
 
 #Functions to calculate and plot correlation matrices for a set of responses,
-"plotCorrmatrix" <- function(responses, data, which.plots = c("heatmap","matrixplot"), 
+"plotCorrmatrix" <- function(data, responses, which.plots = c("heatmap","matrixplot"), 
                              title = NULL, labels = NULL, labelSize = 4, 
                              show.sig = FALSE, pairs.sets = NULL, ...)
 { 

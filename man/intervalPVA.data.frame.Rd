@@ -1,20 +1,21 @@
-\name{intervalPVA}
+\name{intervalPVA.data.frame}
+\alias{intervalPVA.data.frame}
 \alias{intervalPVA}
-\title{Selects a subset of variables observed within a specified time interval using Principal Variable Analysis (PVA)}
-\description{Principal Variable Analysis (PVA) (Cummings, 2007) selects a subset 
+\title{Selects a subset of variables using Principal Variable Analysis (PVA), based on the observed values within a specified time interval}
+\description{Principal Variable Analysis (PVA) (Cumming and Wooff, 2007) selects a subset 
   from a set of the variables such that the variables in the subset are as 
   uncorrelated as possible, in an effort to ensure that all aspects of the variation 
   in the data are covered. Here, all observations in a specified time interval are 
   used for calculation the correlations on which the selection is based.}
 \usage{
-intervalPVA(responses, data, times.factor = "Days", start.time, end.time, 
+\method{intervalPVA}{data.frame}(obj, responses, times.factor = "Days", start.time, end.time, 
             nvarselect = NULL, p.variance = 1, include = NULL, 
             plot = TRUE, ...)}
 \arguments{
+ \item{obj}{A \code{\link{data.frame}} containing the columns of variables from which the 
+             selection is to be made.}
  \item{responses}{A \code{\link{character}} giving the names of the columns in 
              \code{data} from which the variables are to be selected.}
- \item{data}{A \code{\link{data.frame}} containing the columns of variables from which the 
-             selection is to be made.}
  \item{times.factor}{A \code{\link{character}} giving the name of the column in 
              \code{data} containing the factor for times at which the data was 
              collected. Its levels will be used to identify the subset and 
@@ -54,14 +55,14 @@ The variable that is most correlated with the other variables is selected first 
 \author{Chris Brien}
 \seealso{\code{\link{PVA}}, \code{\link{rcontrib}}}
 \references{
-Cumming, J. A. and D. A. Wood (2007) Dimension reduction via principal variables. \emph{Computational Statistics
+Cumming, J. A. and D. A. Wooff (2007) Dimension reduction via principal variables. \emph{Computational Statistics
 and Data Analysis}, \bold{52}, 550--565.
 }
 \examples{
 data(exampleData)
 responses <- c("Area","Area.SV","Area.TV", "Image.Biomass", "Max.Height","Centre.Mass",
                "Density", "Compactness.TV", "Compactness.SV")
-results <-  intervalPVA(responses, longi.dat, 
+results <-  intervalPVA(longi.dat, responses, 
                         start.time = "31", end.time = "31",
                         p.variance=0.9, plot = FALSE)
 }
