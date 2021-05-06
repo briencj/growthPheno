@@ -1,5 +1,5 @@
 Package: growthPheno
-Version: 1.0-31
+Version: 1.0-32
 Date: 2021-05-06
 Title: Plotting, Smoothing and Growth Trait Extraction for Longitudinal Data 
 Authors@R: person("Chris","Brien", role = c("aut","cre"),

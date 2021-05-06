@@ -290,30 +290,34 @@
   {
     red <- RColorBrewer::brewer.pal(3, "Set1")[1]
     blu <- RColorBrewer::brewer.pal(3, "Set1")[2]
-    corr <- Hmisc::rcorr(as.matrix(data[responses]))
+    corr.stats <- Hmisc::rcorr(as.matrix(data[responses]))
     if (is.null(labels))
       labels <- responses
-    p <- within(reshape::melt.array(corr$P), 
+    p <- within(reshape::melt.array(corr.stats$P), 
                 { 
                   X1 <- factor(X1, levels=responses)
                   X2 <- factor(X2, levels=rev(levels(X1)))
                 })
     names(p)[match("value", names(p))] <- "p"
-    corr <- within(reshape::melt.array(corr$r), 
+    corr <- within(reshape::melt.array(corr.stats$r), 
                    { 
                      X1 <- factor(X1, levels=responses)
                      X2 <- factor(X2, levels=rev(levels(X1)))
                    })
     names(corr)[match("value", names(corr))] <- "r"
-    corr <- merge(corr, p, by=c("X1", "X2"))
+    corr <- merge(corr, p, by=c("X1", "X2"), sort = FALSE)
     corr <- within(corr, 
                    {
+                     levels(X1) <-responses
+                     levels(X2) <-responses
                      X1 <- factor(X1, labels = labels)
-                     X2 <- factor(X2, labels = labels)
+                     X2 <- factor(X2, labels = rev(labels))
                    })
+    corr <- with(corr, corr[order(X2, X1), ])
     plt <- ggplot(corr, aes(X1, X2)) +
       geom_tile(aes(fill=r)) +
       scale_fill_gradient2(low=red, high=blu, limits=c(-1, 1)) +
+      scale_y_discrete(limits = rev) +
       labs(x=NULL, y=NULL, ggtitle=title) + 
       theme_bw() +
       theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5, size=axis.text.size),

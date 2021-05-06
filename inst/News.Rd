@@ -1,5 +1,9 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 1.0-32 (2021-05-06)}{
+  \itemize{
+   \item{Fix bug labelleding y-axis variables in plotCorrmatrix .}
+}}
 \section{growthPheno Version 1.0-31 (2021-05-06)}{
   \itemize{
    \item{Add option \code{axis.text.size} to plotCorrmatrix for the \code{heatmap} and made a legend box for it.}
