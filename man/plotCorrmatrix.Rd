@@ -16,8 +16,8 @@
 }
 \usage{
 plotCorrmatrix(data, responses, which.plots = c("heatmap","matrixplot"), 
-               title = NULL, labels = NULL, labelSize = 4, 
-               show.sig = FALSE, pairs.sets = NULL, ...)
+               title = NULL, labels = NULL, labelSize = 4, pairs.sets = NULL, 
+               show.sig = FALSE, axis.text.size = 20, ggplotFuncs = NULL, ...)
 }
 \arguments{
  \item{data}{A \code{\link{data.frame}} containing the columns of variables to be correlated.}
@@ -30,13 +30,20 @@ plotCorrmatrix(data, responses, which.plots = c("heatmap","matrixplot"),
                If \code{labels} is \code{NULL}, \code{responses} is used for the \code{labels}.}
  \item{labelSize}{A \code{\link{numeric}} giving the size of the \code{labels} in the 
                   \code{matrixplot}.}
- \item{show.sig}{A \code{\link{logical}} indicating whether or not to give asterisks indicating 
-                 significance on the plot.}
- \item{pairs.sets}{A \code{\link{list}} each of whose components is a \code{\link{numeric}} giving 
+\item{pairs.sets}{A \code{\link{list}} each of whose components is a \code{\link{numeric}} giving 
                 the position of the variable names in \code{responses} that are to be included 
                 in the set. All pairs of variables in this pairs.set will be included in a 
-                matrix plot.}
- \item{...}{allows passing of arguments to other functions}
+                \code{matrixplot}.}
+ \item{show.sig}{A \code{\link{logical}} indicating whether or not to give asterisks on the 
+                 \code{heatmap} indicating the correlations are significantly different from zero.}
+ \item{axis.text.size}{A \code{\link{numeric}} giving the size of the \code{labels} on the axes   
+                  of the \code{heatmap}.}
+ \item{ggplotFuncs}{A \code{\link{list}}, each element of which contains the 
+                results of evaluating a \code{\link{ggplot}} function. 
+                It is created by calling the \code{\link{list}} function with 
+                a \code{\link{ggplot}} function call for each element.
+                These functions are applied in creating the \code{ggplot} object.}
+ \item{...}{Allows the passing of arguments to other functions ans is presently unused}
 }
 \value{\code{NULL}.}
 \author{Chris Brien}

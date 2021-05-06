@@ -5,3 +5,4 @@
 ^.vignettes$
 ^CRANlogs$
 ^README.*$
+^\tests\testthat\testthat-problems.rds$

@@ -1,9 +1,14 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 1.0-31 (2021-05-06)}{
+  \itemize{
+   \item{Add option \code{axis.text.size} to plotCorrmatrix for the \code{heatmap} and made a legend box for it.}
+   \item{Added \code{ggplotFuncs} option to plotCorrmatrix.}
+}}
 \section{growthPheno Version 1.0-30 (2020-12-12)}{
   \itemize{
-   \item{Fix a bug in splitValueCalculate associated with the arguments \code{which.obs} and \code{which.values}.
-   \item{Fix a bug for R 4.1.0 in longitudinalPrime, importExcel and plotMedianDeviations.}}
+   \item{Fix a bug in splitValueCalculate associated with the arguments \code{which.obs} and \code{which.values}.}
+   \item{Fix a bug for R 4.1.0 in longitudinalPrime, importExcel and plotMedianDeviations.}
 }}
 \section{growthPheno Version 1.0-29 (2020-11-10)}{
   \itemize{

@@ -272,8 +272,8 @@
 
 #Functions to calculate and plot correlation matrices for a set of responses,
 "plotCorrmatrix" <- function(data, responses, which.plots = c("heatmap","matrixplot"), 
-                             title = NULL, labels = NULL, labelSize = 4, 
-                             show.sig = FALSE, pairs.sets = NULL, ...)
+                             title = NULL, labels = NULL, labelSize = 4, pairs.sets = NULL, 
+                             show.sig = FALSE, axis.text.size = 20, ggplotFuncs = NULL, ...)
 { 
   #Check responses in data
   if (!all(responses %in% names(data)))
@@ -316,9 +316,12 @@
       scale_fill_gradient2(low=red, high=blu, limits=c(-1, 1)) +
       labs(x=NULL, y=NULL, ggtitle=title) + 
       theme_bw() +
-      theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5, size=20),
-            axis.text.y=element_text(size=20),
-            plot.title=element_text(face="bold")) +
+      theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5, size=axis.text.size),
+            axis.text.y=element_text(size=axis.text.size),
+            plot.title=element_text(face="bold"),
+            legend.key = element_rect(colour = "black"),
+            legend.background = element_blank(),
+            legend.box.background = element_rect(colour = "black")) +
       guides(fill=guide_legend(title="r"))
     if (show.sig)
     { 
@@ -331,24 +334,34 @@
       plt <- plt + geom_text(data=corr, aes(label=sig), size=3)
     } else
       plt <- plt + geom_text(data=corr, aes(label=round(r, 2)), size=4)
+    
+    if (!is.null(ggplotFuncs))
+    {
+      for (f in ggplotFuncs)
+        plt <- plt + f
+    }
+    
     print(plt)
   }
   if ("matrixplot" %in% plots.opt)
   {
     if (is.null(pairs.sets))
       print(my_ggpairs(data=data, responses = responses, 
-                       labels=labels,  labelSize= labelSize, title = title))
+                       labels=labels,  labelSize= labelSize, title = title),
+            ggplotFuncs = ggplotFuncs)
     else
       for(k in 1:length(pairs.sets))
         my_ggpairs(data=data, responses = responses[pairs.sets[[k]]], 
                    labels=labels[pairs.sets[[k]]],  
-                   labelSize= labelSize, title = title)
+                   labelSize= labelSize, title = title,
+                   ggplotFuncs = ggplotFuncs)
   }
   invisible()
 }
 
   my_ggally_text <- function (label, mapping = ggplot2::aes(color = "black"), labelSize = 4, 
-                            xP = 0.5, yP = 0.5, xrange = c(0, 1), yrange = c(0, 1), ...) 
+                            xP = 0.5, yP = 0.5, xrange = c(0, 1), yrange = c(0, 1),
+                            ggplotFuncs = NULL, ...) 
 { 
   p <- ggplot() + xlim(xrange) + ylim(yrange) + 
     theme(legend.position = "none", 
@@ -375,11 +388,19 @@
   mapping$colour <- NULL
   p <- p + geom_text(label = label, mapping = mapping, colour = colour, size = labelSize, 
                      ...) + theme(legend.position = "none")
+
+    if (!is.null(ggplotFuncs))
+  {
+    for (f in ggplotFuncs)
+      p <- p + f
+  }
+  
   p
 }
 
 my_ggpairs <- function(data, responses = NULL, labels = NULL, 
-                       labelSize = 4, title = "")
+                       labelSize = 4, title = "",
+                       ggplotFuncs = NULL)
 { 
   
   if (is.null(responses))
@@ -396,7 +417,8 @@ my_ggpairs <- function(data, responses = NULL, labels = NULL,
                  diag=list(continuous="blankDiag")) 
   for (i in 1:nvars)
   { 
-    gtx <- my_ggally_text(labels[i], mapping = aes(col = "grey50"), labelSize= labelSize)
+    gtx <- my_ggally_text(labels[i], mapping = aes(col = "grey50"), labelSize= labelSize,
+                          ggplotFuncs = ggplotFuncs)
     gg1 <- putPlot(gg1, gtx, i, i)
   }
   print(gg1)

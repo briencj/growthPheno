@@ -71,7 +71,8 @@ plotLongitudinal(data, x = "xDays+44.5", response = "Area",
  \item{ggplotFuncs}{A \code{\link{list}}, each element of which contains the 
                 results of evaluating a \code{\link{ggplot}} function. 
                 It is created by calling the \code{\link{list}} function with 
-                a \code{\link{ggplot}} function call for each element.}
+                a \code{\link{ggplot}} function call for each element.
+                These functions are applied in creating the \code{ggplot} object.}
  \item{printPlot}{A \code{\link{logical}} indicating whether or not to print the 
                   plot.}
 }

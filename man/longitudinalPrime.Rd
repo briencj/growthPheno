@@ -4,7 +4,7 @@
 \description{Forms the prime traits by selecting a subset of the traits in a data.frame of 
   imaging data produced by the Lemna Tec Scanalyzer. The imaging traits to be retained 
   are specified using the \code{traits} and \code{labsCamerasViews} arguments. Some imaging 
-  traits are divided by 10000 to convert them from pixels to kilopixels. 
+  traits are divided by 1000 to convert them from pixels to kilopixels. 
   Also added are factors and explanatory variates that might be of use in an analysis.}
 \usage{
 longitudinalPrime(data, cartId = "Snapshot.ID.Tag", 
