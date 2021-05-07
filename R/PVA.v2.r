@@ -323,10 +323,12 @@
       theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5, size=axis.text.size),
             axis.text.y=element_text(size=axis.text.size),
             plot.title=element_text(face="bold"),
+            legend.position = "bottom", 
+            legend.margin = margin(7.5,10,5,5, "pt"),
             legend.key = element_rect(colour = "black"),
             legend.background = element_blank(),
             legend.box.background = element_rect(colour = "black")) +
-      guides(fill=guide_legend(title="r"))
+      guides(fill=guide_colorbar(title="r "))
     if (show.sig)
     { 
       corr <- within(corr,

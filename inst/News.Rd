@@ -1,5 +1,9 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 1.0-33 (2021-05-07)}{
+  \itemize{
+   \item{Move legend and to the bottom and turn it into a colour bar in plotCorrmatrix .}
+}}
 \section{growthPheno Version 1.0-32 (2021-05-06)}{
   \itemize{
    \item{Fix bug labelleding y-axis variables in plotCorrmatrix .}
