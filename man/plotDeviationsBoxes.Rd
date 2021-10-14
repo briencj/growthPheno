@@ -7,7 +7,7 @@ plotDeviationsBoxes(data, observed, smoothed, x.factor,
                     x.title = NULL, y.titles = NULL,
                     facet.x = ".", facet.y = ".", labeller = NULL, 
                     df, deviations.plots = "absolute", 
-                    ggplotFuncs = NULL, ...)
+                    ggplotFuncs = NULL, printPlot = TRUE, ...)
  }
 \arguments{
  \item{data}{A \code{\link{data.frame}} containing the observed and smoothed values 
@@ -42,9 +42,14 @@ plotDeviationsBoxes(data, observed, smoothed, x.factor,
                 It is created by calling the \code{\link{list}} function with 
                 a \code{\link{ggplot}} function call for each element.
                 These functions are applied in creating the \code{ggplot} object for plotting.}
+ \item{printPlot}{A \code{\link{logical}} indicating whether or not to print the 
+                  plots.}
 \item{...}{allows passing of arguments to \code{\link{plotLongitudinal}}.}
 }
-\value{A \code{\link{data.frame}} containing the median deviations that have been plotted.}
+\value{A list whose components are named \code{absolute} and \code{relative}; a 
+       component will contain an object of class "\code{ggplot}" when the plot has been 
+       requested using the \code{deviations.plots} argument and a \code{NULL} otherwise. 
+       The objects can be plotted using \code{print}.}
 \author{Chris Brien}
 \seealso{\code{\link{plotMedianDeviations}}, \code{\link{probeSmoothing}}, \code{\link{ggplot}}.}
 \examples{

@@ -9,6 +9,7 @@ test_that("corrPlot", {
   data(exampleData)
   responses <- c("Area","Area.SV","Area.TV", "Image.Biomass", "Max.Height","Centre.Mass",
                  "Density", "Compactness.TV", "Compactness.SV")
- testthat::expect_null(plotCorrmatrix(longi.dat, responses, 
+ testthat::expect_invisible(plt <- plotCorrmatrix(longi.dat, responses, 
                                         pairs.sets=list(c(1:4),c(5:7))))
+ testthat::expect_true("ggplot" %in% class(plt))
 })

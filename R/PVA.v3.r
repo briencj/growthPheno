@@ -258,22 +258,11 @@
   return(p.var)
 }
 
-"corrPlot" <- function(responses, data, which.plots = c("heatmap","matrixplot"), 
-                       title = NULL, labels = NULL, labelSize = 4, 
-                       show.sig = FALSE, pairs.sets = NULL, ...)
-{ 
-  warning(paste("corrPlot will be deprecated in future versions,", 
-                "its pseudonym plotCorrmatrix being preferred"))
-  plotCorrmatrix(responses = responses, data = data, which.plots = which.plots, 
-                 title = title, labels = labels, labelSize = labelSize, 
-                 show.sig = show.sig, pairs.sets = pairs.sets, ...)
-  invisible()
-}
-
 #Functions to calculate and plot correlation matrices for a set of responses,
 "plotCorrmatrix" <- function(data, responses, which.plots = c("heatmap","matrixplot"), 
                              title = NULL, labels = NULL, labelSize = 4, pairs.sets = NULL, 
-                             show.sig = FALSE, axis.text.size = 20, ggplotFuncs = NULL, ...)
+                             show.sig = FALSE, axis.text.size = 20, ggplotFuncs = NULL, 
+                             printPlot = TRUE, ...)
 { 
   #Check responses in data
   if (!all(responses %in% names(data)))
@@ -286,23 +275,26 @@
   plots.opt <- options[unlist(lapply(which.plots, check.arg.values, 
                                      options=options))]
   
+  plt <- NULL
   if ("heatmap" %in% plots.opt)
   {
     red <- RColorBrewer::brewer.pal(3, "Set1")[1]
     blu <- RColorBrewer::brewer.pal(3, "Set1")[2]
     corr.stats <- Hmisc::rcorr(as.matrix(data[responses]))
+    rownames(corr.stats$P) <- colnames(corr.stats$P) <- NULL
+    rownames(corr.stats$r) <- colnames(corr.stats$r) <- NULL
     if (is.null(labels))
       labels <- responses
     p <- within(reshape::melt.array(corr.stats$P), 
                 { 
-                  X1 <- factor(X1, levels=responses)
-                  X2 <- factor(X2, levels=rev(levels(X1)))
+                  X1 <- factor(X1, labels=responses)
+                  X2 <- factor(X2, labels=levels(X1))
                 })
     names(p)[match("value", names(p))] <- "p"
     corr <- within(reshape::melt.array(corr.stats$r), 
                    { 
-                     X1 <- factor(X1, levels=responses)
-                     X2 <- factor(X2, levels=rev(levels(X1)))
+                     X1 <- factor(X1, labels=responses)
+                     X2 <- factor(X2, labels=levels(X1))
                    })
     names(corr)[match("value", names(corr))] <- "r"
     corr <- merge(corr, p, by=c("X1", "X2"), sort = FALSE)
@@ -311,7 +303,7 @@
                      levels(X1) <-responses
                      levels(X2) <-responses
                      X1 <- factor(X1, labels = labels)
-                     X2 <- factor(X2, labels = rev(labels))
+                     X2 <- factor(X2, labels = labels)
                    })
     corr <- with(corr, corr[order(X2, X1), ])
     plt <- ggplot(corr, aes(X1, X2)) +
@@ -347,7 +339,8 @@
         plt <- plt + f
     }
     
-    print(plt)
+    if (printPlot)
+      print(plt)
   }
   if ("matrixplot" %in% plots.opt)
   {
@@ -362,7 +355,7 @@
                    labelSize= labelSize, title = title,
                    ggplotFuncs = ggplotFuncs)
   }
-  invisible()
+  invisible(plt)
 }
 
   my_ggally_text <- function (label, mapping = ggplot2::aes(color = "black"), labelSize = 4, 

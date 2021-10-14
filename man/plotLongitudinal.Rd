@@ -1,5 +1,4 @@
 \name{plotLongitudinal}
-\alias{longiPlot}
 \alias{plotLongitudinal}
 \title{Plots longitudinal data for a set of indiividuals}
 \description{Produce profile or longitudinal plots of a response using \code{ggplot}. 
@@ -7,9 +6,6 @@
              can be facetted so that a grid of plots is produced. For each facet a line for 
              the medians over time can be added, along with the vaue of the outer whiskers 
              (median +/- 1.5 * IQR).
-
-       \emph{Warning: \code{longiPlot} will be deprecated in future versions, its synonym 
-             \code{plotLongitudinal} being preferred.}
 }
 \usage{
 plotLongitudinal(data, x = "xDays+44.5", response = "Area", 

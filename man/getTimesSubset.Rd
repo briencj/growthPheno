@@ -29,10 +29,11 @@ getTimesSubset(responses, times.factor = "Days", data, which.times,
              \code{data} containing an identifier for each individual.}
 }
 \value{A \code{\link{data.frame}} containing the subset of \code{responses} ordered 
-       by as many of the initial columns as are required to uniquely identify each row 
-       (see \code{\link{order}} for more information). The names of the columns for 
-       \code{responses} and \code{times.factor} in the subset are the concatenation of   
-       their names in \code{data} and \code{suffix} separated by a full stop.}
+       by as many of the initial columns of \code{data} as are required to uniquely 
+       identify each row (see \code{\link{order}} for more information). The names 
+       of the columns for \code{responses} and \code{times.factor} in the subset are 
+       the concatenation of their names in \code{data} and \code{suffix} separated 
+       by a full stop.}
 \author{Chris Brien}
 \examples{
 data(exampleData)

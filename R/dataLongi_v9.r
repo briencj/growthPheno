@@ -1016,29 +1016,6 @@ return(response.WUI)
 }
 
 
-"longiPlot" <- function(data, x = "xDays+44.5", response = "Area", 
-                        individuals = "Snapshot.ID.Tag", title = NULL, 
-                        x.title = "Days", y.title = "Area (kpixels)", 
-                        facet.x = "Treatment.1", facet.y = "Smarthouse", 
-                        labeller = NULL,  colour = "black", 
-                        colour.column = NULL, colour.values = NULL, 
-                        alpha = 0.1, addMediansWhiskers = FALSE, 
-                        xname = "xDays", ggplotFuncs = NULL, 
-                        printPlot = TRUE)
-{ 
-  warning(paste("longiPlot will be deprecated in future versions,", 
-                "its pseudonym plotLongitudinal being preferred"))
-  plt <- plotLongitudinal(data = data, x = x, response = response, individuals = individuals, 
-                          title = title, x.title = x.title, y.title = y.title, 
-                          facet.x = facet.x, facet.y =   facet.y, labeller = labeller,  
-                          colour = colour, colour.column = colour.column, 
-                          colour.values = colour.values, alpha = alpha, 
-                          addMediansWhiskers = addMediansWhiskers, 
-                          xname = xname, ggplotFuncs = ggplotFuncs, 
-                          printPlot = printPlot) 
-  invisible(plt)
-}
-
 #Function that produces a longitudinal plot
 "plotLongitudinal" <- function(data, x = "xDays+44.5", response = "Area", 
                                individuals="Snapshot.ID.Tag", title = NULL, 
@@ -1188,26 +1165,11 @@ return(response.WUI)
   return(data)
 }
 
-#Old function kept for compatability
-"imagetimesPlot" <- function(data, intervals = "Time.after.Planting..d.", 
-                             timePositions = "Hour", 
-                             groupVariable = "Snapshot.ID.Tag", colourVariable = "Lane", 
-                             ggplotFuncs = NULL)
-{ 
-  warning(paste("imagetimesPlot will be deprecated in future versions,", 
-                "its pseudonym plotImagetimes being preferred"))
-  time.plot <- plotImagetimes(data = data, intervals = intervals, 
-                              timePositions = timePositions, 
-                              groupVariable = groupVariable, colourVariable = colourVariable, 
-                              ggplotFuncs = ggplotFuncs)
-  invisible(time.plot)
-}
-
 #Function that produces a plot of the imaging times
 "plotImagetimes" <- function(data, intervals = "Time.after.Planting..d.", 
                              timePositions = "Hour", 
                              groupVariable = "Snapshot.ID.Tag", colourVariable = "Lane", 
-                             ggplotFuncs = NULL)
+                             ggplotFuncs = NULL, printPlot = TRUE)
 { 
   #Check whether have enough information to do the calculations
   if (!all(c(intervals, timePositions, groupVariable, colourVariable) %in% names(data)))
@@ -1233,32 +1195,9 @@ return(response.WUI)
     for (f in ggplotFuncs)
       time.plot <- time.plot + f
   
-  print(time.plot)
+  if (printPlot)
+    print(time.plot)
   invisible(time.plot)
-}
-
-#Old function kept for compatability
-"anomPlot" <- function(data, x="xDays+24.16666667", response="Area.smooth.RGR", 
-                       individuals="Snapshot.ID.Tag", 
-                       breaks=seq(12, 36, by=2), vertical.line=NULL, 
-                       groupsFactor=NULL, lower=NULL, upper=NULL, 
-                       start.time=NULL, end.time=NULL, times.factor = "Days", 
-                       suffix.interval=NULL, 
-                       columns.retained=c("Snapshot.ID.Tag", "Smarthouse", "Lane", "Position", 
-                                          "Treatment.1", "Genotype.ID"),
-                       whichPrint=c("anomalous","innerPlot","outerPlot"), na.rm=TRUE, ...)
-{ 
-  warning(paste("anomPlot will be deprecated in future versions,", 
-                "its pseudonym plotAnom being preferred"))
-  anom <- plotAnom(data = data, x = x, response = response, 
-                   individuals = individuals, 
-                   breaks = breaks, vertical.line = vertical.line, 
-                   groupsFactor = groupsFactor, lower = lower, upper = upper, 
-                   start.time = start.time, end.time = end.time, 
-                   times.factor = times.factor, suffix.interval = suffix.interval, 
-                   columns.retained = columns.retained,
-                   whichPrint = whichPrint, na.rm = na.rm, ...)
-  invisible(anom)
 }
 
 #New function
@@ -1401,7 +1340,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                                 x.title = NULL, y.titles = NULL,
                                 facet.x = ".", facet.y = ".", labeller = NULL, 
                                 df, deviations.plots = "absolute", 
-                                ggplotFuncs = NULL, ...)  
+                                ggplotFuncs = NULL, printPlot = TRUE, ...)  
 {
   options <- c("none", "absolute.boxplots", "relative.boxplots", "compare.medians")
   devnplots <- options[unlist(lapply(deviations.plots, check.arg.values, 
@@ -1419,6 +1358,8 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
     if (devnplots  == "compare.medians")
       devnplots <- "none"
   
+  plts <- vector(mode = "list", length = 2)
+  names(plts) <- c("absolute", "relative")
   #only do deviations boxplts if  requested  
   if (devnplots != "none")
   {
@@ -1457,7 +1398,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
     if ("absolute.boxplots" %in% devnplots)
     {
       dat$deviations <- dat[[observed]] - dat[[smoothed]]
-      plt <- ggplot(data = dat, aes_string(x = x.factor, y = "deviations"), ...) +
+      plts[[1]] <- ggplot(data = dat, aes_string(x = x.factor, y = "deviations"), ...) +
         theme_bw() + 
         theme(panel.grid.major = element_line(colour = "grey60", size = 0.5), 
               panel.grid.minor = element_line(colour = "grey80", size = 0.5),
@@ -1470,14 +1411,15 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
       if (!is.null(ggplotFuncs))
       {
         for(f in ggplotFuncs)
-          plt <- plt + f
+          plts[[1]] <- plts[[1]] + f
       }
-      print(plt)
+      if (printPlot)
+        print(plts[[1]])
     }
     if ("relative.boxplots" %in% devnplots)
     {
       dat$deviations <- (dat[[observed]] - dat[[smoothed]])/dat[[smoothed]]
-      plt <- ggplot(data = dat, aes_string(x = x.factor, y = "deviations"), ...) +
+      plts[[2]] <- ggplot(data = dat, aes_string(x = x.factor, y = "deviations"), ...) +
         theme_bw() + 
         theme(panel.grid.major = element_line(colour = "grey60", size = 0.5), 
               panel.grid.minor = element_line(colour = "grey80", size = 0.5),
@@ -1490,12 +1432,13 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
       if (!is.null(ggplotFuncs))
       {
         for(f in ggplotFuncs)
-          plt <- plt + f
+          plts[[2]] <- plts[[2]] + f
       }
-      print(plt)
+      if (printPlot)
+        print(plts[[2]])
     }
   }
-  invisible()
+  invisible(plts)
 }
 
 "plotMedianDeviations" <- function(data, response, response.smoothed, 
@@ -1508,7 +1451,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                                    propn.types = c(0.1, 0.5, 0.75), propn.note = TRUE, 
                                    alpha.med.devn = 0.5, 
                                    smoothing.methods = "direct", df, extra.smooths = NULL, 
-                                   ggplotFuncsMedDevn = NULL, ...)  
+                                   ggplotFuncsMedDevn = NULL, printPlot = TRUE, ...)  
 {
   options <- c("direct", "logarithmic")
   smethods <- options[unlist(lapply(smoothing.methods, check.arg.values, options=options))]
@@ -1697,10 +1640,11 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
     med.resp.dat[xname] <- as.numfac(unlist(med.resp.dat[times.factor]))
   }
   
-  #Plot the median deviations
+  #Plot the median deviations for each trait
+  plts <- list()
   for (k in kresp)
   {
-    plt <- ggplot(med.devn.dat, aes_string(x = xname, kresp.devn[k]), ...) +
+    plts[[k]] <- ggplot(med.devn.dat, aes_string(x = xname, kresp.devn[k]), ...) +
       ggfacet +
       geom_line (aes(colour=Scheme), size=0.4, alpha=alpha.med.devn,) +
       geom_point(aes(colour=Scheme, shape=DF), alpha=alpha.med.devn, size=1.5) +
@@ -1713,7 +1657,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
             panel.grid.minor = element_line(colour = "grey80", size = 0.5))
     
     if (length(levels(med.devn.dat$Method)) == 1 ||length(levels(med.devn.dat$DF)) == 1)
-      plt <- plt + guides(shape = FALSE)
+      plts[[k]] <- plts[[k]] + guides(shape = "none")
     
     #Plot an envelope of the response median
     if (!is.null(propn.types))
@@ -1752,24 +1696,25 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
       }
       
       #Plot the envelope
-      plt <- plt + geom_line(data = med.resp.dat, aes_string(y=k, group="sign"), 
-                             linetype="dashed")
+      plts[[k]] <- plts[[k]] + geom_line(data = med.resp.dat, aes_string(y=k, group="sign"), 
+                                         linetype="dashed")
       if (propn.note)
-        plt <- plt + geom_text(data = envel, 
-                               mapping = aes_string(x = xname, y = kresp.devn[k], 
-                                                    label = "lab"), 
-                               hjust = 0, vjust=-Inf, 
-                               fontface = "plain", size = 3)
+        plts[[k]] <- plts[[k]] + geom_text(data = envel, 
+                                           mapping = aes_string(x = xname, y = kresp.devn[k], 
+                                                                label = "lab"), 
+                                           hjust = 0, vjust=-Inf, 
+                                           fontface = "plain", size = 3)
     }
     
     if (!is.null(ggplotFuncsMedDevn))
     {
       for(f in ggplotFuncsMedDevn)
-        plt <- plt + f
+        plts[[k]] <- plts[[k]] + f
     }
-    print(plt)
+    if (printPlot)
+      print(plts[[k]])
   }
-  invisible(med.devn.dat)
+  invisible(list(plots = plts, med.devn.dat = med.devn.dat))
 }
 
 "plotTrait" <- function(tmp, response, response.smooth, x, xname, 

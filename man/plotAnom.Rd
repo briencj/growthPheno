@@ -1,6 +1,5 @@
 \name{plotAnom}
 \alias{plotAnom}
-\alias{anomPlot}
 \title{Identifies anomalous individuals and produces longitudinal plots without them and with just them}
 \description{Uses \code{\link{intervalValueCalculate}} and the function 
        \code{\link{anom}} to identify anomalous individuals. The user can 
@@ -9,9 +8,6 @@
        with only the anomalous individuals. The plots are produced using 
        \code{ggplot}. The plot can be facetted so that a grid of plots is 
        produced. 
-
-       \emph{Warning: \code{anomPlot} will be deprecated in future versions, its synonym \code{plotAnom} 
-       being preferred.}
 }
 \usage{
 plotAnom(data, x="xDays+24.16666667", response="Area.smooth.RGR", 

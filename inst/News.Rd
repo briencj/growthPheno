@@ -1,12 +1,19 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 1.0-34 (2021-10-14)}{
+  \itemize{
+   \item{Deprecate anomPlot, corrPlot, imagetimesPlot and longiPlots.}
+   \item{Modified a ggplot function call to deal with a deprecation option.}
+   \item{Add printPlot argument to plotCorrmatrix, plotImagetimes and plotMedianDeviations.}
+   \item{Have the \code{ggplot} object returned for plotCorrmatrix, plotDeviationsBoxes and plotMedianDeviations.}
+}}
 \section{growthPheno Version 1.0-33 (2021-05-07)}{
   \itemize{
-   \item{Move legend and to the bottom and turn it into a colour bar in plotCorrmatrix .}
+   \item{Move legend and to the bottom and turn it into a colour bar in plotCorrmatrix.}
 }}
 \section{growthPheno Version 1.0-32 (2021-05-06)}{
   \itemize{
-   \item{Fix bug labelleding y-axis variables in plotCorrmatrix .}
+   \item{Fix bug labelling y-axis variables in plotCorrmatrix.}
 }}
 \section{growthPheno Version 1.0-31 (2021-05-06)}{
   \itemize{

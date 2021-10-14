@@ -166,15 +166,18 @@ test_that("exampleData_growthPheno", {
                                                       trait.types = "response", 
                                                       propn.types = 0.05,
                                                       ggplotFuncsMedDevn = vline))
-  testthat::expect_equal(nrow(med), 28)
-  testthat::expect_equal(ncol(med), 6)
+  testthat::expect_equal(length(med), 2)
+  testthat::expect_true(all(names(med) == c("plots", "med.devn.dat")))
+  testthat::expect_equal(nrow(med$med.devn.dat), 28)
+  testthat::expect_equal(ncol(med$med.devn.dat), 6)
+  testthat::expect_equal(length(med$plots), 1)
   testthat::expect_warning(traits <- probeSmoothing(data = longi.dat, response = "Area", 
-                                                   df = c(4:7), x="xDays+24.16666667", 
-                                                   facet.x = ".", facet.y = ".",
-                                                   which.plots = "none",
-                                                   deviations.plots = c("compare", 
-                                                                        "absolute"),
-                                                   propn.types = NULL))
+                                                    df = c(4:7), x="xDays+24.16666667", 
+                                                    facet.x = ".", facet.y = ".",
+                                                    which.plots = "none",
+                                                    deviations.plots = c("compare", 
+                                                                         "absolute"),
+                                                    propn.types = NULL))
   testthat::expect_equal(nrow(traits), 280)
   testthat::expect_equal(ncol(traits), 19)
   testthat::expect_warning(traits <- probeSmoothing(data = longi.dat, response = "Area", 
@@ -205,16 +208,19 @@ test_that("tomato_growthPheno", {
   labelZn <- as_labeller(function(lev) paste("Zn:", lev, "ppm"))
   
   #'## Gives error that the Length of propn.types is not the same as the number of traits
-  testthat::expect_error(tmp <- probeSmoothing(data = tomato.dat, 
-                                               response = "Area", 
-                                               times.factor = "DAP", xname = "xDAP", 
-                                               smoothing.methods = c("dir", "log"), 
-                                               facet.x = "Zn", facet.y = "AMF",
-                                               df = c(4,7), x="xDAP", get.rates = FALSE,
-                                               which.plots = "methodsc", 
-                                               deviations.plots = "compare",
-                                               labeller = labeller(Zn = labelZn, 
-                                                                   AMF = labelMyc)))
+  testthat::expect_warning(testthat::expect_error(
+    tmp <- probeSmoothing(data = tomato.dat, 
+                          response = "Area", 
+                          times.factor = "DAP", xname = "xDAP", 
+                          smoothing.methods = c("dir", "log"), 
+                          facet.x = "Zn", facet.y = "AMF",
+                          df = c(4,7), x="xDAP", get.rates = FALSE,
+                          which.plots = "methodsc", 
+                          deviations.plots = "compare",
+                          labeller = labeller(Zn = labelZn, 
+                                              AMF = labelMyc)),
+    regexp = "Length of propn.types is not the same as the number of trait.types"), 
+    regexp = "get.rates is FALSE and so trait.types changed to response")
   testthat::expect_warning(tom <- probeSmoothing(data = tomato.dat, 
                                                  response = "Area", 
                                                  times.factor = "DAP", xname = "xDAP", 
@@ -225,7 +231,8 @@ test_that("tomato_growthPheno", {
                                                  which.plots = "methodsc", 
                                                  deviations.plots = "compare",
                                                  labeller = labeller(Zn = labelZn, 
-                                                                     AMF = labelMyc)))
+                                                                     AMF = labelMyc)), 
+                           regexp = "get.rates is FALSE and so trait.types changed to response")
   testthat::expect_equal(nrow(tom), 1120)
   testthat::expect_equal(ncol(tom), 10)
   
@@ -242,8 +249,9 @@ test_that("tomato_growthPheno", {
                                                       labeller = labeller(Zn = labelZn, 
                                                                           AMF = labelMyc)))
   
-  testthat::expect_equal(nrow(med), 1120)
-  testthat::expect_equal(ncol(med), 8)
+  testthat::expect_equal(length(med$plots), 1)
+  testthat::expect_equal(nrow(med$med.devn.dat), 1120)
+  testthat::expect_equal(ncol(med$med.devn.dat), 8)
   
   #Multiple df, single methods
   testthat::expect_warning(tom <- probeSmoothing(data = tomato.dat, response = "Area", 
@@ -256,7 +264,7 @@ test_that("tomato_growthPheno", {
   testthat::expect_equal(nrow(tom), 1120)
   testthat::expect_equal(ncol(tom), 13)
   
-  #'Single `df`, multiple methods
+  #'Single `df`, multiple methods and trait.types
   testthat::expect_warning(tom <- probeSmoothing(data = tomato.dat, response = "Area", 
                                                  times.factor = "DAP", xname="xDAP", df=5,
                                                  smoothing.methods = c("direct","logarithmic"),
@@ -273,8 +281,13 @@ test_that("tomato_growthPheno", {
                                                        facet.x = ".", facet.y = ".",
                                                        propn.types = c(0.02, 0.2, 0.5)))
   
-  testthat::expect_equal(nrow(med), 70)
-  testthat::expect_equal(ncol(med), 8)
+  testthat::expect_equal(length(med), 2)
+  testthat::expect_true(all(names(med) == c("plots", "med.devn.dat")))
+  testthat::expect_equal(nrow(med$med.devn.dat), 70)
+  testthat::expect_equal(ncol(med$med.devn.dat), 8)
+  testthat::expect_equal(length(med$plots), 3)
+  testthat::expect_true(all(names(med$plots) == c("Area","Area.AGR","Area.RGR")))
+  testthat::expect_warning(print(med$plots$Area.AGR))
   
   #'Single `df`, single method
   testthat::expect_warning(tom <- probeSmoothing(data = tomato.dat, response = "Area", 

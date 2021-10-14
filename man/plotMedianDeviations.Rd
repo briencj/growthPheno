@@ -19,7 +19,7 @@ plotMedianDeviations(data, response, response.smoothed,
                      propn.types = c(0.1, 0.5, 0.75), propn.note = TRUE, 
                      alpha.med.devn = 0.5, 
                      smoothing.methods = "direct", df, extra.smooths = NULL, 
-                     ggplotFuncsMedDevn = NULL, ...)
+                     ggplotFuncsMedDevn = NULL, printPlot = TRUE, ...)
 }
 \arguments{
  \item{data}{A \code{\link{data.frame}} containing the observed and smoothed values 
@@ -105,9 +105,16 @@ plotMedianDeviations(data, response, response.smoothed,
                 It is created by calling the \code{\link{list}} function with 
                 a \code{\link{ggplot}} function call for each element.
                 These functions are applied in creating the \code{ggplot} object.}
-\item{...}{allows passing of arguments to \code{\link{plotLongitudinal}}.}
+ \item{printPlot}{A \code{\link{logical}} indicating whether or not to print the 
+                  plot.}
+ \item{...}{allows passing of arguments to \code{\link{plotLongitudinal}}.}
 }
-\value{A \code{\link{data.frame}} containing the median deviations that have been plotted.}
+\value{A \code{\link{list}} that consists of two components:  (i) a componenent named  
+       \code{plots} that stores a \code{\link{list}} of the median deviations plots, 
+       one for each \code{trait.types}; (ii) a component named \code{med.dev.dat} that stores the 
+       \code{\link{data.frame}} containing the median deviations that have been plotted.  
+       Each plot in the \code{plots} \code{\link{list}} is in an object of class 
+       "\code{\link{ggplot}}", which can be plotted using \code{print}.}
 \author{Chris Brien}
 \seealso{\code{\link{plotDeviationsBoxes}}, \code{\link{probeSmoothing}}, \code{\link{ggplot}}.}
 \examples{

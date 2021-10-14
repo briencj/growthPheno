@@ -1,6 +1,5 @@
 \name{plotImagetimes}
 \alias{plotImagetimes}
-\alias{imagetimesPlot}
 \title{Plots the position of a time within an interval against the interval for each cart}
 \description{Uses \code{ggplot} to produce a plot of the time position within an interval
              against the interval. For example, one might plot the hour of the day carts 
@@ -9,14 +8,11 @@
              and the colour is varied according to the value of the \code{colourVariable}. 
              Each \code{Smarthouse} is plotted separately. It aids in checking 
              whether delays  occurred in imaging the plants.
-
-       \emph{Warning: \code{imagetimesPlot} will be deprecated in future versions, its synonym 
-             \code{plotImagetimes} being preferred.}
 }
 \usage{
 plotImagetimes(data, intervals = "Time.after.Planting..d.", timePositions = "Hour", 
                groupVariable = "Snapshot.ID.Tag", colourVariable = "Lane", 
-               ggplotFuncs = NULL)
+               ggplotFuncs = NULL, printPlot = TRUE)
 }
 \arguments{
   \item{data}{A \code{\link{data.frame}} containing any columns specified by 
@@ -41,6 +37,8 @@ plotImagetimes(data, intervals = "Time.after.Planting..d.", timePositions = "Hou
                 It is created by calling the \code{\link{list}} function with 
                 a \code{\link{ggplot}} function call for each element.
                 These functions are applied in creating the \code{ggplot} object.}
+ \item{printPlot}{A \code{\link{logical}} indicating whether or not to print the 
+                  plot.}
 }
 \value{An object of class "\code{ggplot}", which can be plotted using \code{print}.}
 \author{Chris Brien}
