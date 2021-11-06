@@ -1,5 +1,9 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 1.0-35 (2021-11-06)}{
+  \itemize{
+   \item{Miscellaneous code tidying.}
+}}
 \section{growthPheno Version 1.0-34 (2021-10-14)}{
   \itemize{
    \item{Deprecate anomPlot, corrPlot, imagetimesPlot and longiPlots.}

@@ -432,35 +432,38 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
   
   #Form AGR (because Day.diffs is NA for first day, so will the growth rates)
   if ("AGR" %in% opt)
-  { if (is.null(suffices.rates))
-    responses.GR <- paste(responses, "AGR", sep=".")
-  else
-    responses.GR <- paste(responses, suffices.rates[match("AGR",opt)], sep=".")
-  tmp[responses.GR] <- as.data.frame(lapply(tmp[responses], 
-                                            FUN = AGRdiff, 
-                                            time.diffs = tmp[[times.diffs]]))
+  { 
+    if (is.null(suffices.rates))
+      responses.GR <- paste(responses, "AGR", sep=".")
+    else
+      responses.GR <- paste(responses, suffices.rates[match("AGR",opt)], sep=".")
+    tmp[responses.GR] <- as.data.frame(lapply(tmp[responses], 
+                                              FUN = AGRdiff, 
+                                              time.diffs = tmp[[times.diffs]]))
   }
   
   #Form PGR (because Day.diffs is NA for first day, so will the growth rates)
   if ("PGR" %in% opt)
-  { if (is.null(suffices.rates))
-    responses.GR <- paste(responses, "PGR", sep=".")
-  else
-    responses.GR <- paste(responses, suffices.rates[match("PGR",opt)], sep=".")
-  tmp[responses.GR] <- as.data.frame(lapply(tmp[responses], 
-                                            FUN = PGR, 
-                                            time.diffs = tmp[[times.diffs]]))
+  { 
+    if (is.null(suffices.rates))
+      responses.GR <- paste(responses, "PGR", sep=".")
+    else
+      responses.GR <- paste(responses, suffices.rates[match("PGR",opt)], sep=".")
+    tmp[responses.GR] <- as.data.frame(lapply(tmp[responses], 
+                                              FUN = PGR, 
+                                              time.diffs = tmp[[times.diffs]]))
   }
   
   #Form RGR (because Day.diffs is NA for first day, so will the growth rates)
   if ("RGR" %in% opt)
-  { if (is.null(suffices.rates))
-    responses.GR <- paste(responses, "RGR", sep=".")
-  else
-    responses.GR <- paste(responses, suffices.rates[match("RGR",opt)], sep=".")
-  tmp[responses.GR] <- as.data.frame(lapply(tmp[responses], 
-                                            FUN = RGRdiff, 
-                                            time.diffs = tmp[[times.diffs]]))
+  { 
+    if (is.null(suffices.rates))
+      responses.GR <- paste(responses, "RGR", sep=".")
+    else
+      responses.GR <- paste(responses, suffices.rates[match("RGR",opt)], sep=".")
+    tmp[responses.GR] <- as.data.frame(lapply(tmp[responses], 
+                                              FUN = RGRdiff, 
+                                              time.diffs = tmp[[times.diffs]]))
   }
   #Remove NAs in INDICES and time.factor in tmp
   if (any(is.na(tmp[[times.factor]])))
@@ -657,8 +660,10 @@ predict.ncsSpline <- function(object, x, correctBoundaries = FALSE,
   #   AGR       1         NULL       AGR    NULL
   #   RGR       1          RGR      NULL    NULL
   
-  
-  
+  if (!all(c(response,x) %in% names(data)))
+    stop(paste("One or more of", response, "and", x, "is missing from ", 
+               deparse(substitute(data))))
+
   #check input arguments
   impArgs <- match.call()
   if ("na.rm" %in% names(impArgs))
@@ -721,7 +726,7 @@ predict.ncsSpline <- function(object, x, correctBoundaries = FALSE,
   #  - it should include all the x values that are returned by smooth.spline;
   #    it will not include any x values that are missing, but may include
   #    x values for which there are missing y values, depending on the settings 
-  #    of na.y.action, and these x values wil not have been supplied to smooth.spline.
+  #    of na.y.action, and these x values will not have been supplied to smooth.spline.
   if (nrow(tmp) == 0)
   {
     warning("A response with no data values supplied")
@@ -881,6 +886,10 @@ predict.ncsSpline <- function(object, x, correctBoundaries = FALSE,
                            deriv = NULL, suffices.deriv=NULL, RGR=NULL, AGR = NULL, sep=".", 
                            na.x.action="exclude", na.y.action = "exclude", ...)
 { 
+  if (!all(c(response,x) %in% names(data)))
+    stop(paste("One or more of", response, "and", x, "is missing from ", 
+               deparse(substitute(data))))
+  
   impArgs <- match.call()
   if ("na.rm" %in% names(impArgs))
     stop("na.rm has been deprecated; use na.x.action and na.y.action")
@@ -1365,7 +1374,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
   {
     dat <- data
     if (!all(c(observed, smoothed) %in% names(dat)))
-      stop(paste("One or more of", observed, "and", smoothed, "is missing from", 
+      stop(paste("One or more of", observed, "and", smoothed, "is missing from ", 
                  deparse(substitute(data))))
     if (is.null(x.title))
       x.title <- x.factor
@@ -1533,7 +1542,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
   }
   
   if (!(all(c(id.cols, unlist(vary)) %in% names(dat))))
-    stop(paste("Do not have the following required columns in",deparse(substitute(data)),": ", 
+    stop(paste("Do not have the following required columns in ",deparse(substitute(data)),": ", 
                paste(c(id.cols, unlist(vary))[!(c(id.cols, unlist(vary)) %in% names(dat))],
                      collapse =", "), "\n", sep=""))
   dat <- dat[c(id.cols, unlist(vary))]
