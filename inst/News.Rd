@@ -1,5 +1,9 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 1.0-36 (2022-02-17)}{
+  \itemize{
+   \item{Add \code{na.rm} and \code{...} arguments to cumulate.}
+}}
 \section{growthPheno Version 1.0-35 (2021-11-06)}{
   \itemize{
    \item{Miscellaneous code tidying.}

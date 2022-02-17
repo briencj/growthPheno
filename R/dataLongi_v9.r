@@ -994,13 +994,16 @@ else
 }
 
 #Function to calculate the cumulative sum, ignoring the first element if exclude.1st is TRUE
-"cumulate" <- function(x, exclude.1st=FALSE)
-{ sum <- x
-if (exclude.1st)
-  sum[-1] <- cumsum(x[-1])
-else
-  sum <- cumsum(x)
-return(sum)
+"cumulate" <- function(x, exclude.1st=FALSE, na.rm = FALSE, ...)
+{ 
+  if (na.rm)
+    x <- x[!(is.na(x))]
+  sum <- x
+  if (exclude.1st)
+    sum[-1] <- cumsum(x[-1])
+  else
+    sum <- cumsum(x)
+  return(sum)
 }
 
 #Functions to calculate growth rates between successive imagings
