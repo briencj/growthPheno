@@ -89,7 +89,6 @@
                       plots.group.med, facet.x.med, facet.y.med,
                       colour.values.med, shape.values.med, alpha.med, 
                       propn.note.med, propn.types.med, ggplotFuncsMedDevn.}
-
              }
 }
 \usage{

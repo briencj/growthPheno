@@ -39,13 +39,14 @@
              This function is a wrapper function for \code{\link{probeSmooths}} that 
              (i) uses preset values for many of the \code{\link{probeSmooths}} arguments 
              and  (ii) extends \code{\link{probeSmooths}} to return a single smooth and 
-             asociated profile plots. Any of the \code{\link{probeSmooths}} arguments 
-             can be included in the call to \code{traitSmooth}. The arguments that 
-             are likely to be of most use are \code{keep.columns} and those that control 
-             the features of the profile and median-deviations plots. Arguments for 
-             \code{\link{plotProfiles}} can also be included in the call, 
-             although the \code{facet} and \code{colour} arguments for the chosen 
-             smooth must be supplied using the \code{traitSmooth} arguments that end in 
+             asociated profile plots. In order to adapt the call to \code{traitSmooth} to 
+             the requirements of particular data sets, it can include any of 
+             the \code{\link{probeSmooths}} arguments. The \code{\link{probeSmooths}} 
+             arguments can be used to modify the Data description, Smoothing parameters, 
+             General plot features, Profile plots (pf) and Median-deviations (med) plots.  
+             Arguments for \code{\link{plotProfiles}} can also be included in the call, 
+             although the \code{facet} and \code{colour} arguments for the chosen smooth 
+             must be supplied using the \code{traitSmooth} arguments that end in 
              \code{chosen}.
 }
 \usage{
