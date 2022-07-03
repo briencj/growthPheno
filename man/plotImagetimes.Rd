@@ -48,7 +48,7 @@ data(exampleData)
 library(ggplot2)
 longi.dat <- calcTimes(longi.dat, imageTimes = "Snapshot.Time.Stamp",
                        timePositions = "Hour")
-plotImagetimes(data = longi.dat, intervals = "Days", timePositions = "Hour",
+plotImagetimes(data = longi.dat, intervals = "DAP", timePositions = "Hour",
                ggplotFuncs=list(scale_colour_gradient(low="grey20", high="black"), 
                                 geom_line(aes(group=Snapshot.ID.Tag, colour=Lane))))
 

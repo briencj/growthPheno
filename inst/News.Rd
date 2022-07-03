@@ -1,5 +1,73 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.0-14 (2022-07-03)}{
+  \itemize{
+  \item{Add traitExtractFeatures as a wrapper function for producing traits that are single-valued features for each individual.}
+  \item{Implement a revised naming convention for data column names. The names of the columns with \code{Area} and \code{Water.Loss} values are to be replaced with \code{PSA} and \code{WU}. The corresponding columns of smoothed data are to have an \code{s} prepended to the unsmoothed column names. A factor name is singular, the name of a numeric for a factor has an \code{x} prefixed to the factor name and the name of a centred numeric for a factor has a \code{c} prefixed to the factor name.} 
+  \item{Modify the Rice and tomato vignettes and the associated data to follow the new naming convention.}
+  \item{Replace plotLongitudinal with plotProfiles, the latter having the \code{xname} argument replaced by \code{times} that bevomes the primary argument for specifying the values for plotting on the x-axis. The argument \code{times} can be supplied as a factor, character or numeric and \code{x} is only required if an expression involving \code{times} is to be used for plotting on the x-axis. The naming of columns follows the new naming conventions.}
+  \item{Add \code{times} argument to plotAnom. and change default for \code{x} to \code{NULL}.}
+  \item{Replace longitudinalPrime with prepImageData, the latter implementing the new naming conventions. The column \code{xPosn} is no longer included by prepImagesData, but is added by designfactors; the order of the Id and times columns has been changed. The function designfactors has also been modified to produce columns that follow the new naming conventions.}
+  \item{Add the function smoothSpline with the same functionality as fitSpline, but simplified specification of growth rates and derivatives.}
+  \item{The defaults for the functions getTimesSubset, byIndv4Intvl_GRsAvg, byIndv4Intvl_GRsDiff, byIndv4Intvl_ValueCalc and byIndv4Intvl_WaterUse, byIndv4Times_SplinesGRs, byIndv4Times_GRsDiff, probeSmooths, plotSmoothsComparison, plotsSmoothsMedianDevns, plotProfiles have also been modified to reflect these naming conventions.}
+  \item{Fix bugs when \code{extra.derivs} is used in byIndv4Times_SplinesGRs.}
+  \item{Fix a big in byIndv_ValueCalc and byIndv4Intvl_ValueCalc that occurs when all the values for a response are \code{NA}.}
+  \item{Ensure that unwanted growth rates are not retained by byIndv4Times_SplinesGRs when \code{rates.method}  is set to \code{derivatives}.}
+  \item{Have growth rates for smoothed traits computed across the segments for segmented smooths when ntimes2span is 2 in bIndv4Times_SplinesGRs and probeSmooths.}
+\item{Make \code{trimx} the default for \code{na.y.action} in fitSpline, byIndv4Times_SplinesGRs and probeSmooths.} 
+  \item{Modify the Rice and tomato vignettes and the associated data to follow the naming convention that a factor name is singular, the name of a numeric for a factor has an \code{x} prefixed and the name of a centred numeric for a factor has a \code{c} prefixed.}
+  }}
+\section{growthPheno Version 2.0-13 (2022-06-19)}{
+  \itemize{
+  \item{The set of functions traitSmooths, probeSmooths, plotSmoothsComparison, plotSmoothMedianDeviations, splitSplines, splitContGR, splitValueCalculate, intervalGRaverage, intervalGRdiff, intervalValueCalculate, and intervalWUI have been overhauled to make them a consistent set of functions for smoothing and calculations performed on each individual. Where possible the arguments have been simplified. The changes that have been made include:
+  \enumerate{
+  \item{To make clear what the different functions do, all of The \code{split} and \code{interval} functions have been renamed to begin with \code{byIndv} to make clear that they all repeats operates on each individual from a set of individuals. In the renaming a distinction is made between those that produce, for each individual, (i) values for all of the times (4Times) and (ii) a value for an interval (4Intvl).}
+     \item{The three \code{split} functions splitSplines, splitContGR and  splitValueCalculate have been renamed to byIndv4Times_SplinesGRs and byIndv4Times_GRsDiff and byIndv_ValueCalc,}
+     \item{The new function byIndv4Times_SplinesGRs can smooth and calculate growth rates, either using derivative or differencing, in a single call using simplified arguments \code{rates.method} and \code{which.rates}.}
+     \item{The \code{interval} functions have been renamed to byIndv4Intvl_GRsAvg, byIndv4Intvl_GRsDiff, byIndv4Intvl_ValueCalc and byIndv4Intvl_WaterUse.}
+     \item{The new function byIndv4Intvl_WaterUse can produce the three water use traits \code{WU}, \code{WUR}, \code{WUI}, as well as the \code{AGR}, for a time interval. To achieve this \code{include.water.use} has been replaced by \code{trait.types}.}
+     \item{The functions traitSmooths and probeSmooths have been revised to use the new \code{byIndv} functions.}
+     \item{All functions now 
+       \itemize{
+         \item{use the \code{times} argument rather than \code{x} or \code{times.factor} and \code{times} accepts a \code{factor}, \code{character} or \code{numeric};}
+        \item{use the \code{individuals} argument rather than \code{INDICES};}
+        \item{have the initial arguments in the order \code{data}, \code{response(s)}, \code{individuals}, \code{times};}
+        \item{have had their arguments reordered so that error may occur if arguments have been matched by position.}
+        }
+  }}
+  \item{The \code{split} and \code{interval} functions have been soft-deprecated. They are no longer being maintained and  will eventually be removed.}
+  \item{Changed the argument \code{times.factor} to \code{times} in getTimesSubset.}
+  \item{Changed the arguments \code{start.times} and \code{end.times} to \code{start.time} and \code{end.time} in byIndv4Intvl_GRsDiff and byIndv4Intvl_WaterUse.}
+  \item{Changed \code{Area} and \code{Water.Loss} to \code{PSA} and \code{WU} in the data set \code{tomato.dat}. Modified the vignette \code{Tomato} to reflect this and adapted it to version 2.x.x of \code{growthPheno}.}
+}}}
+\section{growthPheno Version 2.0-12 (2022-06-08)}{
+  \itemize{
+  \item{Generalize splitContGRdiff to calculate growth rates for any span of times using a new argument \code{ntimes2span} and add \code{ntimes2span} to probeSmooths.}
+  \item{Add the argument \code{individuals} to splitContGRdiff and splitSplines as a pseudonym for \code{INDICES}, making them consistent with splitValueCalculate and probeSmooths.}
+  \item{Changed the \code{pspline.segments} to \code{npspline.segments} in fitSpline, splitSplines and probeSmooths.}
+}}
+\section{growthPheno Version 2.0-11 (2022-05-25)}{
+  \itemize{
+  \item{Correct examples for probeSmooths and plotMediansDeviations.}
+}}
+\section{growthPheno Version 2.0-10 (2022-05-25)}{
+  \itemize{
+  \item{This version incorporates a major overhaul of the smoothing functionality of growthPheno with new and revised functions, new arguments in some functions and changes in the order of some arguments. The descriptiion of the function has been revised.}
+  \item{Add \code{spline.type}, \code{lambda} and \code{npspline.segments} arguments to fitSpline, splitSplines, and  probeSmoothing to incorporate P-spline smoothing (\code{PS}) using the \code{JOPS} package.}
+  \item{Replaced \code{AGR} and \code{RGR} with the argument \code{extra.rate} to simplify the specification.}
+  \item{Allow the specification of \code{lambda}, as an alternative to \code{df}, for natural cubic smoothing splines (\code{NCSS}).}
+  \item{Add the new functions probeSmooths and plotSmoothsMedianDevns to replace probeSmoothing and plotMedianDeviations and the additional function plotSmoothsComparison. The new functions are more flexible than those that they replace, their arguments and options having been substantially changed from those for the old functions. They allow for the comparison of the two \code{spline.types} of natural cubic smoothing splines (\code{NCSS}) and P-splines (\code{PS}) and organize the smoothed data in long format to produce a \code{data.frame} of class \code{smooths.frame}.}
+  \item{Add the function traitSmooth as a wrapper function for probeSmooths.}
+  \item{Add functions as.smooths.frame, is.smooths.frame and validSmoothsFrame to allow a \code{data.frame} to be assigned the class \code{smooths.frame} and to test whether a \code{data.frame} is of class \code{smooths.frame} and whether it is a valid object of class \code{smooths.frame}.}
+  \item{Deprecate function probeDF.}
+  \item{Implement segmented smoothing in splitSplines and probeSmooths.}
+  \item{Fix bugs in plotLongitudinal and plotMedianDeviations when multiple factors are supplied to either \code{facet.x} or \code{facet.y}. Changed defaults for \code{facet.x} and \code{facet.y} in plotLongitudinal to \code{"."}.}
+   \item{Add \code{PSAcolumn} argument to longitudinalPrime.}
+   \item{Add \code{response.smoothed} argument to fitSpline, splitSplines, and  probeSmoothing to allow the user to specify arbitrary names for the smoothed response.}
+   \item{Mofify fitSpline to return the \code{predictions} and the object returned by either \code{smooth.spline} or \code{JOPS::psNormal}.}
+   \item{Fix an obscure bug in fitSpline that occurred when the \code{times.factor} differnces pre-exist in \code{data} and the growth rates are to be calculated for a subset of the times. In such cases, the first growth rate was not \code{NA}.}
+   \item{Correct the documentation of WUI to reflect what is actually done in the code, namely that the response is divided by the water.}
+}}
 \section{growthPheno Version 1.0-36 (2022-02-17)}{
   \itemize{
    \item{Add \code{na.rm} and \code{...} arguments to cumulate.}

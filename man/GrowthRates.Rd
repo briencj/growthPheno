@@ -28,13 +28,14 @@ ahead of the first in \code{x} and the ratio raised to the
 power of the reciprocal of \code{time.diffs}. 
 The RGRdiff is calculated as the \code{log} of the PGR and so is equal to the difference between 
 the logarithms of a pair of values divided by the \code{time.diffs}.
-The differences and ratios are obtained using \code{calcLagged} with \code{lag = 1}.
+The differences and ratios are obtained using \code{\link{calcLagged}} with \code{lag = 1}.
 }
 \author{Chris Brien}
-\seealso{\code{\link{intervalGRaverage}}, \code{\link{intervalGRdiff}}, \code{\link{splitContGRdiff}}, \code{\link{splitSplines}}, \code{calcLagged}}
+\seealso{\code{\link{byIndv4Intvl_GRsAvg}}, \code{\link{byIndv4Intvl_GRsDiff}}, \code{\link{byIndv4Times_GRsDiff}}, \code{\link{byIndv4Times_SplinesGRs}}, \cr
+         \code{\link{calcLagged}}}
 \examples{
 data(exampleData)
-longi.dat$Area.AGR <- with(longi.dat, AGRdiff(Area, time.diffs = Days.diffs))
+longi.dat$PSA.AGR <- with(longi.dat, AGRdiff(PSA, time.diffs = DAP.diffs))
 }
 \keyword{data}
 \keyword{manip}

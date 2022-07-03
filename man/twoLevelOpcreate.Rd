@@ -10,22 +10,22 @@
              on the right of the binary operator and the value for the other 
              level will be on the left.}
 \usage{
-twoLevelOpcreate(responses, data, treatment.factor = "Treatment.1", 
+twoLevelOpcreate(data, responses, treatment.factor = "Treatment.1", 
                  suffices.treatment = c("Cont","Salt"), control = 1, 
                  columns.suffixed = NULL, 
                  operations = "/", suffices.results="OST", 
                  columns.retained = c("Snapshot.ID.Tag","Smarthouse","Lane", 
-                                      "Zones","xZones","SHZones","ZLane",
-                                      "ZMainplots","xMainPosn", "Genotype.ID"),
-                 by = c("Smarthouse","Zones","ZMainplots"))
+                                      "Zone","cZone","SHZone","ZLane",
+                                      "ZMainunit","cMainPosn", "Genotype.ID"),
+                 by = c("Smarthouse","Zone","ZMainunit"))
 }
 \arguments{
- \item{responses}{A \code{\link{character}} giving the names of the columns 
-             in \code{data} that contain the responses to which the binary 
-             operations are to be applied.}
  \item{data}{A \code{\link{data.frame}} containing the columns specified by 
              \code{treatment.factor}, \code{columns.retained} and 
              \code{responses}.}
+ \item{responses}{A \code{\link{character}} giving the names of the columns 
+             in \code{data} that contain the responses to which the binary 
+             operations are to be applied.}
  \item{treatment.factor}{A \code{\link{factor}} with two levels corresponding to 
                          what is to be designated the \code{control} and treated 
                          observations .}
@@ -91,19 +91,20 @@ twoLevelOpcreate(responses, data, treatment.factor = "Treatment.1",
 \author{Chris Brien}
 \examples{
 data(exampleData)
-responses <- c("Area.smooth.AGR","Area.smooth.RGR")
+responses <- c("sPSA.AGR","sPSA.RGR")
 cols.retained <-  c("Snapshot.ID.Tag","Smarthouse","Lane","Position",
-                    "Days","Snapshot.Time.Stamp", "Hour", "xDays",
-                    "Zones","xZones","SHZones","ZLane","ZMainplots",
-                    "xMainPosn", "Genotype.ID")
+                    "DAP","Snapshot.Time.Stamp", "Hour", "xDAP",
+                    "Zone","cZone","SHZone","ZLane","ZMainunit",
+                    "cMainPosn", "Genotype.ID")
 longi.SIIT.dat <- 
-  twoLevelOpcreate(responses, longi.dat, suffices.treatment=c("C","S"),
+  twoLevelOpcreate(data = longi.dat, responses = responses, 
+                   suffices.treatment=c("C","S"),
                    operations = c("-", "/"), 
                    suffices.results = c("diff", "SIIT"), 
                    columns.retained = cols.retained, 
-                   by = c("Smarthouse","Zones","ZMainplots","Days"))
+                   by = c("Smarthouse","Zone","ZMainunit","DAP"))
 longi.SIIT.dat <- with(longi.SIIT.dat, 
-                            longi.SIIT.dat[order(Smarthouse,Zones,ZMainplots,Days),])
+                            longi.SIIT.dat[order(Smarthouse,Zone,ZMainunit,DAP),])
 }
 \keyword{data}
 \keyword{manip}

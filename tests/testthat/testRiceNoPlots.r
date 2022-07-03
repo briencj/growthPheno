@@ -1,5 +1,4 @@
-#devtools::test("asremlPlus")
-context("model_selection")
+#devtools::test("growthPheno")
 
 cat("#### Test using Rice vignette with no plots\n")
 test_that("Rice2015_growthPheno", {
@@ -16,202 +15,209 @@ test_that("Rice2015_growthPheno", {
   raw.dat$Smarthouse <- 1
   
   #'# Step 2: Select imaging variables and add covariates and factors (produces longi.dat)
-  longi.prime.dat <- longitudinalPrime(data=raw.dat, smarthouse.lev=1, 
-                                       idcolumns = c("Genotype.ID", "Treatment.1", "Treatment.2"))
+  longi.dat <- prepImageData(data=raw.dat, smarthouse.lev=1, 
+                             idcolumns = c("Genotype.ID", "Treatment.1", "Treatment.2"))
   
-  longi.dat <- designFactors(longi.prime.dat, insertName = "xDays",
-                             nzones = 1, nlanesperzone = 1, nmainplotsperlane = 10, 
+  longi.dat <- designFactors(longi.dat, insertName = "Reps",
+                             nzones = 1, nlanesperzone = 1, nmainunitsperlane = 10, 
                              designfactorMethod="StandardOrder")
   testthat::expect_equal(nrow(longi.dat), 280)
   testthat::expect_equal(ncol(longi.dat), 44)
   
   
-  #'## Particular edits to longi.dat
+  #'## Particular edits to longi.dat - add Days after treatment (DAT)
   longi.dat <- within(longi.dat, 
-                      { 
-                        Days.after.Salting <- as.numfac(Days) - 29
-                      })
+                      DAT <- xDAP - 29)
   
   #'# Step 3: Form derived traits that result in a value for each observation
   #'### Set responses
-  responses.image <- c("Area")
-  responses.smooth <- paste(responses.image, "smooth", sep=".")
+  responses.image <- c("PSA")
+  responses.smooth <- paste0("s", responses.image)
   
   #'## Form growth rates for each observation of a subset of responses by differencing
-  longi.dat <- splitContGRdiff(longi.dat, responses.image, 
-                               INDICES="Snapshot.ID.Tag",
-                               which.rates = c("AGR","RGR"))
+  longi.dat <- byIndv4Times_GRsDiff(data = longi.dat, responses.image, 
+                                    times = "DAP", avail.times.diffs = FALSE, 
+                                    which.rates = c("AGR","RGR"))
   testthat::expect_equal(nrow(longi.dat), 280)
   testthat::expect_equal(ncol(longi.dat), 48)
   
-  #'## Form Area.WUE 
+  #'## Form Area.WUI 
   longi.dat <- within(longi.dat, 
-                      { 
-                        Area.WUE <- WUI(Area.AGR*Days.diffs, Water.Loss)
-                      })
+                      Area.WUI <- WUI(PSA.AGR*DAP.diffs, WU))
   
   #'## Add cumulative responses 
   longi.dat <- within(longi.dat, 
                       { 
-                        Water.Loss.Cum <- unlist(by(Water.Loss, Snapshot.ID.Tag, 
-                                                    cumulate, exclude.1st=TRUE))
-                        WUE.cum <- Area / Water.Loss.Cum 
+                        WU.cum <- unlist(by(WU, Snapshot.ID.Tag, 
+                                            cumulate, exclude.1st=TRUE))
+                        WUI.cum <- PSA / WU.cum 
                       })
   testthat::expect_equal(nrow(longi.dat), 280)
   testthat::expect_equal(ncol(longi.dat), 51)
   
   #'# Step 4: Fit splines to smooth the longitudinal trends in the primary traits and calculate their growth rates
   #'
-  #'## Smooth responses
+  #'## Smooth responses and form growth rates by differences
   #+
-  for (response in c(responses.image, "Water.Loss"))
-    longi.dat <- splitSplines(longi.dat, response, x="xDays", INDICES = "Snapshot.ID.Tag", 
-                              df = 4)
-  longi.dat <- with(longi.dat, longi.dat[order(Snapshot.ID.Tag, xDays), ])
+  for (response in c(responses.image, "WU"))
+    longi.dat <- byIndv4Times_SplinesGRs(data = longi.dat, response = response, 
+                                         response.smoothed = paste0("s", response),
+                                         individuals = "Snapshot.ID.Tag", times="DAP",  
+                                         df = 4)
   testthat::expect_equal(nrow(longi.dat), 280)
-  testthat::expect_equal(ncol(longi.dat), 53)
-  
-  #'## Loop over smoothed responses, forming growth rates by differences
-  #+
-  responses.GR <- paste(responses.smooth, "AGR", sep=".")
-  longi.dat <- splitContGRdiff(longi.dat, responses.smooth, 
-                               INDICES="Snapshot.ID.Tag",
-                               which.rates = c("AGR","RGR"))
-  testthat::expect_equal(nrow(longi.dat), 280)
-  testthat::expect_equal(ncol(longi.dat), 55)
+  testthat::expect_equal(ncol(longi.dat), 57)
   
   #'## Finalize longi.dat
-  longi.dat <- with(longi.dat, longi.dat[order(Snapshot.ID.Tag, xDays), ])
+  longi.dat <- with(longi.dat, longi.dat[order(Snapshot.ID.Tag, xDAP), ])
   
   #'# Step 5: Do exploratory plots on unsmoothed and smoothed longitudinal data
 
   #'# Step 6: Form single-value plant responses in Snapshot.ID.Tag order.
   #'
+
+  #'### Set up intervals
+  #+
+  DAP.endpts <- c(31,35,38,42)
+  DAP.starts <- c(31,35,31,38)
+  DAP.stops   <- c(35,38,38,42)
+  DAP.mids <- (DAP.starts + DAP.stops)/2
+  suffices <- paste(DAP.starts, DAP.stops, sep = "to")
+  
   #'## 6a) Set up a data frame with factors only
   #+
-  cart.dat <- longi.dat[longi.dat$Days == 31, 
+  cart.dat <- longi.dat[longi.dat$DAP == DAP.endpts[1], 
                         c("Smarthouse","Lane","Position","Snapshot.ID.Tag",
-                          "xPosn","xMainPosn",
-                          "Zones","xZones","SHZones","ZLane","ZMainplots", "Subplots",
+                          "cPosn","cMainPosn",
+                          "Zone","cZone","SHZone","ZLane","ZMainunit", "Subunit",
                           "Genotype.ID","Treatment.1")]
   cart.dat <- cart.dat[do.call(order, cart.dat), ]
   
   #'## 6b) Get responses based on first and last date.
   #'
   #'### Observation for first and last date
-  cart.dat <- cbind(cart.dat, getTimesSubset(responses.image, data = longi.dat, 
-                                             which.times = c(31), suffix = "first"))
-  cart.dat <- cbind(cart.dat, getTimesSubset(responses.image, data = longi.dat, 
-                                             which.times = c(42), suffix = "last"))
-  cart.dat <- cbind(cart.dat, getTimesSubset(c("WUE.cum"), 
-                                             data = longi.dat, 
-                                             which.times = c(42), suffix = "last"))
-  responses.smooth <- paste(responses.image, "smooth", sep=".")
-  cart.dat <- cbind(cart.dat, getTimesSubset(responses.smooth, data = longi.dat, 
-                                             which.times = c(31), suffix = "first"))
-  cart.dat <- cbind(cart.dat, getTimesSubset(responses.smooth, data = longi.dat, 
-                                             which.times = c(42), suffix = "last"))
+  cart.dat <- cbind(cart.dat, getTimesSubset(data = longi.dat, responses = responses.image, 
+                                             times = "DAP", which.times = DAP.endpts[1], 
+                                             suffix = "first"))
+  cart.dat <- cbind(cart.dat, getTimesSubset(data = longi.dat, responses = responses.image, 
+                                             times = "DAP", 
+                                             which.times = DAP.endpts[length(DAP.endpts)], 
+                                             suffix = "last"))
+  cart.dat <- cbind(cart.dat, getTimesSubset(data = longi.dat, responses = "WUI.cum", 
+                                             times = "DAP", 
+                                             which.times = DAP.endpts[length(DAP.endpts)], 
+                                             suffix = "last"))
+  responses.smooth <- paste0("s", responses.image)
+  cart.dat <- cbind(cart.dat, getTimesSubset(data = longi.dat, responses = responses.smooth, 
+                                             times = "DAP", which.times = DAP.endpts[1], 
+                                             suffix = "first"))
+  cart.dat <- cbind(cart.dat, getTimesSubset(data = longi.dat, responses = responses.smooth, 
+                                             times = "DAP", 
+                                             which.times = DAP.endpts[length(DAP.endpts)], 
+                                             suffix = "last"))
   testthat::expect_equal(nrow(cart.dat), 20)
   testthat::expect_equal(ncol(cart.dat), 19)
+  testthat::expect_true(all(c( "PSA.first", "PSA.last", "WUI.cum.last", 
+                               "sPSA.first", "sPSA.last") %in% names(cart.dat)))
   
   #'### Growth rates over whole period.
   #+
-  tottime <- 42 - 31
+  (tottime <- DAP.endpts[length(DAP.endpts)] - DAP.endpts[1]) #= 11
+  testthat::expect_equal(tottime,11)  
   cart.dat <- within(cart.dat, 
                      { 
-                       Area.AGR <- (Area.last - Area.first)/tottime
-                       Area.RGR <- log(Area.last / Area.first)/tottime
+                       PSA.AGR.full <- (PSA.last - PSA.first)/tottime
+                       PSA.RGR.full <- log(PSA.last / PSA.first)/tottime
                      })
   
   #'### Calculate water index over whole period
   tmp.dat <- cart.dat
   cart.dat <- merge(cart.dat, 
-                    intervalWUI("Area", water.use = "Water.Loss", 
-                                start.times = c(31), 
-                                end.times = c(42), 
-                                suffix = NULL, 
-                                data = longi.dat, include.total.water = TRUE),
+                    byIndv4Intvl_WaterUse(data = longi.dat, 
+                                          water.use = "WU", response = "PSA", 
+                                          trait.types = c("WUI","WUR", "WU"), 
+                                          times = "DAP", 
+                                          start.time = DAP.endpts[1], 
+                                          end.time = DAP.endpts[length(DAP.endpts)]),
                     by = c("Snapshot.ID.Tag"))
-  names(cart.dat)[match(c("Area.WUI","Water.Loss.Total"),names(cart.dat))] <- c("Area.Overall.WUE", 
-                                                                                "Water.Loss.Overall")
-  cart.dat$Water.Loss.rate.Overall <- cart.dat$Water.Loss.Overall / (42 - 31)
   testthat::expect_equal(nrow(cart.dat), 20)
-  testthat::expect_equal(ncol(cart.dat), 25)
-  #Check same value of the WUE for include.total.water both TRUE and FALSE
+  testthat::expect_equal(ncol(cart.dat), 24)
+  #Check same value of the WUR for cart.dat and when calculated for tmp.dat
   tmp.dat <- merge(tmp.dat, 
-                   intervalWUI("Area", water.use = "Water.Loss", 
-                               start.times = c(31), 
-                               end.times = c(42), 
-                               suffix = NULL, 
-                               data = longi.dat, include.total.water = FALSE),
+                   byIndv4Intvl_WaterUse(data = longi.dat, 
+                                         water.use = "WU", responses = "PSA", 
+                                         trait.types = c("WU", "WUI"), 
+                                         times = "DAP", 
+                                         start.time = DAP.endpts[1], 
+                                         end.time = DAP.endpts[length(DAP.endpts)], 
+                                         suffix.interval = NULL),
                    by = c("Snapshot.ID.Tag"))
-  names(tmp.dat)[match(c("Area.WUI"),names(tmp.dat))] <- "Area.Overall.WUE"
-  testthat::expect_true(all(abs(cart.dat$Area.Overall.WUE - tmp.dat$Area.Overall.WUE) < 1e-05))
+  tmp.dat$WUR <- tmp.dat$WU / (42 - 31)
+  testthat::expect_true(all(abs(cart.dat$WUR - tmp.dat$WUR) < 1e-05))
   
   #'## 6c) Add growth rates and water indices for intervals
-  #'### Set up intervals
-  #+
-  start.days <- list(31,35,31,38)
-  end.days <- list(35,38,38,42)
-  suffices <- list("31to35","35to38","31to38","38to42")
   
   #'### Rates for specific intervals from the smoothed data by differencing
   #+
   for (r in responses.smooth)
-  { for (k in 1:length(suffices))
   { 
-    cart.dat <- merge(cart.dat, 
-                      intervalGRdiff(r, 
-                                     which.rates = c("AGR","RGR"), 
-                                     start.times = start.days[k][[1]], 
-                                     end.times = end.days[k][[1]], 
-                                     suffix.interval = suffices[k][[1]], 
-                                     data = longi.dat),
-                      by = "Snapshot.ID.Tag")
+    for (k in 1:length(suffices))
+    { 
+      cart.dat <- merge(cart.dat, 
+                        byIndv4Intvl_GRsDiff(data = longi.dat, responses = r, 
+                                             times = "DAP", 
+                                             which.rates = c("AGR","RGR"), 
+                                             start.time = DAP.starts[k], 
+                                             end.time = DAP.stops[k], 
+                                             suffix.interval = suffices[k]),
+                        by = "Snapshot.ID.Tag")
+    }
   }
-  }
+  testthat::expect_true(all(c(paste("sPSA.AGR", suffices, sep = "."), 
+                              paste("sPSA.RGR", suffices, sep = ".")) %in% names(cart.dat)))
   
   #'### Water indices for specific intervals from the unsmoothed and smoothed data
   #+
   for (k in 1:length(suffices))
   { 
     cart.dat <- merge(cart.dat, 
-                      intervalWUI("Area", water.use = "Water.Loss", 
-                                  start.times = start.days[k][[1]], 
-                                  end.times = end.days[k][[1]], 
-                                  suffix = suffices[k][[1]], 
-                                  data = longi.dat, include.total.water = TRUE),
+                      byIndv4Intvl_WaterUse(data = longi.dat, 
+                                            water.use = "WU", responses = "PSA", 
+                                            times = "DAP", 
+                                            trait.types = c("WU","WUR","AGR","WUI"), 
+                                            start.time = DAP.starts[k], 
+                                            end.time = DAP.stops[k], 
+                                            suffix.interval = suffices[k]),
                       by = "Snapshot.ID.Tag")
-    names(cart.dat)[match(paste("Area.WUI", suffices[k][[1]], sep="."), 
-                          names(cart.dat))] <- paste("Area.WUE", suffices[k][[1]], sep=".")
-    cart.dat[paste("Water.Loss.rate", suffices[k][[1]], sep=".")] <- 
-      cart.dat[[paste("Water.Loss.Total", suffices[k][[1]], sep=".")]] / 
-      ( end.days[k][[1]] - start.days[k][[1]])
   }
+  testthat::expect_true(all(c(paste("PSA.AGR", suffices, sep = "."), 
+                              paste("WU", suffices, sep = "."),
+                              paste("PSA.WUI", suffices, sep = "."), 
+                              paste("WU", suffices, sep = ".")) %in% names(cart.dat)))
   
   cart.dat <- with(cart.dat, cart.dat[order(Snapshot.ID.Tag), ])
   testthat::expect_equal(nrow(cart.dat), 20)
-  testthat::expect_equal(ncol(cart.dat), 49)
+  testthat::expect_equal(ncol(cart.dat), 48)
   
   #'# Step 7: Form continuous and interval SIITs
   #'
   #'## 7a) Calculate continuous
   #+
   cols.retained <-  c("Snapshot.ID.Tag","Smarthouse","Lane","Position",
-                      "Days","Snapshot.Time.Stamp", "Hour", "xDays",
-                      "Zones","xZones","SHZones","ZLane","ZMainplots",
-                      "xMainPosn", "Genotype.ID")
-  responses.GR <- c("Area.smooth.AGR","Area.smooth.AGR","Area.smooth.RGR")
+                      "DAP","Snapshot.Time.Stamp", "Hour", "xDAP",
+                      "Zone","cZone","SHZone","ZLane","ZMainunit",
+                      "cMainPosn", "Genotype.ID")
+  responses.GR <- c("sPSA.AGR","sPSA.AGR","sPSA.RGR")
   suffices.results <- c("diff", "SIIT", "SIIT")
   responses.SIIT <- unlist(Map(paste, responses.GR, suffices.results,sep="."))
   
   longi.SIIT.dat <- 
-    twoLevelOpcreate(responses.GR, longi.dat, suffices.treatment=c("C","S"),
+    twoLevelOpcreate(data = longi.dat, responses = responses.GR, 
+                     suffices.treatment=c("C","S"),
                      operations = c("-", "/", "/"), suffices.results = suffices.results, 
                      columns.retained = cols.retained, 
-                     by = c("Smarthouse","Zones","ZMainplots","Days"))
+                     by = c("Smarthouse","Zone","ZMainunit","DAP"))
   longi.SIIT.dat <- with(longi.SIIT.dat, 
-                         longi.SIIT.dat[order(Smarthouse,Zones,ZMainplots,Days),])
+                         longi.SIIT.dat[order(Smarthouse,Zone,ZMainunit,DAP),])
   testthat::expect_equal(nrow(longi.SIIT.dat), 140)
   testthat::expect_equal(ncol(longi.SIIT.dat), 22)
   
@@ -220,20 +226,19 @@ test_that("Rice2015_growthPheno", {
   #+ "03-SIITProfiles"
   k <- 2
   nresp <- length(responses.SIIT)
-  limits <- with(longi.SIIT.dat, list(c(min(Area.smooth.AGR.diff, na.rm=TRUE),
-                                        max(Area.smooth.AGR.diff, na.rm=TRUE)),
+  limits <- with(longi.SIIT.dat, list(c(min(sPSA.AGR.diff, na.rm=TRUE),
+                                        max(sPSA.AGR.diff, na.rm=TRUE)),
                                       c(0,3),
                                       c(0,1.5)))
   #Plots
 
   #'## 7b) Calculate interval SIITs 
   #+ "01-SIITIntClean"
-  suffices <- list("31to35","35to38","31to38","38to42")
-  response <- "Area.smooth.RGR.31to35"
+  response <- "sPSA.RGR.31to35"
   SIIT <- paste(response, "SIIT", sep=".")
-  responses.SIITinterval <- as.vector(outer("Area.smooth.RGR", suffices, paste, sep="."))
+  responses.SIITinterval <- as.vector(outer("sPSA.RGR", suffices, paste, sep="."))
   
-  cart.SIIT.dat <- twoLevelOpcreate(responses.SIITinterval, cart.dat,
+  cart.SIIT.dat <- twoLevelOpcreate(data = cart.dat, responses = responses.SIITinterval, 
                                     suffices.treatment=c("C","S"), 
                                     suffices.results="SIIT", 
                                     columns.suffixed="Snapshot.ID.Tag")

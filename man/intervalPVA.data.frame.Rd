@@ -8,7 +8,7 @@
   in the data are covered. Here, all observations in a specified time interval are 
   used for calculation the correlations on which the selection is based.}
 \usage{
-\method{intervalPVA}{data.frame}(obj, responses, times.factor = "Days", start.time, end.time, 
+\method{intervalPVA}{data.frame}(obj, responses, times = "Days", start.time, end.time, 
             nvarselect = NULL, p.variance = 1, include = NULL, 
             plot = TRUE, ...)}
 \arguments{
@@ -16,16 +16,18 @@
              selection is to be made.}
  \item{responses}{A \code{\link{character}} giving the names of the columns in 
              \code{data} from which the variables are to be selected.}
- \item{times.factor}{A \code{\link{character}} giving the name of the column in 
-             \code{data} containing the factor for times at which the data was 
-             collected. Its levels will be used to identify the subset and 
-             should be numeric values stored as characters.}
+ \item{times}{A \code{\link{character}} giving the name of the column in 
+             \code{data} containing the times at which the data was 
+             collected, either as a \code{\link{numeric}}, \code{\link{factor}}, or 
+             \code{\link{character}}. It will be used to identify the subset and,  
+             if a \code{\link{factor}} or \code{\link{character}}, the values should 
+             be numerics stored as characters.}
  \item{start.time}{A \code{numeric} giving the time,
-                   in terms of a level of \code{times.factor}, at which the time interval 
+                   in terms of values in \code{times}, at which the time interval 
                    begins; observations at this time and up to and including \code{end.time}
                    will be included.}
  \item{end.time}{A \code{numeric} giving the time,
-                 in terms of levels of \code{times.factor}, at the end of the interval; 
+                 in terms of values in \code{times}, at the end of the interval; 
                  observations after this time will not be included.}
  \item{nvarselect}{A \code{\link{numeric}} specifying the number of variables to be selected, 
                    which includes those listed in \code{include}. If \code{nvarselect = 1}, as 
@@ -60,9 +62,20 @@ and Data Analysis}, \bold{52}, 550--565.
 }
 \examples{
 data(exampleData)
-responses <- c("Area","Area.SV","Area.TV", "Image.Biomass", "Max.Height","Centre.Mass",
+longi.dat <- prepImageData(data=raw.dat, smarthouse.lev=1)
+longi.dat <- within(longi.dat, 
+                    {
+                      Max.Height <- pmax(Max.Dist.Above.Horizon.Line.SV1,  
+                                         Max.Dist.Above.Horizon.Line.SV2)
+                      Density <- PSA/Max.Height
+                      PSA.SV = (PSA.SV1 + PSA.SV2) / 2
+                      Image.Biomass = PSA.SV * (PSA.TV^0.5)
+                      Centre.Mass <- (Center.Of.Mass.Y.SV1 + Center.Of.Mass.Y.SV2) / 2
+                      Compactness.SV = (Compactness.SV1 + Compactness.SV2) / 2
+                    })
+responses <- c("PSA","PSA.SV","PSA.TV", "Image.Biomass", "Max.Height","Centre.Mass",
                "Density", "Compactness.TV", "Compactness.SV")
-results <-  intervalPVA(longi.dat, responses, 
+results <-  intervalPVA(longi.dat, responses, times = "DAP", 
                         start.time = "31", end.time = "31",
                         p.variance=0.9, plot = FALSE)
 }

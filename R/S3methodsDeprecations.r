@@ -30,3 +30,8 @@ longiPlot <- function(...)
 { .Deprecated(new = "plotLongitudinal", package = "growthPheno")
   invisible()
 }
+
+probeDF <- function(...)
+{ .Deprecated(new = "probeSmooths", package = "growthPheno")
+  invisible()
+}

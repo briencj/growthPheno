@@ -1,9 +1,9 @@
 \name{plotLongitudinal}
 \alias{plotLongitudinal}
-\title{Plots longitudinal data for a set of indiividuals}
-\description{Produce profile or longitudinal plots of a response using \code{ggplot}. 
+\title{Produces profile plots of longitudinal data for a set of individuals}
+\description{Produce profile plots of longitudinal data for a response using \code{ggplot}. 
              A line is drawn for the data for each \code{individual} and the plot 
-             can be facetted so that a grid of plots is produced. For each facet a line for 
+             can be faceted so that a grid of plots is produced. For each facet a line for 
              the medians over time can be added, along with the vaue of the outer whiskers 
              (median +/- 1.5 * IQR).
 }
@@ -11,7 +11,7 @@
 plotLongitudinal(data, x = "xDays+44.5", response = "Area", 
                  individuals = "Snapshot.ID.Tag", title = NULL, 
                  x.title = "Days", y.title = "Area (kpixels)", 
-                 facet.x = "Treatment.1", facet.y = "Smarthouse", 
+                 facet.x = ".", facet.y = ".", 
                  labeller = NULL, colour = "black", 
                  colour.column = NULL, colour.values = NULL, 
                  alpha = 0.1, addMediansWhiskers = FALSE, 
@@ -23,10 +23,10 @@ plotLongitudinal(data, x = "xDays+44.5", response = "Area",
  \item{x}{A \code{\link{character}} giving the variable to be plotted on the x-axis.}
  \item{response}{A \code{character} specifying the response variable that 
                  is to be plotted on the y-axis.}
- \item{individuals}{A \code{\link{character}} giving the name(s) of the 
-             \code{\link{factor}}(s) that define the subsets of the 
-             \code{data} for which each subset corresponds to the 
-             \code{response} values for an individual.}
+ \item{individuals}{A \code{\link{character}} giving the name of the 
+            \code{\link{factor}} that defines the subsets of the \code{data} 
+            for which each subset corresponds to the \code{response} values for 
+            an individual (plant/cart/plot/unit).}
  \item{x.title}{Title for the x-axis.}
  \item{y.title}{Title for the y-axis.}
  \item{title}{Title for the plot.}
@@ -35,7 +35,7 @@ plotLongitudinal(data, x = "xDays+44.5", response = "Area",
                 Use \code{"."} if a split into columns is not wanted.}
  \item{facet.y}{A \code{\link{data.frame}} giving the variable to be used to 
                 form subsets to be plotted in separate rows of plots.
-                Use \code{"."} if a split into columns is not wanted.}
+                Use \code{"."} if a split into rows is not wanted.}
  \item{labeller}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
                  facets of a plot produced using the \code{\link{ggplot}} function. 
                  For more information see \code{\link{ggplot}}.}
@@ -44,7 +44,7 @@ plotLongitudinal(data, x = "xDays+44.5", response = "Area",
                values of a variable is required then use \code{colour.column}.}
  \item{colour.column}{A \code{\link{character}} giving the name of a column 
              in \code{data} over whose values the colours of the lines are to be 
-             varied. The colours can be specified using \code{colour.values} .}
+             varied. The colours can be specified using \code{colour.values}.}
  \item{colour.values}{A \code{\link{character}} vector specifying the values of 
                the colours to use in drawing the lines for the profiles.  
                If this is a named vector, then the values will be matched based 
@@ -78,20 +78,25 @@ plotLongitudinal(data, x = "xDays+44.5", response = "Area",
 \seealso{\code{\link{ggplot}}, \code{\link{labeller}}.}
 \examples{
 data(exampleData)
-plotLongitudinal(data = longi.dat, response = "Area.smooth")
+plotLongitudinal(data = longi.dat, x = "xDAP", response = "sPSA")
 
-plt <- plotLongitudinal(data = longi.dat, response = "Area.smooth", x.title = "DAP",  
-                        y.title = "Area.smooth", x="xDays+35.42857143", printPlot=FALSE)
+plt <- plotLongitudinal(data = longi.dat, x = "xDAP", response = "sPSA", 
+                        x.title = "DAP",  y.title = "sPSA (kpixels)", 
+                        facet.x = "Treatment.1", facet.y = "Smarthouse", 
+                        printPlot=FALSE)
 plt <- plt + ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1) +
              ggplot2::scale_x_continuous(breaks=seq(28, 42, by=2)) + 
              ggplot2::scale_y_continuous(limits=c(0,750))
 print(plt)
 
-plotLongitudinal(data = longi.dat, response = "Area.smooth", x.title = "DAP",  
-                 y.title = "Area.smooth", x="xDays+35.42857143", 
-                 ggplotFuncs = list(ggplot2::geom_vline(xintercept=29, linetype="longdash", 
+plotLongitudinal(data = longi.dat, x="xDAP", response = "sPSA", 
+                 x.title = "DAP",  y.title = "sPSA (kpixels)", 
+                 facet.x = "Treatment.1", facet.y = "Smarthouse", 
+                 ggplotFuncs = list(ggplot2::geom_vline(xintercept=29, 
+                                                        linetype="longdash", 
                                                         size=1), 
-                                    ggplot2::scale_x_continuous(breaks=seq(28, 42, by=2)), 
+                                    ggplot2::scale_x_continuous(breaks=seq(28, 42, 
+                                                                           by=2)), 
                                     ggplot2::scale_y_continuous(limits=c(0,750))))
 }
 \keyword{hplot}

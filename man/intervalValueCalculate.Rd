@@ -6,12 +6,16 @@
              value from each individual's observations during a specified 
              time interval.  It includes the ability to calculate the 
              observation number that is closest to the calculated value of 
-             the function and the assocated values of a \code{factor} or 
-             \code{numeric}.}
+             the function and the assocated values of a \code{\link{factor}} or 
+             \code{numeric}.
+
+             \strong{Note: this function is soft deprecated and may be removed in 
+             future versions. \cr Use \code{\link{byIndv4Intvl_ValueCalc}}.}
+}
 \usage{
 intervalValueCalculate(response, weights=NULL, individuals = "Snapshot.ID.Tag",
                        FUN = "max", which.obs = FALSE, which.values = NULL, 
-                       start.time=NULL, end.time=NULL, times.factor = "Days", 
+                       times = "Days", start.time=NULL, end.time=NULL, 
                        suffix.interval=NULL, data, sep=".", na.rm=TRUE, ...)
 }
 \arguments{
@@ -20,10 +24,10 @@ intervalValueCalculate(response, weights=NULL, individuals = "Snapshot.ID.Tag",
  \item{weights}{A \code{\link{character}} giving the name of the column in 
              \code{data} containing the weights to be supplied as \code{w} 
              to \code{FUN}.}
- \item{individuals}{A \code{\link{character}} giving the name(s) of the 
-             \code{factor}(s) that define the subsets of the \code{data} for 
-             which each subset corresponds to the \code{response} value for an 
-             individual.}
+ \item{individuals}{A \code{\link{character}} giving the name of the 
+            \code{\link{factor}} that defines the subsets of the \code{data} 
+            for which each subset corresponds to the \code{response} values for 
+            an individual (plant/cart/plot/unit).}
  \item{FUN}{A \code{\link{character}} giving the name of the \code{function} 
              that calculates the value for each subset.}
  \item{which.obs}{A \code{\link{logical}} indicating whether or not to determine 
@@ -41,11 +45,17 @@ intervalValueCalculate(response, weights=NULL, individuals = "Snapshot.ID.Tag",
              observed response values satisfying this condition, the value of 
              the \code{which.values} vector for the first of these is 
              returned.}
+ \item{times}{A \code{\link{character}} giving the name of the column in 
+             \code{data} containing the times at which the data was 
+             collected, either as a \code{\link{numeric}}, \code{\link{factor}}, or 
+             \code{\link{character}}. It will be used in calculating growth rates and,  
+             if a \code{\link{factor}} or \code{\link{character}}, the values should 
+             be numerics stored as characters.}
  \item{start.time}{A \code{\link{numeric}} giving the times, 
              in terms of levels of \code{times.factor}, that will give a 
              single value for each \code{Snapshot.ID.Tag} and that will 
              be taken as the observation at the start of the interval for 
-             which the growth rate is to be calculated. If 
+             which a value is to be calculated. If 
              \code{start.time} is \code{NULL}, the interval will start 
              with the first observation. In the case of multiple 
              observed response values satisfying this condition, the first is 
@@ -54,12 +64,8 @@ intervalValueCalculate(response, weights=NULL, individuals = "Snapshot.ID.Tag",
              in terms of levels of \code{times.factor}, that will give a 
              single value for each \code{Snapshot.ID.Tag} and that will be 
              taken as the observation at the end of the interval for which 
-             the growth rate is to be calculated. If \code{end.time} is 
+             a value is to be calculated. If \code{end.time} is 
              \code{NULL}, the interval will end with the last observation.}
- \item{times.factor}{A \code{\link{character}} giving the name of the column in 
-             \code{data} containing the factor for times at which the data was 
-             collected. Its levels should be numeric values stored as 
-             characters.}
  \item{suffix.interval}{A \code{\link{character}} giving the suffix to be 
              appended to \code{response} to form the 
              name of the column containing the calculated values. If it is
@@ -70,7 +76,7 @@ intervalValueCalculate(response, weights=NULL, individuals = "Snapshot.ID.Tag",
              should be stripped before the calculation proceeds.}
  \item{sep}{A \code{\link{character}} giving the separator to use when the 
              levels of \code{individuals} are combined. This is needed to avoid 
-             using a \code{\link{character}} that occurs in a factor to delimit 
+             using a \code{\link{character}} that occurs in a \code{\link{factor}} to delimit 
              levels when the levels of \code{individuals} are combined to 
              identify subsets.}
  \item{... }{allows for arguments to be passed to \code{FUN}.}
@@ -103,14 +109,15 @@ intervalValueCalculate(response, weights=NULL, individuals = "Snapshot.ID.Tag",
 \seealso{\code{\link{intervalGRaverage}}, \code{\link{intervalGRdiff}}, \code{\link{intervalWUI}}, \code{\link{splitValueCalculate}}, \code{\link{getTimesSubset}}}
 \examples{
 data(exampleData)
-Area.smooth.max <- intervalValueCalculate("Area.smooth", 
-                                          start.time = 31, end.time = 35, 
-                                          suffix.interval = "31to35",
-                                          data = longi.dat)
-AGR.max.dat <- intervalValueCalculate("Area.smooth.AGR", FUN="max", 
+sPSA.max <- intervalValueCalculate(response = "sPSA", times = "DAP",  
+                                   start.time = 31, end.time = 35, 
+                                   suffix.interval = "31to35",
+                                   data = longi.dat)
+AGR.max.dat <- intervalValueCalculate(response = "sPSA.AGR", times = "DAP", 
+                                      FUN="max", 
                                       start.time = 31, end.time = 35, 
                                       suffix.interval = "31to35",
-                                      which.values = "Days", which.obs = TRUE, 
+                                      which.values = "DAP", which.obs = TRUE, 
                                       data=longi.dat)
 }
 \keyword{data}

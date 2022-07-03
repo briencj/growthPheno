@@ -1,7 +1,7 @@
 \name{calcTimes}
 \alias{calcTimes}
 \title{Calculates for a set of times, the time intervals after an origin time and the position of each within a time interval}
-\description{For the column specified in imageTimes, having converted it to \code{POSIXct} if not already converted, calculates for each value the number of \code{intervalUnits} between the time and the \code{startTime}. Then the number of \code{timePositions} within the \code{intervals} is calculated for the values in \code{imageTimes}. The function \code{difftimes} is used in doing the calculations, but the results are converted to \code{numeric}. For example \code{intervals} could correspond to the number of Days after Planting and the \code{timePositions} to the hour within each day.}
+\description{For the column specified in imageTimes, having converted it to \code{POSIXct} if not already converted, calculates for each value the number of \code{intervalUnits} between the time and the \code{startTime}. Then the number of \code{timePositions} within the \code{intervals} is calculated for the values in \code{imageTimes}. The function \code{difftimes} is used in doing the calculations, but the results are converted to \code{numeric}. For example \code{intervals} could correspond to the number of Days after Planting (DAP) and the \code{timePositions} to the hour within each day.}
 \usage{
 calcTimes(data, imageTimes = NULL, timeFormat = "\%Y-\%m-\%d \%H:\%M",
           intervals = "Time.after.Planting..d.", startTime = NULL, 

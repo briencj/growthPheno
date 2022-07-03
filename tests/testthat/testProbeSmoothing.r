@@ -15,28 +15,47 @@ test_that("chickpea_growthPheno", {
   #'## Obtain plots
   testthat::expect_warning(t <- probeSmoothing(dat1, df=df, xname="TimeAfterPlanting", 
                                                response="ShootArea1000",
+                                               facet.x = "Treatment.1", facet.y = "Smarthouse", 
                                                which.plots=c("bothseparately"), 
                                                ggplotFuncs=list(scale_x_continuous(breaks=
                                                                                      seq(30, 50, by=2)))))
   testthat::expect_equal(nrow(t), 8480)
   testthat::expect_equal(ncol(t), 15)
   
-  testthat::expect_silent(t <- probeSmoothing(dat1, df=df, xname="TimeAfterPlanting", 
-                                               response="ShootArea1000", 
-                                               trait.types=c("AGR")))
+  testthat::expect_warning(
+    t <- probeSmoothing(dat1, df=df, xname="TimeAfterPlanting", 
+                        response="ShootArea1000", 
+                        trait.types=c("AGR"),
+                        facet.x = "Treatment.1", facet.y = "Smarthouse"))
   testthat::expect_equal(nrow(t), 8480)
   testthat::expect_equal(ncol(t), 12)
   
-  testthat::expect_silent(t <- probeSmoothing(dat1, df=df, xname="TimeAfterPlanting", 
-                                              response="ShootArea1000", 
-                                              trait.types=c("response"), 
-                                              which.plots="dfcompare", get.rates=FALSE))
+  testthat::expect_warning(
+    t <- probeSmoothing(dat1, df=df, xname="TimeAfterPlanting", 
+                        response="ShootArea1000", 
+                        trait.types=c("response"), 
+                        facet.x = "Treatment.1", facet.y = "Smarthouse", 
+                        which.plots="dfcompare", get.rates=FALSE))
   testthat::expect_equal(nrow(t), 8480)
   testthat::expect_true(all(c("Snapshot.ID.Tag", "Days", "TimeAfterPlanting", "ShootArea1000", 
                               "Treatment.1", "Smarthouse",  "ShootArea1000", 
                               "ShootArea1000.smooth.Direct.4", "ShootArea1000.smooth.Direct.7") 
                             %in% names(t)))
   
+  #include relative.boxplots
+  testthat::expect_warning(
+    t <- probeSmoothing(dat1, df=df, xname="TimeAfterPlanting", 
+                        response="ShootArea1000", 
+                        trait.types=c("response"), 
+                        facet.x = "Treatment.1", facet.y = "Smarthouse", 
+                        which.plots="dfcompare", deviations.plots = "relat", 
+                        get.rates=FALSE))
+  testthat::expect_equal(nrow(t), 8480)
+  testthat::expect_true(all(c("Snapshot.ID.Tag", "Days", "TimeAfterPlanting", "ShootArea1000", 
+                              "Treatment.1", "Smarthouse",  "ShootArea1000", 
+                              "ShootArea1000.smooth.Direct.4", "ShootArea1000.smooth.Direct.7") 
+                            %in% names(t)))
+
   #'## Include deviations boxplots
   testthat::expect_error(t <- probeSmoothing(dat1, df=df, xname="TimeAfterPlanting", 
                                              response="ShootArea1000",
@@ -45,12 +64,14 @@ test_that("chickpea_growthPheno", {
                                              which.plots="dfcompare", 
                                              deviations.boxplots = "absolute")) 
   #deviations.boxplots deprecated
-  testthat::expect_silent(t <- probeSmoothing(dat1, df=df, xname="TimeAfterPlanting", 
-                                              response="ShootArea1000",
-                                              x.title = "DAP", 
-                                              trait.types=c("response"), get.rates=FALSE,
-                                              which.plots="dfcompare", 
-                                              deviations.plots = "absolute"))
+  testthat::expect_warning(
+    t <- probeSmoothing(dat1, df=df, xname="TimeAfterPlanting", 
+                        response="ShootArea1000",
+                        x.title = "DAP", 
+                        trait.types=c("response"), get.rates=FALSE,
+                        facet.x = "Treatment.1", facet.y = "Smarthouse", 
+                        which.plots="dfcompare", 
+                        deviations.plots = "absolute"))
   testthat::expect_equal(nrow(t), 8480)
   testthat::expect_true(all(c("Snapshot.ID.Tag", "Days", "TimeAfterPlanting", "ShootArea1000", 
                               "Treatment.1", "Smarthouse", "ShootArea1000", 
@@ -61,6 +82,7 @@ test_that("chickpea_growthPheno", {
                                                response="ShootArea1000",
                                                x.title = "DAP", 
                                                trait.types=c("response", "AGR"), 
+                                               facet.x = "Treatment.1", facet.y = "Smarthouse", 
                                                which.plots="methodscompare", 
                                                deviations.plots = c("absolute", "relative")))
   testthat::expect_equal(nrow(t), 8480)
@@ -89,25 +111,28 @@ test_that("exampleData_growthPheno", {
   vline <- list(ggplot2::geom_vline(xintercept=20, linetype="longdash", size=1),
                 ggplot2::scale_x_continuous(breaks=seq(12, 36, by=2)))
   
-  plotDeviationsBoxes(longi.dat, observed = "Area", smoothed = "Area.smooth",
-                    x.factor="Days", facet.x = ".", facet.y= ".", df =5)
+  plotDeviationsBoxes(longi.dat, observed = "PSA", smoothed = "sPSA",
+                    x.factor="DAP", facet.x = ".", facet.y= ".", df =5)
   
-  testthat::expect_silent(tmp <- probeSmoothing(data = longi.dat, response = "Area", 
-                                                df = c(4,7), x="xDays+24.16666667", 
-                                                ggplotFuncs=vline))
+  testthat::expect_warning(
+    tmp <- probeSmoothing(data = longi.dat, response = "PSA", 
+                          df = c(4,7), xname="xDAP", times.factor = "DAP", 
+                          ggplotFuncs=vline))
   testthat::expect_equal(nrow(tmp), 280)
   testthat::expect_equal(ncol(tmp), 15)
   
-  testthat::expect_warning(tmp <- probeSmoothing(data = longi.dat, response = "Area", 
-                                                 df = c(4,7), x="xDays+24.16666667", 
+  testthat::expect_warning(tmp <- probeSmoothing(data = longi.dat, response = "PSA", 
+                                                 xname = "xDAP", times.factor = "DAP", 
+                                                 df = c(4,7), 
                                                  which.plots = "methodsc", 
                                                  facet.y = ".",
                                                  get.rates = FALSE,
                                                  ggplotFuncs=vline))
   testthat::expect_equal(nrow(tmp), 280)
   testthat::expect_equal(ncol(tmp), 7)
-  testthat::expect_warning(tmp <- probeSmoothing(data = longi.dat, response = "Area", 
-                                                 df = c(4,7), x="xDays+24.16666667", 
+  testthat::expect_warning(tmp <- probeSmoothing(data = longi.dat, response = "PSA", 
+                                                 xname = "xDAP", times.factor = "DAP", 
+                                                 df = c(4,7), 
                                                  which.plots = "dfcompare", 
                                                  facet.y = ".",
                                                  get.rates = FALSE,
@@ -115,8 +140,9 @@ test_that("exampleData_growthPheno", {
   testthat::expect_equal(nrow(tmp), 280)
   testthat::expect_equal(ncol(tmp), 7)
   
-  testthat::expect_warning(tmp <- probeSmoothing(data = longi.dat, response = "Area", 
-                                                 df = c(4:7), x="xDays+24.16666667", 
+  testthat::expect_warning(tmp <- probeSmoothing(data = longi.dat, response = "PSA", 
+                                                 xname = "xDAP", times.factor = "DAP", 
+                                                 df = c(4:7), 
                                                  which.plots = "dfcompare", 
                                                  facet.y = ".",
                                                  alpha = 0.6, get.rates = FALSE,
@@ -124,16 +150,19 @@ test_that("exampleData_growthPheno", {
   testthat::expect_equal(nrow(tmp), 280)
   testthat::expect_equal(ncol(tmp), 9)
   
-  testthat::expect_silent(tmp <- probeSmoothing(data = longi.dat, response = "Area", 
-                                                df = c(4:7), x="xDays+24.16666667", 
-                                                which.plots = "dfcompare", facet.y = ".",
-                                                alpha = 0.5, trait.types = "AGR",
-                                                ggplotFuncs=vline))
+  testthat::expect_warning(
+    tmp <- probeSmoothing(data = longi.dat, response = "PSA", 
+                          xname = "xDAP", times.factor = "DAP", 
+                          df = c(4:7), 
+                          which.plots = "dfcompare", facet.y = ".",
+                          alpha = 0.5, trait.types = "AGR",
+                          ggplotFuncs=vline))
   testthat::expect_equal(nrow(tmp), 280)
   testthat::expect_equal(ncol(tmp), 15)
   
-  testthat::expect_warning(tmp <- probeSmoothing(data = longi.dat, response = "Area", 
-                                                 df = c(4:7), x="xDays+24.16666667", 
+  testthat::expect_warning(tmp <- probeSmoothing(data = longi.dat, response = "PSA", 
+                                                 xname = "xDAP", times.factor = "DAP", 
+                                                 df = c(4:7), 
                                                  facet.y = ".", 
                                                  deviations.plots = "compare",
                                                  propn.types = c(0.025,0.2, 0.25),
@@ -141,8 +170,9 @@ test_that("exampleData_growthPheno", {
   testthat::expect_equal(nrow(tmp), 280)
   testthat::expect_equal(ncol(tmp), 20)
   
-  testthat::expect_warning(tmp <- probeSmoothing(data = longi.dat, response = "Area", 
-                                                 df = c(4:7), x="xDays+24.16666667", 
+  testthat::expect_warning(tmp <- probeSmoothing(data = longi.dat, response = "PSA", 
+                                                 xname = "xDAP", times.factor = "DAP", 
+                                                 df = c(4:7), 
                                                  facet.x = ".", facet.y = ".",
                                                  which.plots = "none",
                                                  deviations.plots = "compare", 
@@ -151,16 +181,19 @@ test_that("exampleData_growthPheno", {
   testthat::expect_equal(nrow(tmp), 280)
   testthat::expect_equal(ncol(tmp), 19)
   
-  testthat::expect_silent(traits <- probeSmoothing(data = longi.dat, response = "Area", 
-                                                   df = c(4:7), x="xDays+24.16666667", 
-                                                   facet.x = ".", facet.y = ".",
-                                                   which.plots = "none",
-                                                   deviations.plots = "none", 
-                                                   propn.types = NULL))
+  testthat::expect_warning(
+    traits <- probeSmoothing(data = longi.dat, 
+                             response = "PSA", response.smoothed = "sPSA", 
+                             xname = "xDAP", times.factor = "DAP", 
+                             df = c(4:7), 
+                             facet.x = ".", facet.y = ".",
+                             which.plots = "none",
+                             deviations.plots = "none", 
+                             propn.types = NULL))
   testthat::expect_silent(med <- plotMedianDeviations(data = traits, 
-                                                      response = "Area", 
-                                                      response.smoothed = "Area.smooth", 
-                                                      x="xDays+24.16666667", xname = "xDays", 
+                                                      response = "PSA", 
+                                                      response.smoothed = "sPSA", 
+                                                      x="xDAP", xname = "xDAP", 
                                                       df = c(4,7), x.title = "DAP", 
                                                       facet.x = ".", facet.y = ".",
                                                       trait.types = "response", 
@@ -171,8 +204,9 @@ test_that("exampleData_growthPheno", {
   testthat::expect_equal(nrow(med$med.devn.dat), 28)
   testthat::expect_equal(ncol(med$med.devn.dat), 6)
   testthat::expect_equal(length(med$plots), 1)
-  testthat::expect_warning(traits <- probeSmoothing(data = longi.dat, response = "Area", 
-                                                    df = c(4:7), x="xDays+24.16666667", 
+  testthat::expect_warning(traits <- probeSmoothing(data = longi.dat, response = "PSA", 
+                                                    xname = "xDAP", times.factor = "DAP", 
+                                                    df = c(4:7), 
                                                     facet.x = ".", facet.y = ".",
                                                     which.plots = "none",
                                                     deviations.plots = c("compare", 
@@ -180,8 +214,9 @@ test_that("exampleData_growthPheno", {
                                                     propn.types = NULL))
   testthat::expect_equal(nrow(traits), 280)
   testthat::expect_equal(ncol(traits), 19)
-  testthat::expect_warning(traits <- probeSmoothing(data = longi.dat, response = "Area", 
-                                                   df = c(4:7), x="xDays+24.16666667", 
+  testthat::expect_warning(traits <- probeSmoothing(data = longi.dat, response = "PSA", 
+                                                    xname = "xDAP", times.factor = "DAP", 
+                                                    df = c(4:7), 
                                                    facet.x = ".", facet.y = ".",
                                                    which.plots = "methodsc",
                                                    deviations.plots = c("compare", 
@@ -210,7 +245,7 @@ test_that("tomato_growthPheno", {
   #'## Gives error that the Length of propn.types is not the same as the number of traits
   testthat::expect_warning(testthat::expect_error(
     tmp <- probeSmoothing(data = tomato.dat, 
-                          response = "Area", 
+                          response = "PSA", response.smoothed = "sPSA", 
                           times.factor = "DAP", xname = "xDAP", 
                           smoothing.methods = c("dir", "log"), 
                           facet.x = "Zn", facet.y = "AMF",
@@ -221,24 +256,26 @@ test_that("tomato_growthPheno", {
                                               AMF = labelMyc)),
     regexp = "Length of propn.types is not the same as the number of trait.types"), 
     regexp = "get.rates is FALSE and so trait.types changed to response")
-  testthat::expect_warning(tom <- probeSmoothing(data = tomato.dat, 
-                                                 response = "Area", 
-                                                 times.factor = "DAP", xname = "xDAP", 
-                                                 smoothing.methods = c("dir", "log"), 
-                                                 facet.x = "Zn", facet.y = "AMF",
-                                                 df = c(4,7), x="xDAP", get.rates = FALSE,
-                                                 propn.types = 0.1,
-                                                 which.plots = "methodsc", 
-                                                 deviations.plots = "compare",
-                                                 labeller = labeller(Zn = labelZn, 
-                                                                     AMF = labelMyc)), 
-                           regexp = "get.rates is FALSE and so trait.types changed to response")
+  testthat::expect_warning(
+    tom <- probeSmoothing(data = tomato.dat, 
+                          response = "PSA", 
+                          response.smoothed = "sPSA", 
+                          times.factor = "DAP", xname = "xDAP", 
+                          smoothing.methods = c("dir", "log"), 
+                          facet.x = "Zn", facet.y = "AMF",
+                          df = c(4,7), x="xDAP", get.rates = FALSE,
+                          propn.types = 0.1,
+                          which.plots = "methodsc", 
+                          deviations.plots = "compare",
+                          labeller = labeller(Zn = labelZn, 
+                                              AMF = labelMyc)), 
+    regexp = "get.rates is FALSE and so trait.types changed to response")
   testthat::expect_equal(nrow(tom), 1120)
   testthat::expect_equal(ncol(tom), 10)
   
   testthat::expect_silent(med <- plotMedianDeviations(data = tom, 
-                                                      response = "Area", 
-                                                      response.smoothed = "Area.smooth", 
+                                                      response = "PSA", 
+                                                      response.smoothed = "sPSA", 
                                                       xname = "xDAP", 
                                                       smoothing.methods = c("dir", "log"), 
                                                       df = c(4,7), x.title = "DAP", 
@@ -254,7 +291,8 @@ test_that("tomato_growthPheno", {
   testthat::expect_equal(ncol(med$med.devn.dat), 8)
   
   #Multiple df, single methods
-  testthat::expect_warning(tom <- probeSmoothing(data = tomato.dat, response = "Area", 
+  testthat::expect_warning(tom <- probeSmoothing(data = tomato.dat, response = "PSA",
+                                                 response.smoothed = "sPSA", 
                                                  times.factor = "DAP", xname="xDAP", df=5:6,
                                                  smoothing.methods = c("logarithmic"),
                                                  facet.x = ".", facet.y = ".",
@@ -265,7 +303,8 @@ test_that("tomato_growthPheno", {
   testthat::expect_equal(ncol(tom), 13)
   
   #'Single `df`, multiple methods and trait.types
-  testthat::expect_warning(tom <- probeSmoothing(data = tomato.dat, response = "Area", 
+  testthat::expect_warning(tom <- probeSmoothing(data = tomato.dat, response = "PSA", 
+                                                 response.smoothed = "sPSA", 
                                                  times.factor = "DAP", xname="xDAP", df=5,
                                                  smoothing.methods = c("direct","logarithmic"),
                                                  facet.x = ".", facet.y = ".",
@@ -273,8 +312,8 @@ test_that("tomato_growthPheno", {
                                                  deviations.plots = "none"))
   testthat::expect_equal(nrow(tom), 1120)
   testthat::expect_equal(ncol(tom), 13)
-  testthat::expect_warning(med <- plotMedianDeviations(data = tom, response = "Area", 
-                                                       response.smoothed = "Area.smooth", 
+  testthat::expect_warning(med <- plotMedianDeviations(data = tom, response = "PSA", 
+                                                       response.smoothed = "sPSA", 
                                                        xname = "xDAP", 
                                                        smoothing.methods = c("dir", "log"), 
                                                        df = 5, x.title = "DAP", 
@@ -286,11 +325,12 @@ test_that("tomato_growthPheno", {
   testthat::expect_equal(nrow(med$med.devn.dat), 70)
   testthat::expect_equal(ncol(med$med.devn.dat), 8)
   testthat::expect_equal(length(med$plots), 3)
-  testthat::expect_true(all(names(med$plots) == c("Area","Area.AGR","Area.RGR")))
-  testthat::expect_warning(print(med$plots$Area.AGR))
+  testthat::expect_true(all(names(med$plots) == c("PSA","PSA.AGR","PSA.RGR")))
+  testthat::expect_warning(print(med$plots$PSA.AGR))
   
   #'Single `df`, single method
-  testthat::expect_warning(tom <- probeSmoothing(data = tomato.dat, response = "Area", 
+  testthat::expect_warning(tom <- probeSmoothing(data = tomato.dat, response = "PSA", 
+                                                 response.smoothed = "sPSA", 
                                                  times.factor = "DAP", xname="xDAP", df=5,
                                                  smoothing.methods = c("direct"),
                                                  facet.x = ".", facet.y = ".",

@@ -19,7 +19,7 @@
 \author{Chris Brien}
 \examples{
 data(exampleData)
-anom.val <- anom(longi.dat$Area.smooth.AGR, lower=2.5)
+anom.val <- anom(longi.dat$sPSA.AGR, lower=2.5)
 }
 \keyword{data}
 \keyword{manip}

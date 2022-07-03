@@ -24,7 +24,7 @@
 }
 
 "PVA.data.frame" <- function(obj, responses, nvarselect = NULL, p.variance = 1, include = NULL, 
-                  plot = TRUE, ...)
+                             plot = TRUE, ...)
   #Automatically selects variables using Principal Variables Analysis (PVA)
   #nvarselect is the number of to variables to select, counting those in include.
   #It is possible to use several criteria to control the selection:
@@ -245,12 +245,27 @@
   return(h)
 }
 
-"intervalPVA.data.frame" <- function(obj, responses, times.factor = "Days", start.time, end.time, 
-                          nvarselect = NULL, p.variance = 1, include = NULL, 
-                          plot = TRUE, ...)
+"intervalPVA.data.frame" <- function(obj, responses, 
+                                     times = "Days", start.time, end.time, 
+                                     nvarselect = NULL, p.variance = 1, include = NULL, 
+                                     plot = TRUE, ...)
   #Call PVA to perform a PVA on all data in a time interval
 { 
-  d <- subset(obj, obj[[times.factor]] %in% as.character(start.time[1]:end.time[1]), 
+  d <- subset(obj, obj[[times]] %in% as.character(start.time[1]:end.time[1]), 
+              select=responses)
+  p.var <- PVA(obj = d, responses = responses, 
+               nvarselect = nvarselect, p.variance = p.variance, include = include, 
+               plot=plot, ...)
+  return(p.var)
+}
+
+"intervalPVA.data.frame" <- function(obj, responses, 
+                                     times = "Days", start.time, end.time, 
+                                     nvarselect = NULL, p.variance = 1, include = NULL, 
+                                     plot = TRUE, ...)
+  #Call PVA to perform a PVA on all data in a time interval
+{ 
+  d <- subset(obj, obj[[times]] %in% as.character(start.time[1]:end.time[1]), 
               select=responses)
   p.var <- PVA(obj = d, responses = responses, 
                nvarselect = nvarselect, p.variance = p.variance, include = include, 

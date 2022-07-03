@@ -6,7 +6,11 @@
              value from each individual's observations.
              It includes the ability to calculate the observation number 
              that is closest to the calculated value of the function and 
-             the assocated values of a \code{factor} or \code{numeric}.}
+             the assocated values of a \code{\link{factor}} or \code{numeric}.
+
+             \strong{Note: this function is soft deprecated and may be removed in 
+             future versions. \cr Use \code{\link{byIndv_ValueCalc}}.}
+}
 \usage{
 splitValueCalculate(response, weights=NULL, individuals = "Snapshot.ID.Tag", 
                     FUN = "max", which.obs = FALSE, which.values = NULL, 
@@ -18,10 +22,10 @@ splitValueCalculate(response, weights=NULL, individuals = "Snapshot.ID.Tag",
  \item{weights}{A \code{\link{character}} giving the name of the column in 
              \code{data} containing the weights to be supplied as \code{w} 
              to \code{FUN}.}
- \item{individuals}{A \code{\link{character}} giving the name(s) of the 
-             \code{factor}(s) that define the subsets of the \code{data} for 
-             which each subset corresponds to the \code{response} value for an 
-             individual.}
+ \item{individuals}{A \code{\link{character}} giving the name of the 
+            \code{\link{factor}} that defines the subsets of the \code{data} 
+            for which each subset corresponds to the \code{response} values for 
+            an individual (plant/cart/plot/unit).}
  \item{FUN}{A \code{\link{character}} giving the name of the \code{function} 
              that calculates the value for each subset.}
  \item{which.obs}{A \code{\link{logical}} indicating whether or not to determine 
@@ -47,7 +51,7 @@ splitValueCalculate(response, weights=NULL, individuals = "Snapshot.ID.Tag",
               should be stripped before the calculation proceeds.}
  \item{sep}{A \code{\link{character}} giving the separator to use when the 
             levels of \code{individuals} are combined. This is needed to avoid 
-            using a \code{\link{character}} that occurs in a factor to delimit 
+            using a \code{\link{character}} that occurs in a \code{\link{factor}} to delimit 
             levels when the levels of \code{individuals} are combined to 
             identify subsets.}
  \item{... }{allows for arguments to be passed to \code{FUN}.}
@@ -80,11 +84,11 @@ splitValueCalculate(response, weights=NULL, individuals = "Snapshot.ID.Tag",
          \code{\link{splitSplines}}}
 \examples{
 data(exampleData)
-Area.smooth.max.dat <- splitValueCalculate("Area.smooth", data = longi.dat)
-AGR.max.dat <- splitValueCalculate("Area.smooth.AGR", FUN="max", data=longi.dat, 
-                                    which.values = "Days", which.obs = TRUE)
-sPSA.dec1.dat <- splitValueCalculate("Area.smooth", FUN="quantile", data=longi.dat, 
-                                     which.values = "Days", probs = 0.1)
+sPSA.max.dat <- splitValueCalculate("sPSA", data = longi.dat)
+AGR.max.dat <- splitValueCalculate("sPSA.AGR", FUN="max", data=longi.dat, 
+                                    which.values = "DAP", which.obs = TRUE)
+sPSA.dec1.dat <- splitValueCalculate("sPSA", FUN="quantile", data=longi.dat, 
+                                     which.values = "DAP", probs = 0.1)
 }
 \keyword{data}
 \keyword{manip}

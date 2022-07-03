@@ -5,42 +5,48 @@
              combination of the Absolute Growth Rates 
              using differences (AGR), the Proportionate Growth Rates (PGR) 
              and Relative Growth Rates using log differences (RGR) between 
-             two nominated time points.}
+             two nominated time points.
+
+             \strong{Note: this function is soft deprecated and may be removed in 
+             future versions. \cr Use \code{\link{byIndv4Intvl_GRsDiff}}.}
+}
 \usage{
 intervalGRdiff(responses, individuals = "Snapshot.ID.Tag", 
                which.rates = c("AGR","PGR","RGR"), suffices.rates=NULL, 
-               times.factor = "Days", start.times, end.times, suffix.interval, 
+               times = "Days", start.time, end.time, suffix.interval, 
                data)}
 \arguments{
  \item{responses}{A \code{\link{character}} giving the names of the columns in 
              \code{data} from which the growth rates are to be  calculated.}
- \item{individuals}{A \code{\link{character}} giving the name(s) of the 
-                    \code{factor}(s) that define the subsets of the \code{data} 
-                    for which each subset corresponds to the \code{responses} 
-                    for an individual.}
+ \item{individuals}{A \code{\link{character}} giving the name of the 
+            \code{\link{factor}} that defines the subsets of the \code{data} 
+            for which each subset corresponds to the \code{response} values for 
+            an individual (plant/cart/plot/unit).}
  \item{which.rates}{A \code{\link{character}} giving the growth rates that are 
-                    to be calculated. It should be a combination 
-                    \code{"AGR"}, \code{"PGR"} and \code{"RGR"}.}
+            to be calculated. It should be a combination of one or more of 
+            \code{"AGR"}, \code{"PGR"} and \code{"RGR"}.}
  \item{suffices.rates}{A \code{\link{character}} giving the characters to be 
                     appended to the names of the responses in constructing the 
                     names of the columns containing the calculated growth rates.            
                     The order of the suffices in \code{suffices.rates} should 
                     correspond to the order of the elements of 
                     \code{which.rates}.}
- \item{times.factor}{A \code{\link{character}} giving the name of the column in 
-             \code{data} containing the factor for times at which the data was 
-             collected. Its levels will be used in calculating growth rates and 
-             should be numeric values stored as characters.}
- \item{start.times}{A \code{\link{numeric}} giving the times,
-                    in terms of levels of \code{times.factor}, that will give a 
-                    single value for each \code{Snapshot.ID.Tag} and that will 
-                    be taken as the observation at the start of the interval for 
-                    which the growth rate is to be calculated.}
- \item{end.times}{A \code{\link{numeric}} giving the times, 
-                  in terms of levels of \code{times.factor}, that will give a 
-                  single value for each \code{Snapshot.ID.Tag} and that will be 
-                  taken as the observation at the end of the interval for which 
-                  the growth rate is to be calculated.}
+ \item{times}{A \code{\link{character}} giving the name of the column in 
+             \code{data} containing the times at which the data was 
+             collected, either as a \code{\link{numeric}}, \code{\link{factor}}, or 
+             \code{\link{character}}. It will be used in calculating growth rates and,  
+             if a \code{\link{factor}} or \code{\link{character}}, the values should 
+             be numerics stored as characters.}
+ \item{start.time}{A \code{\link{numeric}} giving the times,
+                   in terms of values in \code{times}, that will give a 
+                   single value for each \code{Snapshot.ID.Tag} and that will 
+                   be taken as the observation at the start of the interval for 
+                   which the growth rate is to be calculated.}
+ \item{end.time}{A \code{\link{numeric}} giving the times, 
+                 in terms of values \code{times}, that will give a 
+                 single value for each \code{Snapshot.ID.Tag} and that will be 
+                 taken as the observation at the end of the interval for which 
+                 the growth rate is to be calculated.}
  \item{suffix.interval}{A \code{\link{character}} giving the suffix to be 
                appended to \code{response} to form the names of the columns 
                containing the calculated the growth rates.}
@@ -55,24 +61,26 @@ intervalGRdiff(responses, individuals = "Snapshot.ID.Tag",
         full stops.}
 \details{
 The \code{AGR} is calculated as the difference between the values of 
-\code{response} at the \code{end.times}  and \code{start.times} divided by the 
-difference between \code{end.times}  and \code{start.times}. 
-The PGR is calculated as the ratio of \code{response} at the \code{end.times} 
-to that at \code{start.times} and the ratio raised to the power of the 
-reciprocal of the difference between \code{end.times}  and \code{start.times}. 
+\code{response} at the \code{end.time}  and \code{start.time} divided by the 
+difference between \code{end.time}  and \code{start.time}. 
+The PGR is calculated as the ratio of \code{response} at the \code{end.time} 
+to that at \code{start.time} and the ratio raised to the power of the 
+reciprocal of the difference between \code{end.time}  and \code{start.time}. 
 The \code{RGR} is calculated as the \code{log} of the PGR and so is equal to 
 the difference between the logarithms of \code{response} 
-at the \code{end.times}  and \code{start.times} divided by the difference 
-between \code{end.times}  and \code{start.times}.
+at the \code{end.time}  and \code{start.time} divided by the difference 
+between \code{end.time}  and \code{start.time}.
 }
 \author{Chris Brien}
-\seealso{\code{\link{intervalGRaverage}}, \code{\link{intervalWUI}},  \code{\link{getTimesSubset}}, \code{\link{GrowthRates}}, \code{\link{splitSplines}}, \code{\link{splitContGRdiff}}}
+\seealso{\code{\link{intervalGRaverage}}, \code{\link{intervalWUI}},  \code{\link{getTimesSubset}}, \code{\link{GrowthRates}}, \cr
+         \code{\link{splitSplines}}, \code{\link{splitContGRdiff}}}
 \examples{
 data(exampleData)
-Area.smooth.GR <- intervalGRdiff("Area.smooth", which.rates = c("AGR","RGR"), 
-                                 start.times = 31, end.times = 35,
-                                 suffix.interval = "31to35",
-                                 data = longi.dat)
+sPSA.GR <- intervalGRdiff(responses = "sPSA", times = "DAP", 
+                          which.rates = c("AGR","RGR"), 
+                          start.time = 31, end.time = 35,
+                          suffix.interval = "31to35",
+                          data = longi.dat)
 }
 \keyword{data}
 \keyword{manip}

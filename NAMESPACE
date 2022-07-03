@@ -1,6 +1,14 @@
 export(anom,
        anomPlot,
+       as.smooths.frame, 
        AGRdiff,
+       byIndv_ValueCalc,
+       byIndv4Intvl_GRsAvg, 
+       byIndv4Intvl_GRsDiff,
+       byIndv4Intvl_ValueCalc,
+       byIndv4Intvl_WaterUse,
+       byIndv4Times_GRsDiff, 
+       byIndv4Times_SplinesGRs, 
        calcLagged,
        calcTimes,
        corrPlot,
@@ -17,6 +25,7 @@ export(anom,
        intervalPVA.data.frame,
        intervalValueCalculate,
        intervalWUI,
+       is.smooths.frame,
        longitudinalPrime,
        longiPlot,
        PGR,
@@ -26,8 +35,13 @@ export(anom,
        plotImagetimes,
        plotLongitudinal,
        plotMedianDeviations, 
+       plotProfiles, 
+       prepImageData,
        probeDF,
        probeSmoothing,
+       probeSmooths,
+       plotSmoothsComparison,
+       plotSmoothsMedianDevns,
        PVA,
        PVA.data.frame,
        PVA.matrix,
@@ -35,15 +49,22 @@ export(anom,
        rcontrib.data.frame,
        rcontrib.matrix,
        RGRdiff,
+       smoothSpline,
        splitContGRdiff,
        splitSplines,
        splitValueCalculate,
+       traitExtractFeatures, 
+       traitSmooth,
        twoLevelOpcreate,
+       validSmoothsFrame,
        WUI)
-importFrom(grid, grid.newpage)
-importFrom(grid, grid.layout)
-importFrom(grid, pushViewport)
-importFrom(grid, viewport)
+import(dae, ggplot2, readxl, RColorBrewer)
+importFrom(GGally, ggpairs, putPlot)
+importFrom(grDevices, boxplot.stats)
+importFrom(Hmisc, rcorr)
+importFrom(JOPS, bbase, psNormal)
+importFrom(methods, setOldClass, formalArgs)
+importFrom(reshape, melt)
 importFrom(stats, smooth.spline, IQR, median, weighted.mean)
 importFrom(stats, terms)
 importFrom(stats, as.formula)
@@ -51,12 +72,7 @@ importFrom(stats, na.omit)
 importFrom(stats, predict)
 importFrom(stats, reshape)
 importFrom(stringi, stri_order)
-importFrom(grDevices, boxplot.stats)
-importFrom(Hmisc, rcorr)
-importFrom(GGally, ggpairs, putPlot)
-importFrom(reshape, melt)
-importFrom(utils, read.csv)
-import(dae, ggplot2, readxl, RColorBrewer)
+importFrom(utils, read.csv, tail, modifyList)
 S3method(intervalPVA, data.frame)
 S3method(PVA, data.frame)
 S3method(PVA, matrix)

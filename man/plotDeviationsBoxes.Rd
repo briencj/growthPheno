@@ -18,14 +18,14 @@ plotDeviationsBoxes(data, observed, smoothed, x.factor,
                  corresponding to \code{observed}, for which values are supplied.}
  \item{x.factor}{A \code{\link{character}} giving the \code{\link{factor}} to be 
                 plotted on the x-axis.}
- \item{x.title}{Title for the x-axis. If \code{NULL} then set to \code{xname}.}
+ \item{x.title}{Title for the x-axis. If \code{NULL} then set to \code{x}.}
  \item{y.titles}{A \code{\link{character}} giving the titles for the y-axis, 
              one for each plot specified \code{deviations.plots}.}
  \item{facet.x}{A \code{\link{data.frame}} giving the variable to be used to 
                 form subsets to be plotted in separate columns of plots. 
                 Use \code{"."} if a split into columns is not wanted. For 
                 \code{which.plots} set to \code{methodcompare} or \code{dfcompare} 
-                \code{facet.x} is ignored.}
+                \code{facet.x.pf} is ignored.}
  \item{facet.y}{A \code{\link{data.frame}} giving the variable to be used to 
                 form subsets to be plotted in separate rows of plots.
                 Use \code{"."} if a split into columns is not wanted.}
@@ -44,7 +44,7 @@ plotDeviationsBoxes(data, observed, smoothed, x.factor,
                 These functions are applied in creating the \code{ggplot} object for plotting.}
  \item{printPlot}{A \code{\link{logical}} indicating whether or not to print the 
                   plots.}
-\item{...}{allows passing of arguments to \code{\link{plotLongitudinal}}.}
+\item{...}{allows passing of arguments to \code{\link{ggplot}}.}
 }
 \value{A list whose components are named \code{absolute} and \code{relative}; a 
        component will contain an object of class "\code{ggplot}" when the plot has been 
@@ -55,8 +55,8 @@ plotDeviationsBoxes(data, observed, smoothed, x.factor,
 \examples{
 data(exampleData)
 
-plotDeviationsBoxes(longi.dat, observed = "Area", smoothed = "Area.smooth",
-                    x.factor="Days", facet.x = ".", facet.y= ".", df =5)
+plotDeviationsBoxes(longi.dat, observed = "PSA", smoothed = "sPSA",
+                    x.factor="DAP", facet.x.pf = ".", facet.y= ".", df =5)
 }
 \keyword{hplot}
 \keyword{manip}

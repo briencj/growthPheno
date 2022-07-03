@@ -27,7 +27,7 @@
 \seealso{\code{\link{Ops}}}
 \examples{
 data(exampleData)
-longi.dat$Days.diffs <- calcLagged(longi.dat$xDays, operation ="-")
+longi.dat$DAP.diffs <- calcLagged(longi.dat$xDAP, operation ="-")
 }
 \keyword{data}
 \keyword{manip}

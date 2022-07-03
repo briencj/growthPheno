@@ -17,7 +17,7 @@
 \seealso{\code{\link{cumsum}}}
 \examples{
 data(exampleData)
-Area.cum <- cumulate(longi.dat$Area)
+PSA.cum <- cumulate(longi.dat$PSA)
 }
 \keyword{data}
 \keyword{manip}

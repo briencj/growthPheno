@@ -14,14 +14,19 @@
              \code{smoothing methods} in combination with \code{df}. Note that the 
              arguments that modify the plots apply to all 
              plots that are produced. The handling of missing values is controlled 
-             via \code{na.x.action} and \code{na.y.action}}
+             via \code{na.x.action} and \code{na.y.action}
+
+             \strong{Note: this function is soft deprecated and may be removed in 
+             future versions. \cr Use \code{\link{probeSmooths}}.}
+}
 \usage{
-probeSmoothing(data, response = "Area", x = NULL, xname="xDays", 
+probeSmoothing(data, response = "Area", response.smoothed = NULL, 
+               x = NULL, xname="xDays", 
                times.factor = "Days", individuals="Snapshot.ID.Tag", 
                na.x.action="exclude", na.y.action = "exclude", 
                df, smoothing.methods = "direct", correctBoundaries = FALSE, 
                get.rates = TRUE, rates.method="differences", 
-               facet.x = "Treatment.1", facet.y =   "Smarthouse", 
+               facet.x = "Treatment.1", facet.y = "Smarthouse", 
                labeller = NULL, x.title = NULL, 
                colour = "black", colour.column=NULL, 
                colour.values=NULL, alpha = 0.1, 
@@ -36,22 +41,26 @@ probeSmoothing(data, response = "Area", x = NULL, xname="xDays",
  \item{response}{A \code{character} specifying the response variable to be 
             supplied to \code{\link{smooth.spline}} and that is to be plotted 
             on the y-axis.}
+ \item{response.smoothed}{A \code{\link{character}} specifying the name of the column 
+             containing the values of the smoothed response variable, corresponding 
+             to \code{response}. If \code{response.smoothed} is \code{NULL}, then 
+             \code{response.smoothed} is set to the \code{response} to which 
+             \code{.smooth} is added.}
   \item{x}{A \code{\link{character}} giving the variable to be plotted on the 
-            x-axis; it may incorporate an expression, it being that \code{x} may 
-            incorporate an expression. If \code{x} is \code{NULL} then 
+            x-axis; it may incorporate an expression. If \code{x} is \code{NULL} then 
             \code{xname} is used.}
  \item{xname}{A \code{\link{character}} giving the name of the
             \code{\link{numeric}} that contains the values of the predictor 
             variable to be supplied to \code{\link{smooth.spline}} and 
             from which \code{x} is derived.}
  \item{times.factor}{A \code{\link{character}} giving the name of the column in 
-            \code{data} containing the factor for times at which the data was 
+            \code{data} containing the \code{\link{factor}} for times at which the data was 
             collected. Its levels will be used in calculating growth rates and 
             should be numeric values stored as characters.}
- \item{individuals}{A \code{\link{character}} giving the name(s) of the 
-            \code{\link{factor}}(s) that define the subsets of the \code{data} 
+ \item{individuals}{A \code{\link{character}} giving the name of the 
+            \code{\link{factor}} that defines the subsets of the \code{data} 
             for which each subset corresponds to the \code{response} values for 
-            an individual.}
+            an individual (plant/cart/plot/unit).}
  \item{na.x.action}{A \code{character} string that specifies the action to 
             be taken when values of \code{x} are \code{NA}. The possible 
             values are \code{fail}, \code{exclude} or \code{omit}. 
@@ -80,17 +89,16 @@ probeSmoothing(data, response = "Area", x = NULL, xname="xDays",
             values, respectively, are trimmed.}
  \item{df}{A \code{\link{numeric}} specifying the set of degrees of freedom to 
               be probed.}
- \item{smoothing.methods}{A \code{\link{character}} giving one or more methods 
-            to use for smoothing. Currently, the two possibilites 
-            are (i) \code{"direct"}, for directly smoothing the observed 
-            \code{response}, and (ii) \code{"logarithmic"}, for smoothing the 
-            \code{log}-transformed \code{response}, followed by taking 
-            exponentials of the fitted values to back-trasnform them.}
- \item{correctBoundaries}{A \code{\link{logical}} indicating whether the fitted 
-            spline values are to have the method of Huang (2001) applied 
+ \item{smoothing.methods}{A \code{\link{character}} giving the smoothing method 
+      to use. The two possibilites are (i) \code{"direct"}, for directly 
+      smoothing the observed \code{response}, and (ii) \code{"logarithmic"}, for 
+      smoothing the \code{log}-transformed \code{response} and then 
+      back-transforming by taking the exponentional of the fitted values.}
+\item{correctBoundaries}{A \code{\link{logical}} indicating whether the fitted spline 
+            values are to have the method of Huang (2001) applied 
             to them to correct for estimation bias at the end-points. Note that 
-            if \code{rates.method} is set to \code{"derivatives"} then it is not 
-            possible to have \code{correctBoundaries} set to \code{TRUE}.}
+            \code{spline.type} must be \code{NCSS} and \code{lambda} and \code{deriv} 
+            must be \code{NULL} for \code{correctBoundaries} to be set to \code{TRUE}.}
  \item{get.rates}{A \code{\link{logical}} specifying whether or not the growth 
               rates (AGR and RGR) are to be computed and stored.}
  \item{rates.method}{A \code{\link{character}} specifying the method to use in 
@@ -113,7 +121,7 @@ probeSmoothing(data, response = "Area", x = NULL, xname="xDays",
                values of a variable is required then use \code{colour.column}.}
  \item{colour.column}{A \code{\link{character}} giving the name of a column 
              in \code{data} over whose values the colours of the lines are to be 
-             varied. The colours can be specified using \code{colour.values} .}
+             varied. The colours can be specified using \code{colour.values}.}
  \item{colour.values}{A \code{\link{character}} vector specifying the values of 
                the colours to use in drawing the lines for the profiles.  
                If this is a named vector, then the values will be matched based 
@@ -124,15 +132,14 @@ probeSmoothing(data, response = "Area", x = NULL, xname="xDays",
               specifies the number of points (or lines) that must be overplotted 
               to give a solid cover.}
  \item{trait.types}{A \code{\link{character}} giving the \code{trait.types} that 
-             are to be produced. One of more of \code{response}, \code{AGR} and 
-             \code{RGR}. If \code{all}, all three traits are produced. 
-             The unsmoothed growth rates are not calculated if only smoothed plots 
-            are requested.}
+             are to be produced, and potentially plotted. One of more of 
+             \code{response}, \code{AGR} and \code{RGR}. If \code{all}, all three 
+             traits are produced.}
  \item{propn.types}{A \code{\link{numeric}} giving the proportion of the median 
              values of each of the \code{trait.types} that are to be plotted in 
              the \code{compare.medians} plots of the deviations of the observed 
              values from the smoothed values. If set 
-             to \code{NULL}, the plots of the proprotions of the median values of
+             to \code{NULL}, the plots of the proportions of the median values of
              the traits are omitted.}
  \item{propn.note}{A \code{\link{logical}} indicating whether a note giving the 
              proportion of the median values plotted in the \code{compare.medians} 
@@ -190,9 +197,10 @@ probeSmoothing(data, response = "Area", x = NULL, xname="xDays",
 \seealso{\code{\link{splitSplines}}, \code{\link{splitContGRdiff}}, \code{\link{smooth.spline}}, \code{\link{ggplot}}.}
 \examples{
 data(exampleData)
-vline <- list(ggplot2::geom_vline(xintercept=20, linetype="longdash", size=1),
-              ggplot2::scale_x_continuous(breaks=seq(12, 36, by=2)))
-probeSmoothing(data = longi.dat, response = "Area", df = c(4,7), x="xDays+24.16666667", 
+vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1),
+              ggplot2::scale_x_continuous(breaks=seq(28, 42, by=2)))
+probeSmoothing(data = longi.dat, response = "PSA", df = c(4,7), 
+               xname = "xDAP", times = "DAP", 
                ggplotFuncs=vline)
 }\keyword{hplot}
 \keyword{manip}

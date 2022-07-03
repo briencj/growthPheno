@@ -3,11 +3,15 @@
 \title{Calculates and plots  the median of the deviations of the smoothed values from the observed values.}
 \description{Calculates and plots the median of the deviations of the supplied smoothed values from the 
              supplied observed values for traits and combinations of different smoothing methods and 
-             smoothing degrees of freedom, possibly for subsets of factor combinations. The requisite values 
-             can be generated using \code{\link{probeSmoothing}} with both \code{which.plots} and 
-             \code{deviations.plots} set to \code{none}. The results of smoothing methods applied externally to 
+             smoothing degrees of freedom, possibly for subsets of \code{\link{factor}} combinations. 
+             The requisite values can be generated using \code{\link{probeSmoothing}} with \code{which.plots} 
+             set to \code{none}. The results of smoothing methods applied externally to 
              \code{growthPheno} can be included via the \code{extra.smooths} argument. Envelopes of the 
-             median value of a trait for each factor combination can be added.}
+             median value of a trait for each \code{\link{factor}} combination can be added.
+
+             \strong{Note: this function is soft deprecated and may be removed in 
+             future versions. \cr Use \code{\link{plotSmoothsMedianDevns}}.}
+}
 \usage{
 plotMedianDeviations(data, response, response.smoothed, 
                      x = NULL, xname="xDays", 
@@ -29,12 +33,13 @@ plotMedianDeviations(data, response, response.smoothed,
              there should be a column of values for each element of 
              \code{extra.smooths} in combination with the elements of 
              \code{trait.types}. Also, there should be a column of observed values 
-             for the types specified by \code{trait.types}} The naming of the 
+             for each of the types specified by \code{trait.types}}. The naming of the 
              columns for smoothed traits should follow the convention that a name is 
-             made up, in the order sepcified, of a \code{response.smoothed}, the 
-             \code{trait.type} if not a \code{response} only, a \code{smoothing.method} or an 
-             \code{extra.smooths} and, if a \code{smoothing.method}, a df; 
-             each component should be separated by a period (.).
+             made up, in the order sepcified, of (i) a \code{response.smoothed}, 
+             (ii) the \code{trait.type} if not just a \code{response} trait type, a 
+             \code{smoothing.method} or an \code{extra.smooths} and, 
+             (iii) if a \code{smoothing.method}, a df.  
+             Each component should be separated by a period (.).
  \item{response}{A \code{\link{character}} specifying the response variable for which the 
              observed values are supplied. Depending on the setting of 
              \code{trait.types}, the observed values of related \code{trait.types} 
@@ -43,6 +48,9 @@ plotMedianDeviations(data, response, response.smoothed,
              containing the values of the smoothed response variable, corresponding 
              to \code{response} and obtained for the combinations of 
              \code{smoothing.methods} and \code{df}, usually using smoothing splines. 
+             If \code{response.smoothed} is \code{NULL}, then 
+             \code{response.smoothed} is set to the \code{response} to which 
+             \code{.smooth} is added. 
              Depending on the setting of \code{trait.types}, the smoothed 
              values of related \code{trait.types} may also need to be be supplied.}
  \item{x}{A \code{\link{character}} giving the variable to be plotted on the 
@@ -52,10 +60,10 @@ plotMedianDeviations(data, response, response.smoothed,
              \code{\link{numeric}} that contains the values from which
              \code{x} is derived, it being that \code{x} may incorporate an 
              expression.}
- \item{individuals}{A \code{\link{character}} giving the name(s) of the 
-             \code{\link{factor}}(s) that define the subsets of the \code{data} 
-             for which each subset corresponds to the \code{response} values for 
-             an individual.}
+ \item{individuals}{A \code{\link{character}} giving the name of the 
+            \code{\link{factor}} that defines the subsets of the \code{data} 
+            for which each subset corresponds to the \code{response} values for 
+            an individual (plant/cart/plot/unit).}
  \item{x.title}{A \code{\link{character}} giving the title for the x-axis. 
              If \code{NULL} then set to \code{xname}.}
  \item{y.titles}{A \code{\link{character}} giving the titles for the y-axis, 
@@ -78,7 +86,7 @@ plotMedianDeviations(data, response, response.smoothed,
              can be arbitrary, except that \code{response} is a special case that 
              indicates that the original response is to be plotted.}
  \item{propn.types}{A \code{\link{numeric}} giving the proportion of the medians 
-             the values of each of the \code{trait.types} that are to be plotted 
+             values of each of the \code{trait.types} that are to be plotted 
              in the median deviations plots. If set to \code{NULL}, the plots of 
              the proprotions are omitted.}
  \item{propn.note}{A \code{\link{logical}} indicating whether a note giving the 
@@ -94,19 +102,20 @@ plotMedianDeviations(data, response, response.smoothed,
  \item{df}{A \code{\link{numeric}} specifying the smoothing degrees of freedom used in 
             producing the \code{response.smoothed} and which is to be used in labelling 
             the plot.}
- \item{extra.smooths}{A \code{\link{character}} specifying one or more \code{smoothing.method} labels 
-            that have been used in naming of columns of smooths of the \code{response} 
-            obtained by methods other than the smoothing spline methods provided by 
-            \code{growthPheno}. Depending on the setting of \code{trait.types}, 
-            the smoothed values of related trait types must also be supplied, with names
-            constructed according to the convention described under \code{data}.}
+ \item{extra.smooths}{A \code{\link{character}} specifying one or more 
+            \code{smoothing.method} labels that have been used in naming of columns of 
+            smooths of the \code{response} obtained by methods other than the smoothing 
+            spline methods provided by \code{growthPheno}. Depending on the setting of 
+            \code{trait.types}, the smoothed values of related trait types must also be 
+            supplied, with names constructed according to the convention described under 
+            \code{data}.}
  \item{ggplotFuncsMedDevn}{A \code{\link{list}}, each element of which contains the 
                 results of evaluating a \code{\link{ggplot}} function. 
                 It is created by calling the \code{\link{list}} function with 
                 a \code{\link{ggplot}} function call for each element.
                 These functions are applied in creating the \code{ggplot} object.}
- \item{printPlot}{A \code{\link{logical}} indicating whether or not to print the 
-                  plot.}
+ \item{printPlot}{A \code{\link{logical}} indicating whether or not to print any 
+                  plots.}
  \item{...}{allows passing of arguments to \code{\link{plotLongitudinal}}.}
 }
 \value{A \code{\link{list}} that consists of two components:  (i) a componenent named  
@@ -119,17 +128,17 @@ plotMedianDeviations(data, response, response.smoothed,
 \seealso{\code{\link{plotDeviationsBoxes}}, \code{\link{probeSmoothing}}, \code{\link{ggplot}}.}
 \examples{
 data(exampleData)
-vline <- list(ggplot2::geom_vline(xintercept=20, linetype="longdash", size=1),
-              ggplot2::scale_x_continuous(breaks=seq(12, 36, by=2)))
-traits <- probeSmoothing(data = longi.dat, response = "Area", 
-                         df = c(4:7), x="xDays+24.16666667", 
+vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1),
+              ggplot2::scale_x_continuous(breaks=seq(28, 42, by=2)))
+traits <- probeSmoothing(data = longi.dat, xname = "xDAP", times.factor = "DAP", 
+                         response = "PSA", response.smoothed = "sPSA", 
+                         df = c(4:7), 
                          facet.x = ".", facet.y = ".",
                          which.plots = "none",
-                         deviations.plots = "none", 
                          propn.types = NULL)
 med <- plotMedianDeviations(data = traits, 
-                            response = "Area", response.smoothed = "Area.smooth", 
-                            x="xDays+24.16666667", xname = "xDays", 
+                            response = "PSA", response.smoothed = "sPSA", 
+                            x="xDAP", xname = "xDAP", 
                             df = c(4,7), x.title = "DAP", 
                             facet.x = ".", facet.y = ".",
                             trait.types = "response", propn.types = 0.05,
