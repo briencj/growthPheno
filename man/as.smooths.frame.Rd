@@ -21,7 +21,7 @@ as.smooths.frame(data, individuals = NULL, times = NULL)}
  \item{individuals}{A \code{\link{character}} giving the name of the 
             \code{\link{factor}} that defines the subsets of the \code{data} 
             for which each subset corresponds to the \code{response} values for 
-            an individual (plant/cart/plot/unit).}
+            an individual (e.g. plant, pot, cart, plot or unit).}
  \item{times}{A \code{\link{character}} giving the name of the 
             \code{\link{numeric}}, or \code{\link{factor}} with numeric levels, that 
             contains the values of the predictor variable to be supplied to 

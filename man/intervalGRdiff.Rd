@@ -21,7 +21,7 @@ intervalGRdiff(responses, individuals = "Snapshot.ID.Tag",
  \item{individuals}{A \code{\link{character}} giving the name of the 
             \code{\link{factor}} that defines the subsets of the \code{data} 
             for which each subset corresponds to the \code{response} values for 
-            an individual (plant/cart/plot/unit).}
+            an individual (e.g. plant, pot, cart, plot or unit).}
  \item{which.rates}{A \code{\link{character}} giving the growth rates that are 
             to be calculated. It should be a combination of one or more of 
             \code{"AGR"}, \code{"PGR"} and \code{"RGR"}.}

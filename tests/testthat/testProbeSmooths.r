@@ -815,7 +815,7 @@ test_that("RicePrepped_growthPheno", {
   
   testthat::expect_warning(
     smth <- probeSmooths(data = RicePrepped.dat, response = "PSA", response.smoothed = "sPSA", 
-                         times = "DAT", 
+                         times = "DAST", 
                          spline.types = c("NCSS", "PS"), smoothing.methods = "log",
                          df = c(4,7), lambdas = c(0.1,1,10), 
                          keep.columns = c("Smarthouse","Salinity"), #so these are included in the smooths.frame
@@ -826,38 +826,38 @@ test_that("RicePrepped_growthPheno", {
   
   #Check that PS smoothing is correct 
   oneplant <- subset(smth, Snapshot.ID.Tag == "045451-C" & Type == "PS" & TuneVal == "0.1")
-  fity <- JOPS::psNormal(x = oneplant$DAT, y = log(oneplant$PSA), nseg = 10, lambda = 0.1, 
-                         xgrid = oneplant$DAT)
+  fity <- JOPS::psNormal(x = oneplant$DAST, y = log(oneplant$PSA), nseg = 10, lambda = 0.1, 
+                         xgrid = oneplant$DAST)
   testthat::expect_true(all(abs(oneplant$sPSA-exp(fity$muhat[,1])) < 1e-05))
   
   #Tuning only for PSA
   testthat::expect_silent(
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
-                                times = "DAT", trait.types = "response", 
+                                times = "DAST", trait.types = "response", 
                                 plots.group.med = "Tuning", 
                                 facet.y.med = c("Smarthouse","Salinity"),
                                 propn.types.med = 0.025))
   testthat::expect_equal(length(t$plots), 1)
   testthat::expect_equal(nrow(t$med.devn.dat), 280)
   testthat::expect_equal(ncol(t$med.devn.dat), 5)
-  testthat::expect_true(all(c("Smarthouse", "Salinity", "SmoothParams", "PSA.devn", "DAT") 
+  testthat::expect_true(all(c("Smarthouse", "Salinity", "SmoothParams", "PSA.devn", "DAST") 
                             %in% names(t$med.devn.dat)))
   #Use plots.by.med for Type
   testthat::expect_silent(
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
-                                times = "DAT", trait.types = "response", 
+                                times = "DAST", trait.types = "response", 
                                 plots.by.med = "Type", plots.group.med = "Tuning", 
                                 facet.y.med = c("Smarthouse","Salinity"),
                                 propn.types.med = 0.025))
   testthat::expect_equal(length(t$plots), 1)
   testthat::expect_equal(nrow(t$med.devn.dat), 280)
   testthat::expect_equal(ncol(t$med.devn.dat), 6)
-  testthat::expect_true(all(c("fac.by","Smarthouse", "Salinity", "SmoothParams", "PSA.devn", "DAT") 
+  testthat::expect_true(all(c("fac.by","Smarthouse", "Salinity", "SmoothParams", "PSA.devn", "DAST") 
                             %in% names(t$med.devn.dat)))
   #Use facet.x.med for Type, additional to plots.compare 
   testthat::expect_silent(
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
-                                times = "DAT", trait.types = "response", 
+                                times = "DAST", trait.types = "response", 
                                 plots.group.med = "Tuning", 
                                 facet.x.med = "Type", 
                                 facet.y.med = c("Smarthouse","Salinity"),
@@ -865,13 +865,13 @@ test_that("RicePrepped_growthPheno", {
   testthat::expect_equal(length(t$plots), 1)
   testthat::expect_equal(nrow(t$med.devn.dat), 280)
   testthat::expect_equal(ncol(t$med.devn.dat), 6)
-  testthat::expect_true(all(c("Type","Smarthouse", "Salinity", "SmoothParams", "PSA.devn", "DAT") 
+  testthat::expect_true(all(c("Type","Smarthouse", "Salinity", "SmoothParams", "PSA.devn", "DAST") 
                             %in% names(t$med.devn.dat)))
   
   #Use plot,by.med
   testthat::expect_silent(
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
-                                times = "DAT", trait.types = "response", 
+                                times = "DAST", trait.types = "response", 
                                 plots.by.med = c("Method","Type"), 
                                 plots.group.med = c("Tuning"),
                                 facet.y.med = c("Smarthouse","Salinity"),
@@ -879,12 +879,12 @@ test_that("RicePrepped_growthPheno", {
   testthat::expect_equal(length(t$plots), 1)
   testthat::expect_equal(nrow(t$med.devn.dat), 280)
   testthat::expect_equal(ncol(t$med.devn.dat), 6)
-  testthat::expect_true(all(c("fac.by", "Smarthouse", "Salinity", "SmoothParams", "PSA.devn", "DAT") 
+  testthat::expect_true(all(c("fac.by", "Smarthouse", "Salinity", "SmoothParams", "PSA.devn", "DAST") 
                             %in% names(t$med.devn.dat)))
   
   testthat::expect_warning(
     smth <- probeSmooths(data = RicePrepped.dat, response = "PSA", response.smoothed = "sPSA", 
-                         times = "DAT", 
+                         times = "DAST", 
                          spline.types = c("NCSS", "PS"), smoothing.methods = "logarithmic",
                          df = c(4,7), lambdas = c(0.1,1,10), 
                          which.plots = "medians.dev", 
@@ -899,14 +899,14 @@ test_that("RicePrepped_growthPheno", {
   lambdas <- round(10^c(-0.5, 0, 0.5, 1), digits = 3)
   df <- 4:5
   traits <- c("PSA","PSA.AGR","PSA.RGR")
-  DAT.segs <- list(c(-1,5),c(6,13))
+  DAST.segs <- list(c(-1,5),c(6,13))
   tmp <- subset(RicePrepped.dat, Smarthouse == "NW")
   testthat::expect_warning(
     longiseg.smth <- probeSmooths(data = tmp, 
                                   response = "PSA", response.smoothed = "sPSA",
-                                  times = "DAT", 
+                                  times = "DAST", 
                                   get.rates = TRUE, 
-                                  smoothing.segments = DAT.segs,
+                                  smoothing.segments = DAST.segs,
                                   spline.types = c("NCSS","PS"), 
                                   df = df, lambdas = list(PS = lambdas), 
                                   npspline.segments = c(4,6), smoothing.methods = "log",
@@ -915,23 +915,23 @@ test_that("RicePrepped_growthPheno", {
     regexp = "Need at least 4 distinct x values to fit a spline - all fitted values set to NA")
   testthat::expect_equal(nrow(longiseg.smth), 44352)
   testthat::expect_equal(ncol(longiseg.smth), 16)
-  testthat::expect_true(all(unique(longiseg.smth$DAT) == c(-1,1:13)))
+  testthat::expect_true(all(unique(longiseg.smth$DAST) == c(-1,1:13)))
   testthat::expect_true(all(c("Type", "TunePar", "TuneVal", "Tuning", "Method", 
-                              "Snapshot.ID.Tag", "DAT", "Smarthouse", "Salinity", 
+                              "Snapshot.ID.Tag", "DAST", "Smarthouse", "Salinity", 
                               "PSA", "PSA.AGR", "PSA.RGR", "sPSA", "sPSA.AGR", "sPSA.RGR") 
                             %in% names(longiseg.smth)))
-  #check sPSA.AGR for first DAT of first segment is always NA, 
-  #but that first DAT of 2nd segment (DAT 6) is has values that are not NA 
-  testthat::expect_true(all(is.na(longiseg.smth$sPSA.AGR[longiseg.smth$DAT == -1]))) 
-  testthat::expect_false(all(is.na(longiseg.smth$sPSA.AGR[longiseg.smth$DAT == 6]))) 
+  #check sPSA.AGR for first DAST of first segment is always NA, 
+  #but that first DAST of 2nd segment (DAST 6) is has values that are not NA 
+  testthat::expect_true(all(is.na(longiseg.smth$sPSA.AGR[longiseg.smth$DAST == -1]))) 
+  testthat::expect_false(all(is.na(longiseg.smth$sPSA.AGR[longiseg.smth$DAST == 6]))) 
   
   #Recalculate using derivatives
   testthat::expect_warning(
     longisegder.smth <- probeSmooths(data = tmp, 
-                                     times = "DAT", 
+                                     times = "DAST", 
                                      response = "PSA", response.smoothed = "sPSA",
                                      get.rates = TRUE, rates.method = "deriv", 
-                                     smoothing.segments = DAT.segs,
+                                     smoothing.segments = DAST.segs,
                                      spline.types = c("NCSS","PS"), 
                                      df = df, lambdas = list(PS = lambdas), 
                                      npspline.segments = c(4,6), smoothing.methods = "log",
@@ -940,51 +940,51 @@ test_that("RicePrepped_growthPheno", {
     regexp = "Need at least 4 distinct x values to fit a spline - all fitted values set to NA")
   testthat::expect_equal(nrow(longisegder.smth), 44352)
   testthat::expect_equal(ncol(longisegder.smth), 16)
-  testthat::expect_true(all(unique(longisegder.smth$DAT) == c(-1,1:13)))
+  testthat::expect_true(all(unique(longisegder.smth$DAST) == c(-1,1:13)))
   testthat::expect_true(all(c("Type", "TunePar", "TuneVal", "Tuning", "Method", 
-                              "Snapshot.ID.Tag", "DAT", "Smarthouse", "Salinity", 
+                              "Snapshot.ID.Tag", "DAST", "Smarthouse", "Salinity", 
                               "PSA", "PSA.AGR", "PSA.RGR", "sPSA", "sPSA.AGR", "sPSA.RGR") 
                             %in% names(longisegder.smth)))
-  #check that, for sPSA.AGR, the DATs that are missing for differences are not the same as for derivatives
-  testthat::expect_true(sum(is.na(longiseg.smth$sPSA.AGR[longiseg.smth$DAT == -1])) !=
-                          sum(is.na(longisegder.smth$sPSA[longisegder.smth$DAT == -1]))) 
-  #Check that the DAT at the start of each segment has values that are not NA for derivatives 
-  testthat::expect_true(!all(is.na(longisegder.smth$sPSA.AGR[longisegder.smth$DAT == -1]))) 
-  testthat::expect_true(!all(is.na(longisegder.smth$sPSA.AGR[longisegder.smth$DAT == 6]))) 
+  #check that, for sPSA.AGR, the DASTs that are missing for differences are not the same as for derivatives
+  testthat::expect_true(sum(is.na(longiseg.smth$sPSA.AGR[longiseg.smth$DAST == -1])) !=
+                          sum(is.na(longisegder.smth$sPSA[longisegder.smth$DAST == -1]))) 
+  #Check that the DAST at the start of each segment has values that are not NA for derivatives 
+  testthat::expect_true(!all(is.na(longisegder.smth$sPSA.AGR[longisegder.smth$DAST == -1]))) 
+  testthat::expect_true(!all(is.na(longisegder.smth$sPSA.AGR[longisegder.smth$DAST == 6]))) 
   
   #Plot the median deviations
   testthat::expect_warning(
     t <- plotSmoothsMedianDevns(data = longisegder.smth, response = "PSA", 
                                 response.smoothed = "sPSA",
-                                times = "DAT", trait.types = "AGR", 
+                                times = "DAST", trait.types = "AGR", 
                                 plots.group.med = "Tuning", 
                                 facet.y.med = c("Smarthouse","Salinity"),
                                 propn.types.med = 0.025))
   testthat::expect_equal(length(t$plots), 1)
   testthat::expect_equal(nrow(t$med.devn.dat), 168)
   testthat::expect_equal(ncol(t$med.devn.dat), 5)
-  #every first DAT must be NA for deviations because PSA.AGR has to be calculated by differences
-  testthat::expect_true(all(is.na(t$med.devn.dat$PSA.AGR[t$med.devn.dat$DATs == -1]))) 
-  #every DAT 6, 7 and 13 must be NA for deviations because PSA.AGR has to be calculated 
+  #every first DAST must be NA for deviations because PSA.AGR has to be calculated by differences
+  testthat::expect_true(all(is.na(t$med.devn.dat$PSA.AGR[t$med.devn.dat$DASTs == -1]))) 
+  #every DAST 6, 7 and 13 must be NA for deviations because PSA.AGR has to be calculated 
   #within segments and by differences with ntimes2span == 3 to centre it properly
-  testthat::expect_true(all(is.na(t$med.devn.dat$PSA.AGR[t$med.devn.dat$DATs == 6]))) 
-  testthat::expect_true(all(is.na(t$med.devn.dat$PSA.AGR[t$med.devn.dat$DATs == 7]))) 
-  testthat::expect_true(all(is.na(t$med.devn.dat$PSA.AGR[t$med.devn.dat$DATs == 13]))) 
-  testthat::expect_true(all(c("Smarthouse", "Salinity", "SmoothParams", "PSA.AGR.devn", "DAT") 
+  testthat::expect_true(all(is.na(t$med.devn.dat$PSA.AGR[t$med.devn.dat$DASTs == 6]))) 
+  testthat::expect_true(all(is.na(t$med.devn.dat$PSA.AGR[t$med.devn.dat$DASTs == 7]))) 
+  testthat::expect_true(all(is.na(t$med.devn.dat$PSA.AGR[t$med.devn.dat$DASTs == 13]))) 
+  testthat::expect_true(all(c("Smarthouse", "Salinity", "SmoothParams", "PSA.AGR.devn", "DAST") 
                             %in% names(t$med.devn.dat)))
   
   #test segmented smooth that is a subset
   lambdas <- round(10^c(-0.5, 0, 0.5, 1), digits = 3)
   df <- 4:5
   traits <- c("PSA","PSA.AGR","PSA.RGR")
-  DAT.segs <- list(c(-1,5),c(6,11))
+  DAST.segs <- list(c(-1,5),c(6,11))
   tmp <- subset(RicePrepped.dat, Smarthouse == "NW")
   testthat::expect_warning(
     longiseg.smth <- probeSmooths(data = tmp, 
                                   response = "PSA", response.smoothed = "sPSA",
-                                  times = "DAT", 
+                                  times = "DAST", 
                                   get.rates = TRUE, 
-                                  smoothing.segments = DAT.segs,
+                                  smoothing.segments = DAST.segs,
                                   spline.types = c("NCSS","PS"), 
                                   df = df, lambdas = list(PS = lambdas), 
                                   npspline.segments = c(4,6), smoothing.methods = "log",
@@ -993,23 +993,23 @@ test_that("RicePrepped_growthPheno", {
     regexp = "Need at least 4 distinct x values to fit a spline - all fitted values set to NA")
   testthat::expect_equal(nrow(longiseg.smth), 38016)
   testthat::expect_equal(ncol(longiseg.smth), 16)
-  testthat::expect_true(all(unique(longiseg.smth$DAT) == c(-1,1:11)))
+  testthat::expect_true(all(unique(longiseg.smth$DAST) == c(-1,1:11)))
   testthat::expect_true(all(c("Type", "TunePar", "TuneVal", "Tuning", "Method", 
-                              "Snapshot.ID.Tag", "DAT", "Smarthouse", "Salinity", 
+                              "Snapshot.ID.Tag", "DAST", "Smarthouse", "Salinity", 
                               "PSA", "PSA.AGR", "PSA.RGR", "sPSA", "sPSA.AGR", "sPSA.RGR") 
                             %in% names(longiseg.smth)))
-  #check sPSA.AGR for first DAT of first segment is always NA, 
-  #but that first DAT of 2nd segment (DAT 6) is has values that are not NA 
-  testthat::expect_true(all(is.na(longiseg.smth$sPSA.AGR[longiseg.smth$DAT == -1]))) 
-  testthat::expect_false(all(is.na(longiseg.smth$sPSA.AGR[longiseg.smth$DAT == 6]))) 
+  #check sPSA.AGR for first DAST of first segment is always NA, 
+  #but that first DAST of 2nd segment (DAST 6) is has values that are not NA 
+  testthat::expect_true(all(is.na(longiseg.smth$sPSA.AGR[longiseg.smth$DAST == -1]))) 
+  testthat::expect_false(all(is.na(longiseg.smth$sPSA.AGR[longiseg.smth$DAST == 6]))) 
   
   #Recalculate using derivatives
   testthat::expect_warning(
     longisegder.smth <- probeSmooths(data = tmp, 
-                                     times = "DAT", 
+                                     times = "DAST", 
                                      response = "PSA", response.smoothed = "sPSA",
                                      get.rates = TRUE, rates.method = "deriv", 
-                                     smoothing.segments = DAT.segs,
+                                     smoothing.segments = DAST.segs,
                                      spline.types = c("NCSS","PS"), 
                                      df = df, lambdas = list(PS = lambdas), 
                                      npspline.segments = c(4,6), smoothing.methods = "log",
@@ -1018,19 +1018,19 @@ test_that("RicePrepped_growthPheno", {
     regexp = "Need at least 4 distinct x values to fit a spline - all fitted values set to NA")
   testthat::expect_equal(nrow(longisegder.smth), 38016)
   testthat::expect_equal(ncol(longisegder.smth), 16)
-  testthat::expect_true(all(unique(longisegder.smth$DAT) == c(-1,1:11)))
+  testthat::expect_true(all(unique(longisegder.smth$DAST) == c(-1,1:11)))
   testthat::expect_true(all(c("Type", "TunePar", "TuneVal", "Tuning", "Method", 
-                              "Snapshot.ID.Tag", "DAT", "Smarthouse", "Salinity", 
+                              "Snapshot.ID.Tag", "DAST", "Smarthouse", "Salinity", 
                               "PSA", "PSA.AGR", "PSA.RGR", "sPSA", "sPSA.AGR", "sPSA.RGR") 
                             %in% names(longisegder.smth)))
-  #check that, for sPSA.AGR, the DATs that are missing for differences are not the same as for derivatives
-  testthat::expect_true(sum(is.na(longiseg.smth$sPSA.AGR[longiseg.smth$DAT == -1])) !=
-                          sum(is.na(longisegder.smth$sPSA[longisegder.smth$DAT == -1]))) 
-  #every DAT 6, 7 and 13 must be NA for deviations because PSA.AGR has to be calculated 
+  #check that, for sPSA.AGR, the DASTs that are missing for differences are not the same as for derivatives
+  testthat::expect_true(sum(is.na(longiseg.smth$sPSA.AGR[longiseg.smth$DAST == -1])) !=
+                          sum(is.na(longisegder.smth$sPSA[longisegder.smth$DAST == -1]))) 
+  #every DAST 6, 7 and 13 must be NA for deviations because PSA.AGR has to be calculated 
   #within segments and by differences with ntimes2span == 3 to centre it properly
-  testthat::expect_true(!all(is.na(longisegder.smth$sPSA.AGR[longisegder.smth$DAT == -1]))) 
-  testthat::expect_true(!all(is.na(longisegder.smth$sPSA.AGR[longisegder.smth$DAT == 6]))) 
-  testthat::expect_true(!all(is.na(longisegder.smth$sPSA.AGR[longisegder.smth$DAT == 7]))) 
-  testthat::expect_true(!all(is.na(longisegder.smth$sPSA.AGR[longisegder.smth$DAT == 11]))) 
+  testthat::expect_true(!all(is.na(longisegder.smth$sPSA.AGR[longisegder.smth$DAST == -1]))) 
+  testthat::expect_true(!all(is.na(longisegder.smth$sPSA.AGR[longisegder.smth$DAST == 6]))) 
+  testthat::expect_true(!all(is.na(longisegder.smth$sPSA.AGR[longisegder.smth$DAST == 7]))) 
+  testthat::expect_true(!all(is.na(longisegder.smth$sPSA.AGR[longisegder.smth$DAST == 11]))) 
   
 })

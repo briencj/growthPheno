@@ -26,7 +26,7 @@ byIndv4Intvl_ValueCalc(data, response,
  \item{individuals}{A \code{\link{character}} giving the name of the 
             \code{\link{factor}} that defines the subsets of the \code{data} 
             for which each subset corresponds to the \code{response} values for 
-            an individual (plant/cart/plot/unit).}
+            an individual (e.g. plant, pot, cart, plot or unit).}
  \item{times}{A \code{\link{character}} giving the name of the column in 
              \code{data} containing the times at which the data was 
              collected, either as a \code{\link{numeric}}, \code{\link{factor}}, or 

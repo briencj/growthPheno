@@ -1,6 +1,6 @@
 Package: growthPheno
-Version: 2.0.14
-Date: 2022-07-03
+Version: 2.0.15
+Date: 2022-07-16
 Title: Functional Analysis of Phenotypic Growth Data to Smooth and Extract Traits
 Authors@R: person("Chris","Brien", role = c("aut","cre"),
          comment = c(ORCID = "0000-0003-0581-1817"),
@@ -21,7 +21,7 @@ Imports:
     stats,
     stringi,
     utils
-Suggests: testthat, nlme, R.rsp, scales
+Suggests: testthat, nlme, R.rsp, scales, WriteXLS
 VignetteBuilder: R.rsp
 Description: Assists in the plotting and functional smoothing of traits 
     measured over time and the extraction of features from these traits, 
@@ -32,8 +32,8 @@ Description: Assists in the plotting and functional smoothing of traits
     segmented smoothing is available to deal with discontinuities in 
     growth trends. There are graphical tools for assessing the adequacy 
     of trait smoothing, both when using this and other packages, such as 
-    those that fit nonlinear growth models. A range of per-unit (pot, 
-    plant, plot) growth traits or features can be extracted from the 
+    those that fit nonlinear growth models. A range of per-unit (plant, 
+    pot, plot) growth traits or features can be extracted from the 
     data, including single time points, interval growth rates and other 
     growth statistics, such as maximum growth or days to maximum growth. 
     The package also has tools adapted to inputting data from 

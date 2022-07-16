@@ -5,18 +5,31 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
                                  starts.intvl = NULL, stops.intvl = NULL, sep.intvl = "to", 
                                  responses.singletimes = NULL, 
                                  responses.rates = NULL, rates.method = "differences", 
-                                 growth.rates = NULL, suffices.rates = NULL, 
+                                 growth.rates = NULL, suffices.growth.rates = NULL, 
                                  water.use = NULL, responses.water = NULL, 
+                                 water.trait.types = c("WU", "WUR", "WUI"), 
+                                 suffix.water.rate = "R", suffix.water.index = "I", 
                                  responses.total = NULL, suffix.total = NULL, 
                                  responses.max = NULL, 
                                  times.whole = NULL, 
                                  mergedata = NULL, ...)
 {
+  #Check that specified columns are in data
+  req.cols <- unique(c(individuals, times, responses.singletimes, responses.rates, 
+                       water.use, responses.water, responses.total, responses.max))
+  checkNamesInData(req.cols, data)
+    
   #Check options
   options <- c("differences","ratesaverages")
   ratemeth.opt <- options[check.arg.values(rates.method, options=options)]
   options <- c("AGR", "RGR")
   grates <- options[unlist(lapply(growth.rates, check.arg.values, options=options))]
+  
+  options <- c("WU", "WUR", "WUI")
+  water.traits <- options[unlist(lapply(water.trait.types, check.arg.values, options=options))]
+  water.traits <- c("WU", "WUR", "WUI")[c("WU", "WUR", "WUI") %in% water.traits]
+  names(water.traits) <- water.traits
+  
   
   if (is.allnull(times.whole) && !is.allnull(c(starts.intvl, stops.intvl)))
   {
@@ -32,8 +45,8 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
       stop("Each element of stops.intvls should be the greater than the corresponding element of starts.intvl")
   }
   
-  if (!is.allnull(growth.rates) && !is.allnull(suffices.rates) && length(growth.rates) != suffices.rates)
-    stop("The length of growth.rates and suffices.rates should be the same")
+  if (!is.allnull(growth.rates) && !is.allnull(suffices.growth.rates) && length(growth.rates) != suffices.growth.rates)
+    stop("The length of growth.rates and suffices.growth.rates should be the same")
   
   #Get a complete set of IDs 
   indv.dat <- data.frame(sort(unique(data[[individuals]])))
@@ -59,7 +72,7 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
   ####Get the growth rates
   if (!is.allnull(responses.rates))
   {
-    if (is.allnull(suffices.rates))
+    if (is.allnull(suffices.growth.rates))
       suffice.rates <- grates
     suffices.intvl <- paste(starts.intvl, stops.intvl, sep = sep.intvl)
     
@@ -73,7 +86,7 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
                             byIndv4Intvl_GRsDiff(data = data, responses = r, 
                                                  individuals = individuals, times = times, 
                                                  which.rates = grates,
-                                                 suffices.rates = suffice.rates, 
+                                                 suffices.rates = suffices.growth.rates, 
                                                  start.time = starts.intvl[k], 
                                                  end.time = stops.intvl[k], 
                                                  suffix.interval = suffices.intvl[k]),
@@ -93,7 +106,7 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
                             byIndv4Intvl_GRsAvg(data = data, responses = r, 
                                                 individuals = individuals, times = times, 
                                                 which.rates = grates,
-                                                suffices.rates = suffice.rates, 
+                                                suffices.rates = suffices.growth.rates, 
                                                 start.time = starts.intvl[k], 
                                                 end.time = stops.intvl[k], 
                                                 suffix.interval = suffices.intvl[k],
@@ -107,12 +120,12 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
   ### Get the water traits
   if (!is.null(water.use) && !is.allnull(responses.water))
   {
-    suffix.rate <- "R"
-    if (grepl(".", water.use, fixed = TRUE))
-      suffix.rate <- ".Rate"
-    suffix.index <- "I"
-    if (grepl(".", water.use, fixed = TRUE))
-      suffix.index <- ".Index"
+    # suffix.rate <- "R"
+    # if (grepl(".", water.use, fixed = TRUE))
+    #   suffix.rate <- ".Rate"
+    # suffix.index <- "I"
+    # if (grepl(".", water.use, fixed = TRUE))
+    #   suffix.index <- ".Index"
     for (r in responses.rates)
     { 
       for (k in 1:length(suffices.intvl))
@@ -121,9 +134,9 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
                       byIndv4Intvl_WaterUse(data = data, 
                                             water.use = water.use, responses = r, 
                                             individuals = individuals, times = times, 
-                                            trait.types =c("WU", "WUR", "WUI"),
-                                            suffix.rate = suffix.rate, 
-                                            suffix.index = suffix.index, 
+                                            trait.types = water.traits,
+                                            suffix.rate = suffix.water.rate, 
+                                            suffix.index = suffix.water.index, 
                                             start.time = starts.intvl[k], 
                                             end.time = stops.intvl[k], 
                                             suffix.interval = suffices.intvl[k]),

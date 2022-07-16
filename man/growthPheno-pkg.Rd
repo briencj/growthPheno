@@ -16,9 +16,9 @@
 
 
 \section{Index}{
-  The following list of functions does not include those that are soft-deprecated, i.e. those that have been available in previous versions of \code{growthPheno} but will be removed in futer versions. For an description of the use of the listed functions and vignettes that are available, see the Overview section below.
+  The following list of functions does not include those that are soft-deprecated, i.e. those that have been available in previous versions of \code{growthPheno} but will be removed in future versions. For a description of the use of the listed functions and vignettes that are available, see the Overview section below.
   \tabular{ll}{
-    (i) Apex wrapper functions    \cr\cr
+    (i) Wrapper functions    \cr\cr
     \code{\link{traitSmooth}}
     \tab Obtain smooths for a trait by fitting spline \cr
     \tab functions and, having compared several smooths, \cr
@@ -78,7 +78,7 @@
     \tab values stored in a \code{data.frame} in long format. \cr
     \cr
     (iv) Smoothing and calculation \cr 
-    of growth rates and WUI \cr 
+    of growth rates and water use traits \cr 
     for each individual (Indv) \cr\cr
 
     \code{\link{byIndv4Intvl_GRsAvg}}
@@ -207,18 +207,22 @@ Maintainer: \packageMaintainer{growthPheno}
 \seealso{\code{\link[dae:dae-package]{dae}}
 }
 \section{Overview}{
-This package can be used to analyse growth data using splines to smooth the trend of individual plant traces over time and then to extract features or tertiarty traits for further analysis. This process is called smoothing and extraction 
-of traits (SET) by Brien et al. (2020), who detail the use of `growthPheno` for carrying out the method. The two primary functions that implement this approach are \code{\link{traitSmooth}} and \code{\link{traitExtractFeatures}}. These may be the only functions that are used in that the complete SET process can be carried out with using only them. The \code{Tomato} vignette illustrates this for the example presented in Brien et al. (2020). 
+This package can be used to perform a functional analysis of growth data using splines to smooth the trend of individual plant traces over time and then to extract features or tertiarty traits for further analysis. This process is called smoothing and extraction 
+of traits (SET) by Brien et al. (2020), who detail the use of \code{growthPheno} for carrying out the method. However, \code{growthPheno} now has the two wrapper, or primary, functions \code{\link{traitSmooth}} and   \code{\link{traitExtractFeatures}} that implement the SET approach. These may be the only functions that are used in that the complete SET process can be carried out using only them. The \code{Tomato} vignette illustrates their use for the example presented in Brien et al. (2020). 
 
-The function \code{\link{traitSmooth}} utilizes the secondary functions \code{\link{probeSmooths}}, \code{\link{plotSmoothsComparison}} and code{\link{plotSmoothsMedianDevns}}. The function \code{\link{probeSmooths}} utilizes the tertiary functions \code{\link{byIndv4Times_SplinesGRs}} and \code{\link{byIndv4Times_GRsDiff}}, which in turn call the function \code{\link{smoothSpline}}. The function \code{\link{plotSmoothsComparison}} calls \code{\link{plotDeviationsBoxes}}. The primary functions \code{\link{traitExtractFeatures}} uses the secondary functions \code{\link{getTimesSubset}} and the set of \code{byIndv4Intvl_} functions. Recourse to these functions may be necessary for special cases. The \code{Rice} vignetter illustrates the use of the secondary and tertiary functions.
+The function \code{\link{traitSmooth}} utilizes the secondary functions \code{\link{probeSmooths}}, \code{\link{plotSmoothsComparison}} and \code{\link{plotSmoothsMedianDevns}} and accepts the arguments of the secondary functions. The function \code{\link{probeSmooths}} utilizes the tertiary functions \code{\link{byIndv4Times_SplinesGRs}} and \code{\link{byIndv4Times_GRsDiff}}, which in turn call the function \code{\link{smoothSpline}}. The function \code{\link{plotSmoothsComparison}} calls \code{\link{plotDeviationsBoxes}}. All of these functions play a role in choosing the smoothing method and parameters for a data set. 
+
+The primary function \code{\link{traitExtractFeatures}} uses the secondary functions \code{\link{getTimesSubset}} and the set of \code{byIndv4Intvl_} functions. These functions are concerned with the extraction of traits that have a single value for each individual in the data. 
+
+Recourse to the secondary and terriary functions may be necessary for special cases. Their use is illustrated in the \code{Rice} vignette.
 
 Use \code{vignette("Tomato", package = "growthPheno")} or \code{vignette("Rice", package = "growthPheno")} to access either of the vignettes.
 
-In addition to functions that implement SET approach, `growthPheno`  also has functions for importing and orgainizing the data that are generally applicable, although they do have defaults that  make them particularly adapted to data from a high-throughput phenotyping facility based on a Lemna-Tec Scananalyzer 3D system. 
+In addition to functions that implement SET approach, \code{growthPheno}  also has functions for importing and organizing the data that are generally applicable, although they do have defaults that  make them particularly adapted to data from a high-throughput phenotyping facility based on a Lemna-Tec Scananalyzer 3D system. 
 
-Data suitable for use with this package consists of columns of data obtained from a set of units (plant, pots, carts or plots) over time. There should be a unique identifier for each unit and a time variable, such as Days after Planting (DAP),  that contain no repeats for a unit. The combination of the identifier and a time for a unit should be unique to that unit. For imaging data, the carts/pots may be arranged in a grid of Lanes \eqn{\times}{x} Positions. 
+Data suitable for use with this package consists of columns of data obtained from a set of individuals (e.g. plants, pots, carts, plots or units) over time. There should be a unique identifier for each individual and a time variable, such as Days after Planting (DAP),  that contain no repeats for an individual. The combination of the identifier and a time for an individual should be unique to that individual. For imaging data, the individuals may be arranged in a grid of Lanes \eqn{\times}{x} Positions. That is, the minimum set of columns is an individuals, a times and one or more primary trait columns. 
 }
 
 \references{
-Brien, C., Jewell, N., Garnett, T., Watts-Williams, S. J., & Berger, B. (2020). Smoothing and extraction of traits in the growth analysis of noninvasive phenotypic data. *Plant Methods*, **16**, 36. \doi{10.1186/s13007-020-00577-6}.
+Brien, C., Jewell, N., Garnett, T., Watts-Williams, S. J., & Berger, B. (2020). Smoothing and extraction of traits in the growth analysis of noninvasive phenotypic data. \emph{Plant Methods}, \bold{16}, 36. \doi{10.1186/s13007-020-00577-6}.
 }

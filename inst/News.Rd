@@ -1,5 +1,14 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.0-15 (2022-07-16)}{
+  \itemize{
+  \item{Fix bug in plotSmoothsCompaison that meant that attemptiing to change the x-axis breaks using the function \code{ggplot2::scale_x_continuous} were ignored.}
+  \item{Change the argument \code{suffices.rates} in traitExtractFeatures to \code{suffices.growth.rates} abd add the arguments \code{water.trait.types}, \code{suffix.water.rate}, \code{suffix.water.index}.}
+  \item{Add check to probeSmooths that there is no more than one observation for each combination of individuals and times.}
+  \item{Add check to traitExtractFeatures that all of the columns speicified in a call to it are in \code{data}.}
+  \item{Minor revisions to Tomato vignette.}
+  \item{Change names of columns in RicePrepped.dat with \code{DAT} to \code{DAST}.}
+  }}
 \section{growthPheno Version 2.0-14 (2022-07-03)}{
   \itemize{
   \item{Add traitExtractFeatures as a wrapper function for producing traits that are single-valued features for each individual.}

@@ -60,7 +60,7 @@ probeSmoothing(data, response = "Area", response.smoothed = NULL,
  \item{individuals}{A \code{\link{character}} giving the name of the 
             \code{\link{factor}} that defines the subsets of the \code{data} 
             for which each subset corresponds to the \code{response} values for 
-            an individual (plant/cart/plot/unit).}
+            an individual (e.g. plant, pot, cart, plot or unit).}
  \item{na.x.action}{A \code{character} string that specifies the action to 
             be taken when values of \code{x} are \code{NA}. The possible 
             values are \code{fail}, \code{exclude} or \code{omit}. 

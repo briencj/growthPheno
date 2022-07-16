@@ -24,7 +24,7 @@ byIndv4Intvl_WaterUse(data, water.use = "Water.Use", responses = NULL,
  \item{individuals}{A \code{\link{character}} giving the name of the 
              \code{\link{factor}} that defines the subsets of the \code{data} 
              for which each subset corresponds to the \code{response} values for 
-             an individual (plant/cart/plot/unit).}
+             an individual (e.g. plant, pot, cart, plot or unit).}
  \item{times}{A \code{\link{character}} giving the name of the column in 
              \code{data} containing the times at which the data was 
              collected, either as a \code{\link{numeric}}, \code{\link{factor}}, or 
@@ -32,14 +32,13 @@ byIndv4Intvl_WaterUse(data, water.use = "Water.Use", responses = NULL,
              if a \code{\link{factor}} or \code{\link{character}}, the values should 
              be numerics stored as characters.}
  \item{trait.types}{A \code{\link{character}} listing the trait types to compute
-             and return. It should be some combination of \code{WU}, \code{WUR}, \code{AGR} 
-             and \code{WUI}, or be \code{all}. See Details for how each is calculated.}
- \item{suffix.rate}{A \code{\link{character}} giving the label to be appended to the 
-             value of \code{water.use} to form the name of the column 
-             containing the WUR.}
- \item{suffix.index}{A \code{\link{character}} giving the label to be appended to the 
-             value of \code{water.use} to form the name of the column 
-             containing the WUI.}
+             and return. It should be some combination of \code{WU}, \code{WUR}, 
+             \code{AGR} and \code{WUI}, or be \code{all}. See Details for how each 
+             is calculated.}
+ \item{suffix.rate}{A \code{\link{character}} giving the label to be appended 
+             to the value of \code{water.use} to form the name of the WUR.}
+ \item{suffix.index}{A \code{\link{character}} giving the label to be appended 
+             to the value of \code{water.use} to form the name of the WUI.}
  \item{start.time}{A \code{\link{numeric}} giving the times,
              in terms of values in \code{times}, that will give a 
              single value for each \code{Snapshot.ID.Tag} and that will 

@@ -27,7 +27,7 @@ intervalValueCalculate(response, weights=NULL, individuals = "Snapshot.ID.Tag",
  \item{individuals}{A \code{\link{character}} giving the name of the 
             \code{\link{factor}} that defines the subsets of the \code{data} 
             for which each subset corresponds to the \code{response} values for 
-            an individual (plant/cart/plot/unit).}
+            an individual (e.g. plant, pot, cart, plot or unit).}
  \item{FUN}{A \code{\link{character}} giving the name of the \code{function} 
              that calculates the value for each subset.}
  \item{which.obs}{A \code{\link{logical}} indicating whether or not to determine 

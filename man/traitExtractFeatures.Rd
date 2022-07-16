@@ -25,8 +25,10 @@ traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP",
                      starts.intvl = NULL, stops.intvl = NULL, sep.intvl = "to", 
                      responses.singletimes = NULL, 
                      responses.rates = NULL, rates.method = "differences", 
-                     growth.rates = NULL, suffices.rates = NULL, 
+                     growth.rates = NULL, suffices.growth.rates = NULL, 
                      water.use = NULL, responses.water = NULL, 
+                     water.trait.types = c("WU", "WUR", "WUI"), 
+                     suffix.water.rate = "R", suffix.water.index = "I", 
                      responses.total = NULL, suffix.total = NULL, 
                      responses.max = NULL, 
                      times.whole = NULL, 
@@ -39,7 +41,7 @@ traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP",
  \item{individuals}{A \code{\link{character}} giving the name of the 
              \code{\link{factor}} that defines the subsets of the \code{data} 
              for which each subset corresponds to the \code{response} values for 
-             an individual (plant/cart/plot/unit).}
+             an individual (e.g. plant, pot, cart, plot or unit).}
  \item{times}{A \code{\link{character}} giving the name of the column in 
              \code{data} containing the times at which the data was 
              collected, either as a \code{\link{numeric}}, \code{\link{factor}}, or 
@@ -73,7 +75,7 @@ traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP",
              \code{derivatives}, the growth rates will be computed from a column with 
              the growth rates computed for each time. The name of the column should be 
              a \code{response} listed in \code{responses.rates} to which is appended an 
-             element of \code{suffices.rates}.} 
+             element of \code{suffices.growth.rates}.} 
  \item{rates.method}{A \code{\link{character}} specifying the method to use in 
              calculating the growth rates over an interval for \code{response.smoothed}. 
              The two possibilities are \code{"differences"} and \code{"ratesaverages"}. 
@@ -92,10 +94,10 @@ traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP",
              to be obtained for the intervals specified by \code{starts.intvl} and 
              \code{stops.intvl}. It should contain one of both of \code{"AGR"} and 
              \code{"RGR"}.} 
- \item{suffices.rates}{A \code{\link{character}} giving the suffices appended to  
+ \item{suffices.growth.rates}{A \code{\link{character}} giving the suffices appended to  
              \code{responses.rates} in constructung the column names for the 
              storing the growth rates specified by \code{growth.rates}. If 
-             \code{suffices.rates} is \code{NULL}, then \code{"AGR"} and 
+             \code{suffices.growth.rates} is \code{NULL}, then \code{"AGR"} and 
              \code{"RGR"} will be used.} 
  \item{water.use}{A \code{\link{character}} giving the name of the column in 
              \code{data} that contains the water use values that are to be used 
@@ -109,6 +111,14 @@ traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP",
              See the \code{Value} section for a description of how 
              \code{responses.water} is incorporated into the names constructed for 
              the water use traits.}
+ \item{water.trait.types}{A \code{\link{character}} listing the trait types to compute
+             and return. It should be some combination of \code{WU}, \code{WUR} 
+             and \code{WUI}. See Details in \code{\link{byIndv4Intvl_WaterUse}} for 
+             how each is calculated.}
+ \item{suffix.water.rate}{A \code{\link{character}} giving the label to be appended 
+             to the value of \code{water.use} to form the name of the WUR.}
+ \item{suffix.water.index}{A \code{\link{character}} giving the label to be appended 
+             to the value of \code{water.use} to form the name of the WUI.}
  \item{responses.total}{A \code{\link{character}} specifying the names of the 
              columns containing responses for which a column of the values is 
              to be formed by summing the response for each individual over the 
@@ -157,13 +167,13 @@ traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP",
                   \code{stops.intvl} values, separating them by the value of \code{sep.intvl}.}
                \item{\bold{water use traits for a time interval} -- Construction of the names for 
                   the three water traits begins with the value of \code{water.use}. The rate (WUR) 
-                  has either \code{R} or \code{.Rate} added to the value of \code{water.use}, the 
-                  latter if the value of \code{water.use} contains a full stop. Similarly the index 
-                  (WUI) has either \code{I} or \code{.Index} added to it. The WUI also has the 
-                  element of \code{responses.water} used in calculating the WUI prefixed to its 
-                  name. All three water use traits have a suffix for the interval appended to their 
-                  name. This suffix is contructed by joining its \code{starts.intvl} and 
-                  \code{stops.intvl}, separated by the value of \code{sep.intvl}.}
+                  has either \code{R} or the value of \code{suffix.water.rate} added to the value of \
+                  \code{water.use}. Similarly the index (WUI) has either \code{I} or the value of 
+                  \code{suffix.water.index} added to it. The WUI also has the element of 
+                  \code{responses.water} used in calculating the WUI prefixed to its name. 
+                  All three water use traits have a suffix for the interval appended to their name. 
+                  This suffix is contructed by joining its \code{starts.intvl} and \code{stops.intvl}, 
+                  separated by the value of \code{sep.intvl}.}
                \item{\bold{whole of imaging period} -- The name for whole-of-imaging total is formed 
                   by combining an element of\code{responses.total}  with \code{suffix interval}, 
                   separating them by a full stop.}

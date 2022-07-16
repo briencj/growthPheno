@@ -26,7 +26,7 @@ plotLongitudinal(data, x = "xDays+44.5", response = "Area",
  \item{individuals}{A \code{\link{character}} giving the name of the 
             \code{\link{factor}} that defines the subsets of the \code{data} 
             for which each subset corresponds to the \code{response} values for 
-            an individual (plant/cart/plot/unit).}
+            an individual (e.g. plant, pot, cart, plot or unit).}
  \item{x.title}{Title for the x-axis.}
  \item{y.title}{Title for the y-axis.}
  \item{title}{Title for the plot.}

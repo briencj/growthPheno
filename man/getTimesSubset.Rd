@@ -14,7 +14,8 @@ getTimesSubset(data, responses,
  \item{responses}{A \code{\link{character}} giving the names of the columns in 
              \code{data} whose values are to be subsetted.}
  \item{individuals}{A \code{\link{character}} giving the name of the column in 
-             \code{data} containing an identifier for each individual. (plant/cart/plot/unit).}
+             \code{data} containing an identifier for each individual 
+             (e.g. plant, pot, cart, plot or unit).}
  \item{times}{A \code{\link{character}} giving the name of the column in 
              \code{data} containing the times at which the data was 
              collected, either as a \code{\link{numeric}}, \code{\link{factor}}, or 

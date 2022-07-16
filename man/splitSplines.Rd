@@ -52,9 +52,9 @@ splitSplines(data, response, response.smoothed = NULL, x,
  \item{individuals}{A \code{\link{character}} giving the name(s) of the 
              \code{\link{factor}}(s) that define the subsets of \code{response} 
              that correspond to the \code{response} values for an individual 
-             (plant/cart/plot/unit) that are to be smoothed separately. If the 
-             columns corresponding to \code{individuals} are not 
-             \code{\link{factor}}(s) then they will be coerced to 
+             (e.g. plant, pot, cart, plot or unit) that are to be smoothed 
+             separately. If the columns corresponding to \code{individuals} 
+             are not \code{\link{factor}}(s) then they will be coerced to 
              \code{\link{factor}}(s). The subsets are formed 
              using \code{\link{split}}.}
  \item{INDICES}{A pseudonym for \code{individuals}.}

@@ -17,10 +17,10 @@
              Three sets of plots are produced for the \code{response.smoothed} and its 
              \code{AGR} and \code{RGR}: (i) a set of profile plots for each trait for 
              each of the combinations of the smoothing parameters, a profile plot 
-             having a single line for each individual or unit; (ii) a set of 
-             medians deviations plots for each trait covering the combinations 
-             of the smoothing parameters; (ii) optionally, profile plots of 
-             the three smoothed traits for a single combination of the 
+             having a single line for each individual (e.g. plant, pot, cart, plot 
+             or unit); (ii) a set of medians deviations plots for each trait covering 
+             the combinations of the smoothing parameters; (ii) optionally, 
+             profile plots of the three smoothed traits for a single combination of the 
              smoothing parameters.
 
              By default, the single smooth for an arbitrarily chosen combination of the 
@@ -75,7 +75,7 @@ traitSmooth(data, response, response.smoothed, individuals, times,
  \item{individuals}{A \code{\link{character}} giving the name of the 
               \code{\link{factor}} that defines the subsets of the \code{data} 
               for which each subset corresponds to the \code{response} values for 
-              an individual (plant/cart/plot/unit).}
+              an individual (e.g. plant, pot, cart, plot or unit).}
  \item{times}{A \code{\link{character}} giving the name of the \code{\link{numeric}}, 
               or \code{\link{factor}} with numeric levels, that contains the values 
               of the predictor variable to be supplied to \code{\link{smooth.spline}} 

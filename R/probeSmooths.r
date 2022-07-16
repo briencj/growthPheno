@@ -742,7 +742,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                        x.title = x.title, y.title = y.titles[k], 
                        addMediansWhiskers = addMediansWhiskers.pf, 
                        printPlot=FALSE, 
-                       ggplotFuncs = c(ggplotFuncsProfile, x.axis)), 
+                       ggplotFuncs = c(x.axis, ggplotFuncsProfile)), 
                   pltLongi.args))
       if (printPlot)
         print(plts[[k]][["profiles"]][["Unsmoothed"]])
@@ -792,7 +792,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                          x.title = x.title, y.title = y.titles[k], 
                          addMediansWhiskers = addMediansWhiskers.pf, 
                          printPlot=FALSE, 
-                         ggplotFuncs = c(ggplotFuncsProfile, x.axis)), 
+                         ggplotFuncs = c(x.axis, ggplotFuncsProfile)), 
                     pltLongi.args))
         if (printPlot)
           print(plts[[k]][["profiles"]][[by]])
@@ -954,7 +954,7 @@ ncsSpline <- function(vars, correctBoundaries = FALSE,
 predict.ncsSpline <- function(object, x, correctBoundaries = FALSE, 
                               df, cv = FALSE,  ...)
 {
-  if (class(object) != "ncsSpline")
+  if (!inherits(object, what = "ncsSpline"))
     stop("Must supply a an object of class ncsSpline")
   fit <- predict(object$uncorrected.fit, x = x)
   
@@ -1025,7 +1025,7 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
   bdeg <- fit.obj$bdeg
   xmin <- min(x, na.rm = TRUE)
   xmax <- max(x, na.rm = TRUE)
-  if (class(object) != "PSpline")
+  if (!inherits(object, what = "PSpline"))
     stop("Must supply a an object of class PSpline")
   if (deriv == 0)
   {
@@ -1616,6 +1616,10 @@ smoothSchemes <- function(tmp, spar.schemes,
   
   #Check that required cols are in data
   checkNamesInData(v, data = data)
+  #Check that there is no more than one observation for each individuals-times combinations
+  if (!all(table(data[c(individuals, times)]) <= 1))
+    stop("There is more than one observation for one or more combinations of the individuals and times")
+  
   tmp <- data[v]
   times.diffs.in.data <- paste0(times, ".diffs") %in% names(data)
   
@@ -2068,7 +2072,7 @@ smoothSchemes <- function(tmp, spar.schemes,
                                        x.title = x.title,
                                        y.title = y.titles[kresp],
                                        printPlot = TRUE,
-                                       ggplotFuncs = c(ggplotFuncsChosen, x.axis)),
+                                       ggplotFuncs = c(x.axis, ggplotFuncsChosen)),
                                   pltLongi.args))
   }
 

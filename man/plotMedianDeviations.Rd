@@ -63,7 +63,7 @@ plotMedianDeviations(data, response, response.smoothed,
  \item{individuals}{A \code{\link{character}} giving the name of the 
             \code{\link{factor}} that defines the subsets of the \code{data} 
             for which each subset corresponds to the \code{response} values for 
-            an individual (plant/cart/plot/unit).}
+            an individual (e.g. plant, pot, cart, plot or unit).}
  \item{x.title}{A \code{\link{character}} giving the title for the x-axis. 
              If \code{NULL} then set to \code{xname}.}
  \item{y.titles}{A \code{\link{character}} giving the titles for the y-axis, 

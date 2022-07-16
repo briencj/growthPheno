@@ -16,12 +16,12 @@ The data is the full set of Lanes and Positions from an experiment in a Smarthou
   2 \tab Snapshot.ID.Tag \tab character \tab a unique identifier for each cart in the experiment. \cr
   3 \tab xDAP            \tab numeric \tab the numbers of days after planting on which the current \cr
     \tab                 \tab         \tab data was observed. \cr
-  4 \tab DAT             \tab factor  \tab the numbers of days after treatment on which the current \cr
-    \tab                 \tab         \tab data was observed. \cr
-  5 \tab xDAT            \tab numeric \tab the numbers of days after treatment on which the current \cr
-    \tab                 \tab         \tab data was observed. \cr
-  6 \tab cDAT            \tab numeric \tab a centered numeric covariate for DAT. \cr
-  7 \tab DAT.diffs       \tab numeric \tab the number of days between this and the previous \cr
+  4 \tab DAST            \tab factor  \tab the numbers of days after the salting treatment on which \cr
+    \tab                 \tab         \tab the current data was observed. \cr
+  5 \tab xDAST           \tab numeric \tab the numbers of days after the salting treatment on which \cr
+    \tab                 \tab         \tab the current data was observed. \cr
+  6 \tab cDAST           \tab numeric \tab a centered numeric covariate for DAST. \cr
+  7 \tab DAST.diffs      \tab numeric \tab the number of days between this and the previous \cr
     \tab                 \tab         \tab observations (all one for this experiment). \cr
   8 \tab Lane            \tab factor  \tab the Lane in the 24 Lane x 24 Positions grid. \cr
   9 \tab Position        \tab factor  \tab the Position in the 24 Lane x 24 Positions grid. \cr
