@@ -5,7 +5,8 @@
 \description{Takes a \code{response} that has been observed for a set of 
              \code{individuals} over a number \code{times} and produces 
              \code{response.smoothed}, using \code{\link{probeSmooths}}, for a default 
-             set of smoothing parameter settings. The settings can be varied from the defaults by 
+             set of smoothing parameter settings (see Details below for the default set of 
+             parameters). The settings can be varied from the defaults by 
              specifying alternate values for the smoothing parameters, the parameters 
              being the type of spline (\code{spline.types}), the degrees of freedom 
              (\code{df}) or smoothing penalty (\code{lambdas}) and \code{smoothing.methods} 
@@ -13,6 +14,19 @@
              the absolute growth rate (\code{AGR}) and relative growth rate 
              (\code{RGR}) are calculated from the two primary traits, the 
              \code{response} and \code{response.smoothed}.
+
+             This function is a wrapper function for \code{\link{probeSmooths}} that 
+             (i) uses preset values for many of the \code{\link{probeSmooths}} arguments 
+             and  (ii) extends \code{\link{probeSmooths}} to return a single smooth and 
+             asociated profile plots. In order to adapt the call to \code{traitSmooth} to 
+             the requirements of particular data sets, it can include any of 
+             the \code{\link{probeSmooths}} arguments. The \code{\link{probeSmooths}} 
+             arguments can be used to modify the Data description, Smoothing parameters, 
+             General plot features, Profile plots (pf) and Median-deviations (med) plots.  
+             Arguments for \code{\link{plotProfiles}} can also be included in the call, 
+             although the \code{facet} and \code{colour} arguments for the chosen smooth 
+             must be supplied using the \code{traitSmooth} arguments that end in 
+             \code{chosen}.
 
              Three sets of plots are produced for the \code{response.smoothed} and its 
              \code{AGR} and \code{RGR}: (i) a set of profile plots for each trait for 
@@ -35,19 +49,6 @@
              However, if \code{chosen.smooth} is \code{NULL}, all of the smooths will be 
              returned, and plots for the single combination of the smoothing parameters 
              will not be produced. 
-
-             This function is a wrapper function for \code{\link{probeSmooths}} that 
-             (i) uses preset values for many of the \code{\link{probeSmooths}} arguments 
-             and  (ii) extends \code{\link{probeSmooths}} to return a single smooth and 
-             asociated profile plots. In order to adapt the call to \code{traitSmooth} to 
-             the requirements of particular data sets, it can include any of 
-             the \code{\link{probeSmooths}} arguments. The \code{\link{probeSmooths}} 
-             arguments can be used to modify the Data description, Smoothing parameters, 
-             General plot features, Profile plots (pf) and Median-deviations (med) plots.  
-             Arguments for \code{\link{plotProfiles}} can also be included in the call, 
-             although the \code{facet} and \code{colour} arguments for the chosen smooth 
-             must be supplied using the \code{traitSmooth} arguments that end in 
-             \code{chosen}.
 }
 \usage{
 traitSmooth(data, response, response.smoothed, individuals, times, 
@@ -58,7 +59,7 @@ traitSmooth(data, response, response.smoothed, individuals, times,
                                  lambda = NULL,
                                  smoothing.method = "logarithmic"), 
              facet.x.chosen = ".", facet.y.chosen = ".", 
-             labeller.chosen = NULL, 
+             labeller.chosen = NULL, breaks.spacing.x.chosen = 2, 
              colour.chosen = "black", colour.column.chosen = NULL, 
              colour.values.chosen = NULL, alpha.chosen = 0.3, 
              addMediansWhiskers.chosen = TRUE, 
@@ -123,10 +124,13 @@ traitSmooth(data, response, response.smoothed, individuals, times,
               to be used to form subsets to be plotted in separate rows of the 
               profile plots for the chosen smooth. The default of \code{"."} results 
               in no split into rows.}
-\item{labeller.chosen}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
+ \item{labeller.chosen}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
               facets of plots produced using the \code{\link{ggplot}} function, 
               including profile plots for the chosen smooth and plots produced using 
               \code{\link{probeSmooths}}. For more information see \code{\link{ggplot}}.}
+ \item{breaks.spacing.x.chosen}{A \code{\link{numeric}} specifying the distance between 
+             breaks for the x-axis in a sequnce beginning with the minimum x value and 
+             continuing up to the maximum x value.}
  \item{colour.chosen}{A \code{\link{character}} specifying a single colour to use in 
               drawing the lines for the profiles. If colouring according to the 
               values of a variable is required then use \code{colour.column.chosen}.}
@@ -168,9 +172,9 @@ traitSmooth(data, response, response.smoothed, individuals, times,
              \item{df:}{5:7}
              \item{lambdas:}{list(PS = round(10^c(-0.5, 0, 0.5, 1), digits = 3))}
              \item{which.plots:}{c("traits", "medians.deviations")}
-             \item{plots.include.raw:}{TRUE}
              \item{plots.by.pf:}{"Type"}
              \item{facet.x.pf:}{c("Method", "Tuning")}
+             \item{include.raw.pf:}{"facet.x"}
              \item{facet.x.med:}{c("Method","Type")} 
              \item{plots.group.med:}{"Tuning"}
              \item{propn.types.med:}{NULL}

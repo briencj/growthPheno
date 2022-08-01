@@ -54,17 +54,18 @@
              smoothed traits for each combination of the smoothing parameters 
              (include \code{Type}, \code{Tuning} and \code{Method} in \code{plots.by.pf}); 
              (ii) as for (i), with the corresponding plot for the unsmoothed trait 
-             preceeding the plots for the smoothed trait (also set 
-             \code{plots.include.raw} to \code{TRUE}); (iii) profiles plots that compare 
-             a smoothed trait for all combinations of the values of the smoothing 
-             parameters, arranging the plots side-by-side 
-             (include \code{Type}, \code{Tuning} and \code{Method} in 
-             \code{facet.x.pf} - to include the unsmoothed trait set 
-             \code{plots.include.raw} to \code{TRUE}); (iv) as for (iii), 
-             except that separate plots are produced for each combination of the 
-             levels of the \code{\link{factor}}s in \code{plot.by} and each plot compares the 
-             smoothed traits for the smoothing-parameter \code{\link{factor}}s included in 
-             \code{facet.x.pf} (set both \code{plots.by.pf} and \code{facet.x.pf}). 
+             preceeding the plots for the smoothed trait (also set \code{include.raw.pf} to 
+             \code{alone}); (iii) profiles plots that compare a smoothed trait for all 
+             combinations of the values of the smoothing parameters, arranging the plots 
+             side-by-side or one above the other (include \code{Type}, \code{Tuning} and 
+             \code{Method} in \code{facet.x.pf} and/or \code{facet.y.pf} - to include the 
+             unsmoothed trait set \code{include.raw.pf} to one of \code{facet.x} or 
+             \code{facet.y}; (iv) as for (iii), except that separate plots are 
+             produced for each combination of the levels of the \code{\link{factor}}s 
+             in \code{plot.by} and each plot compares the smoothed traits for the 
+             smoothing-parameter \code{\link{factor}}s included in \code{facet.x.pf} 
+             and/or \code{facet.y.pf} (set both \code{plots.by.pf} and one or more of 
+             \code{facet.x.pf} and \code{facet.y.pf}). 
 
              Deviation plots that can be produced are the absolute and relative deviations 
              boxplots and plots of medians deviations (see \code{which.plots}). 
@@ -81,9 +82,9 @@
                       spline.types, df, lambdas, npspline.segments, smoothing.schemes, 
                       na.x.action, na.y.action, external.smooths.}
                 \item{\bold{General plot control:} x.title, y.titles, labeller, which.plots.} 
-                \item{\bold{Profile plots (pf) features:} plots.include.raw, plots.by.pf, 
-                      facet.x.pf, facet.y.pf, colour.pf, colour.column.pf, 
-                      colour.values.pf, alpha.pf, addMediansWhiskers.pf, 
+                \item{\bold{Profile plots (pf) features:} plots.by.pf, facet.x.pf, facet.y.pf, 
+                      collapse.facets.x.pf, collapse.facets.y.pf, include.raw.pf, colour.pf, 
+                      colour.column.pf, colour.values.pf, alpha.pf, addMediansWhiskers.pf, 
                       ggplotFuncsProfile.} 
                 \item{\bold{Median-deviations (med) plots features:} plots.by.med, 
                       plots.group.med, facet.x.med, facet.y.med,
@@ -106,9 +107,10 @@ probeSmooths(data, response = "PSA", response.smoothed = NULL,
              correctBoundaries = FALSE, 
              x.title = NULL, y.titles = NULL, labeller = NULL, 
              which.plots = "profiles", 
-             plots.include.raw = FALSE, 
-             plots.by.pf = NULL, 
-             facet.x.pf = ".", facet.y.pf = ".", 
+             breaks.spacing.x = 4, 
+             plots.by.pf = NULL, facet.x.pf = ".", facet.y.pf = ".", 
+             collapse.facets.x.pf = TRUE, collapse.facets.y.pf = FALSE, 
+             include.raw.pf = "no", 
              colour.pf = "black", colour.column.pf = NULL, 
              colour.values.pf = NULL, alpha.pf = 0.3, 
              addMediansWhiskers.pf = TRUE,
@@ -307,9 +309,9 @@ probeSmooths(data, response = "PSA", response.smoothed = NULL,
              values of \code{times} for each combination of the smoothing-parameter values. 
              The arguments to \code{probeSmooths} that apply to \code{medians.deviations} 
              plots have the suffix \code{med}.}
-\item{plots.include.raw}{A \code{\link{logical}} indicating whether plots of the 
-             raw (unsmoothed) trait, corresponding to the plots of the smoothed 
-             traits, are to be included.}
+ \item{breaks.spacing.x}{A \code{\link{numeric}} specifying the distance between breaks for 
+             the x-axis in a sequnce beginning with the minimum x value and continuing 
+             up to the maximum x value.}
 \item{plots.by.pf}{A \code{\link{character}} that gives the names of the set of 
              \code{\link{factor}}s by which the data is to be grouped and a separate 
              plot produced for each group. If \code{NULL}, no groups are formed. If a 
@@ -326,6 +328,18 @@ probeSmooths(data, response = "PSA", response.smoothed = NULL,
              to be used to form subsets to be plotted in separate rows of the 
              profiles plots and deviations boxplots. The default of \code{"."} results 
              in no split into rows.}
+ \item{collapse.facets.x.pf}{A \code{\link{logical}} to indicate whether all variables 
+             specified by \code{facets.x.pf} are to be collapsed to a single variable. 
+             Note that the smoothing-parameters factors, if present, are always collapsed.}
+ \item{collapse.facets.y.pf}{A \code{\link{logical}} to indicate whether all variables 
+             specified by \code{facets.y.pf} are to be collapsed to a single variable. 
+             Note that the smoothing-parameters factors, if present, are always collapsed.}
+ \item{include.raw.pf}{A \code{\link{character}} indicating whether plots of the 
+             raw (unsmoothed) trait, corresponding to the plots of the smoothed traits, 
+             are to be included in profile plots. The options are \code{no}, \code{alone}, 
+             \code{facet.x}, or \code{facet.y}. That is, the plots of the raw traits are 
+             plotted separately or as part of either \code{facet.x.pf} or 
+             \code{facet.y.pf}.}
  \item{colour.pf}{A \code{\link{character}} specifying a single colour to use in 
               drawing the lines for the profiles. If colouring according to the 
               values of a variable is required then use \code{colour.column.pf}.}

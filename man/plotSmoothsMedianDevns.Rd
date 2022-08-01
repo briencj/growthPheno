@@ -32,6 +32,7 @@ plotSmoothsMedianDevns(data, response, response.smoothed = NULL,
                        individuals = "Snapshot.ID.Tag",  times = "DAP", 
                        trait.types = c("response", "AGR", "RGR"), 
                        x.title = NULL, y.titles = NULL, labeller = NULL, 
+                       breaks.spacing.x = 4, 
                        plots.by.med = NULL, plots.group.med = NULL, 
                        facet.x.med = ".", facet.y.med = ".", 
                        colour.values.med = NULL, shape.values.med = NULL, 
@@ -91,6 +92,9 @@ plotSmoothsMedianDevns(data, response, response.smoothed = NULL,
 \item{labeller}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
              facets of a plot produced using the \code{\link{ggplot}} function. 
              For more information see \code{\link{ggplot}}.}
+\item{breaks.spacing.x}{A \code{\link{numeric}} specifying the distance between breaks for 
+             the x-axis in a sequnce beginning with the minimum x value and continuing 
+             up to the maximum x value.}
 \item{plots.by.med}{A \code{\link{character}} that give the names of the set of 
              \code{\link{factor}}s by which medians deviations data is to be 
              grouped and a separate plot produced for each group. If \code{NULL}, 

@@ -51,6 +51,7 @@ test_that("chickpea_growthPheno", {
   testthat::expect_warning(t <- probeSmooths(data = dat1, response="ShootArea1000", 
                                              times = "TimeAfterPlanting", 
                                              df=df, 
+                                             breaks.spacing.x = 2,
                                              plots.by.pf = "Tuning", 
                                              facet.x.pf = "Treatment.1", facet.y.pf = "Smarthouse"),
                            regexp = "NaNs produced")
@@ -62,7 +63,8 @@ test_that("chickpea_growthPheno", {
                                              times = "TimeAfterPlanting", 
                                              df=df, lambdas = list(NCSS = 0.0001),
                                              plots.by.pf = "Tuning", 
-                                             facet.x.pf = "Treatment.1", facet.y.pf = "Smarthouse"),
+                                             facet.x.pf = "Treatment.1", facet.y.pf = "Smarthouse",
+                                             include.raw.pf = "alone"),
                            regexp = "NaNs produced")
   testthat::expect_equal(nrow(t), 25440)
   testthat::expect_equal(ncol(t), 16)
@@ -82,11 +84,23 @@ test_that("chickpea_growthPheno", {
                                              spline.types = c("NCSS","PS"),
                                              df=7, lambdas = list(NCSS = 0.0001, PS = 1),
                                              plots.by.pf = c("Type","Tuning"), 
-                                             facet.x.pf = "Treatment.1", facet.y.pf = "Smarthouse"),
+                                             facet.x.pf = "Treatment.1", facet.y.pf = "Smarthouse",  
+                                             include.raw.pf = "facet.x"),
                            regexp = "NaNs produced")
   testthat::expect_equal(nrow(t), 25440)
   testthat::expect_equal(ncol(t), 16)
   
+  #'## Obtain separate plots Tunings, when includes NCSS & PS for lambda and set include.raw.pf to "alone"
+  testthat::expect_warning(t <- probeSmooths(data = dat1, response="ShootArea1000", 
+                                             times = "TimeAfterPlanting", 
+                                             spline.types = c("NCSS","PS"),
+                                             df=7, lambdas = list(NCSS = 0.0001, PS = 1),
+                                             plots.by.pf = c("Type","Tuning"), 
+                                             facet.x.pf = "Treatment.1", facet.y.pf = "Smarthouse",  
+                                             include.raw.pf = "alone"),
+                           regexp = "NaNs produced")
+  testthat::expect_equal(nrow(t), 25440)
+  testthat::expect_equal(ncol(t), 16)
   
   
   #Test various combinations of smoothing and non-smoothing factors in facet.x.pf
@@ -116,7 +130,58 @@ test_that("chickpea_growthPheno", {
                                                 trait.types = ("response"), 
                                                 plots.by.pf = "Smarthouse", 
                                                 facet.x.pf = c("Method", "Treatment.1", "Tuning")))
+  testthat::expect_silent(plotSmoothsComparison(data = t, response="ShootArea1000", 
+                                                times = "TimeAfterPlanting", 
+                                                trait.types = ("response"), 
+                                                plots.by.pf = "Smarthouse", 
+                                                facet.x.pf = c("Method", "Treatment.1", "Tuning"), 
+                                                collapse.facets.x.pf = FALSE))
+  testthat::expect_silent(plotSmoothsComparison(data = t, response="ShootArea1000", 
+                                                times = "TimeAfterPlanting", 
+                                                trait.types = ("response"), 
+                                                plots.by.pf = "Smarthouse", 
+                                                facet.x.pf = c("Method", "Treatment.1", "Tuning"),
+                                                include.raw.pf = "facet.x"))
+  #Don't collapse the facet.x
+  testthat::expect_silent(plotSmoothsComparison(data = t, response="ShootArea1000", 
+                                                times = "TimeAfterPlanting", 
+                                                trait.types = ("response"), 
+                                                plots.by.pf = "Smarthouse", 
+                                                facet.x.pf = c("Method", "Treatment.1", "Tuning"), 
+                                                collapse.facets.x.pf = FALSE))
+  #Inclusion of raw with both smoothing-parameter and other factors in facet.x
+  testthat::expect_silent(
+    plotSmoothsComparison(data = t, response="ShootArea1000", 
+                          times = "TimeAfterPlanting", 
+                          trait.types = ("response"), 
+                          plots.by.pf = "Smarthouse", 
+                          facet.x.pf = c("Method", "Treatment.1", "Tuning"), 
+                          collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
+  #Inclusion of raw with both smoothing-parameter and other factors in facet.y
+  testthat::expect_silent(
+    plotSmoothsComparison(data = t, response="ShootArea1000", 
+                          times = "TimeAfterPlanting", 
+                          trait.types = ("response"), 
+                          plots.by.pf = "Smarthouse", 
+                          facet.y.pf = c("Method", "Treatment.1", "Tuning"), 
+                          collapse.facets.y.pf = FALSE, include.raw.pf = "facet.y"))
+  #Inclusion of raw with other factors in facet.x and  facet.y
+  testthat::expect_silent(
+    plotSmoothsComparison(data = t, response="ShootArea1000", 
+                          times = "TimeAfterPlanting", 
+                          trait.types = ("response"), 
+                          plots.by.pf = "Smarthouse", 
+                          facet.x.pf = c("Method", "Tuning"), facet.y.pf = "Treatment.1",  
+                          collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
   #removes Median whiskers
+  testthat::expect_silent(
+    plotSmoothsComparison(data = t, response="ShootArea1000", 
+                          times = "TimeAfterPlanting", 
+                          trait.types = ("response"), 
+                          plots.by.pf = "Smarthouse", 
+                          facet.y.pf = c("Method", "Treatment.1", "Tuning"), 
+                          collapse.facets.y.pf = FALSE, include.raw.pf = "facet.y"))
+   #removes Median whiskers
   testthat::expect_silent(plotSmoothsComparison(data = t, response="ShootArea1000", 
                                                 times = "TimeAfterPlanting", 
                                                 trait.types = ("response"), 
@@ -153,7 +218,7 @@ test_that("chickpea_growthPheno", {
                                             df=df, 
                                             plots.by.pf = "Tuning", 
                                             facet.x.pf = "Treatment.1", facet.y.pf = "Smarthouse", 
-                                            plots.include.raw = TRUE))
+                                            include.raw.pf = "alone"))
   testthat::expect_equal(nrow(t), 16960)
   testthat::expect_equal(ncol(t), 14)
   
@@ -171,7 +236,7 @@ test_that("chickpea_growthPheno", {
                                             trait.types=c("response"), get.rates=FALSE, 
                                             df=df, 
                                             facet.x.pf = "Tuning", facet.y.pf = "Treatment.1", 
-                                            plots.include.raw = TRUE))
+                                            include.raw.pf = "facet.x"))
   testthat::expect_equal(nrow(t), 16960)
   testthat::expect_true(all(c("Type", "TunePar", "TuneVal", "Tuning", "Method", 
                               "Snapshot.ID.Tag", "TimeAfterPlanting",  
@@ -452,7 +517,7 @@ test_that("exampleData_growthPheno", {
                                                      response = "PSA", times = "DAP", 
                                                      df = c(4:7), 
                                                      facet.x.pf = "Tuning", 
-                                                     plots.include.raw = TRUE,
+                                                     include.raw.pf = "facet.x",
                                                      propn.types.med = NULL,
                                                      external.smooths = extra.dat))
   testthat::expect_equal(nrow(smth.extra), 1680)
@@ -460,7 +525,7 @@ test_that("exampleData_growthPheno", {
   #Use plots.by.pf different to that in  probeSmooths
   plts <- plotSmoothsComparison(data = smth.extra, 
                                 response = "PSA", times = "DAP", 
-                                x.title = "DAP", plots.include.raw = TRUE, 
+                                x.title = "DAP", include.raw.pf = "facet.x", 
                                 plots.by.pf = "Type", facet.x.pf = "Tuning",
                                 alpha.pf = 0.2, 
                                 ggplotFuncsProfile = vline)  
@@ -474,7 +539,7 @@ test_that("exampleData_growthPheno", {
   
   #Test addMediansWhiskers
   plotSmoothsComparison(data = smth.extra, response = "PSA", times = "DAP", 
-                        x.title = "DAP", plots.include.raw = TRUE, 
+                        x.title = "DAP", include.raw.pf = "facet.x", 
                         facet.x.pf = c("Type", "Tuning"),
                         colour.column.pf = "Method", 
                         colour.values.pf = c("olivedrab", "orange"),
@@ -482,7 +547,7 @@ test_that("exampleData_growthPheno", {
                         ggplotFuncsProfile = vline)  
   
   plts <- plotSmoothsComparison(data = smth.extra, response = "PSA", times = "DAP", 
-                                x.title = "DAP", plots.include.raw = TRUE, 
+                                x.title = "DAP", include.raw.pf = "facet.x", 
                                 plots.by.pf = "Type", facet.x.pf = "Tuning",
                                 colour.pf = "olivedrab",
                                 alpha.pf = 0.25, addMediansWhiskers = TRUE,
@@ -706,29 +771,48 @@ test_that("tomato_growthPheno", {
                                                which.plots = "none"),
                            regexp = "NaNs produced")
   
-  #test various combinations of plots.by.pf, plots.compare and plots.include.raw
-  testthat::expect_silent(plotSmoothsComparison(data = tom, response = "PSA", 
-                                                response.smoothed = "sPSA", 
-                                                times = "DAP", 
-                                                which.plots = "profiles", 
-                                                plots.include.raw = TRUE,
-                                                plots.by.pf = c("Type", "Tuning", "Method"),
-                                                colour.column.pf = "Method", 
-                                                colour.values.pf = c("orange", "olivedrab"), 
-                                                addMediansWhiskers = TRUE))
+  #test various combinations of plots.by.pf, plots.compare and include.raw.pf alone
+  testthat::expect_silent(plts <- 
+                            plotSmoothsComparison(data = tom, response = "PSA", 
+                                                  response.smoothed = "sPSA", 
+                                                  times = "DAP", 
+                                                  which.plots = "profiles", 
+                                                  include.raw.pf = "alone",
+                                                  plots.by.pf = c("Type", "Tuning", "Method"),
+                                                  colour.column.pf = "Method", 
+                                                  colour.values.pf = c("orange", "olivedrab"), 
+                                                  addMediansWhiskers = TRUE))
+  testthat::expect_equal(length(plts$PSA$profiles), 4)
+  testthat::expect_equal(length(plts$PSA$deviations), 0)
+  
+
+  #test various combinations of plots.by.pf, plots.compare and include.raw.pf to facet.x without facet.x.pf set
+  testthat::expect_error(
+    plotSmoothsComparison(data = tom, response = "PSA", 
+                          response.smoothed = "sPSA", 
+                          times = "DAP", 
+                          which.plots = "profiles", 
+                          include.raw.pf = "facet.x",
+                          plots.by.pf = c("Type", "Tuning", "Method"),
+                          colour.column.pf = "Method", 
+                          colour.values.pf = c("orange", "olivedrab"), 
+                          addMediansWhiskers = TRUE), 
+    regexp = "The argument incl.raw.pf is set to facet.x, but facet.x.pf has not been set to include a variable")
+  testthat::expect_equal(length(plts$PSA$profiles), 4)
+  testthat::expect_equal(length(plts$PSA$deviations), 0)
   
   testthat::expect_silent(plotSmoothsComparison(data = tom, response = "PSA", 
                                                 response.smoothed = "sPSA", 
                                                 times = "DAP", 
                                                 which.plots = "profiles", 
-                                                plots.include.raw = FALSE,
+                                                include.raw.pf = "no",
                                                 plots.by.pf = c("Type", "Tuning", "Method")))
   
   testthat::expect_silent(plotSmoothsComparison(data = tom, response = "PSA", 
                                                 response.smoothed = "sPSA", 
                                                 times = "DAP", 
                                                 which.plots = "profiles", 
-                                                plots.include.raw = TRUE,
+                                                include.raw.pf = "facet.x",
                                                 facet.x.pf = c("Type","Tuning","Method"),
                                                 alpha.pf = 0.4, colour.column.pf = "Method", 
                                                 colour.values.pf = c("orange", "olivedrab"), 
@@ -738,7 +822,7 @@ test_that("tomato_growthPheno", {
                                                 response.smoothed = "sPSA", 
                                                 times = "DAP", 
                                                 which.plots = "profiles", 
-                                                plots.include.raw = TRUE,
+                                                include.raw.pf = "facet.x",
                                                 colour.pf = "orange", 
                                                 facet.x.pf = "Tuning"))
   
@@ -746,7 +830,7 @@ test_that("tomato_growthPheno", {
                                                 response.smoothed = "sPSA", 
                                                 times = "DAP", 
                                                 which.plots = "profiles", 
-                                                plots.include.raw = FALSE,
+                                                include.raw.pf = "no",
                                                 facet.x.pf = c("Type","Tuning","Method")))
   
   #'Single `df`, multiple methods and trait.types and GRs using deriv
@@ -757,7 +841,7 @@ test_that("tomato_growthPheno", {
                           df=5,smoothing.methods = c("direct","logarithmic"), 
                           rates.method = "deriv",
                           which.plots = "profiles",
-                          facet.x.pf = "Method", plots.include.raw = TRUE))
+                          facet.x.pf = "Method", include.raw.pf = "facet.x"))
   testthat::expect_equal(nrow(tomdv), 2240)
   testthat::expect_equal(ncol(tomdv), 14)
   testthat::expect_true(all(abs(tomdiff$sPSA-tomdv$sPSA) < 1e-08))
@@ -790,7 +874,7 @@ test_that("tomato_growthPheno", {
                           smoothing.methods = "dir", spline.types = c("NCSS", "PS"), 
                           df=df, lambdas = list(PS = lambdas), 
                           which.plots = c("medians.dev", "profiles"), 
-                          plots.include.raw = TRUE,
+                          include.raw.pf = "facet.x",
                           plots.by.pf = "Type", 
                           facet.x.pf = c("Tuning"),
                           propn.types.med = NULL,
@@ -854,7 +938,7 @@ test_that("RicePrepped_growthPheno", {
   testthat::expect_equal(ncol(t$med.devn.dat), 6)
   testthat::expect_true(all(c("fac.by","Smarthouse", "Salinity", "SmoothParams", "PSA.devn", "DAST") 
                             %in% names(t$med.devn.dat)))
-  #Use facet.x.med for Type, additional to plots.compare 
+  #Use facet.x.med for Type, additional to plots.group 
   testthat::expect_silent(
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "response", 
@@ -868,6 +952,35 @@ test_that("RicePrepped_growthPheno", {
   testthat::expect_true(all(c("Type","Smarthouse", "Salinity", "SmoothParams", "PSA.devn", "DAST") 
                             %in% names(t$med.devn.dat)))
   
+  #facet.x a mixture of a smoothing-parameter factor and another factor
+  testthat::expect_silent(
+    t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
+                                times = "DAST", trait.types = "response", 
+                                plots.group.med = "Tuning", 
+                                facet.x.med = c("Smarthouse"), 
+                                facet.y.med = c("Salinity","Type"),
+                                propn.types.med = 0.025))
+  testthat::expect_silent(
+    t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
+                                times = "DAST", trait.types = "response", 
+                                plots.group.med = "Tuning", 
+                                facet.x.med = c("Salinity","Type"), 
+                                facet.y.med = "Smarthouse",
+                                propn.note.med = FALSE))
+  testthat::expect_silent(
+    t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
+                                times = "DAST", trait.types = "response", 
+                                plots.group.med = "Tuning", 
+                                facet.x.med = c("Salinity","Type"), 
+                                facet.y.med = "Smarthouse",
+                                propn.types.med = 0.025))
+  testthat::expect_equal(length(t$plots), 1)
+  testthat::expect_equal(nrow(t$med.devn.dat), 280)
+  testthat::expect_equal(ncol(t$med.devn.dat), 6)
+  testthat::expect_true(all(c("Type","Smarthouse", "Salinity", "SmoothParams", "PSA.devn", "DAST") 
+                            %in% names(t$med.devn.dat)))
+  
+    
   #Use plot,by.med
   testthat::expect_silent(
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
