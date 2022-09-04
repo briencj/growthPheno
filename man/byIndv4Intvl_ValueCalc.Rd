@@ -14,9 +14,10 @@
 byIndv4Intvl_ValueCalc(data, response, 
                        individuals = "Snapshot.ID.Tag", times = "DAP", 
                        FUN = "max", which.obs = FALSE, which.values = NULL, 
-                       addFUN2name = TRUE, 
-                       start.time=NULL, end.time=NULL, suffix.interval=NULL, 
-                       sep=".", weights=NULL, na.rm=TRUE, ...)
+                       addFUN2name = TRUE, sep.FUNname = ".", 
+                       start.time=NULL, end.time=NULL, 
+                       suffix.interval=NULL, sep.suffix.interval = ".", 
+                       sep.levels=".", weights=NULL, na.rm=TRUE, ...)
 }
 \arguments{
  \item{data}{A \code{\link{data.frame}} containing the column from which the 
@@ -53,6 +54,10 @@ byIndv4Intvl_ValueCalc(data, response,
  \item{addFUN2name}{A \code{\link{logical}} that, if \code{TRUE}, indicates that 
              the \code{FUN} name is to be added to the names of the columns in 
              the \code{\link{data.frame}} returned by \code{byIndv4Intvl_ValueCalc}.}
+ \item{sep.FUNname}{A \code{\link{character}} giving the character(s) to be used 
+             to separate the name of \code{FUN} from the \code{response} 
+             value in constructing the name for a new response. For no separator, 
+             set to \code{""}.}
  \item{start.time}{A \code{\link{numeric}} giving the times, 
              in terms of levels of \code{times.factor}, that will give a 
              single value for each \code{Snapshot.ID.Tag} and that will 
@@ -72,7 +77,10 @@ byIndv4Intvl_ValueCalc(data, response,
              appended to \code{response} to form the 
              name of the column containing the calculated values. If it is
              \code{NULL} then nothing will be appended.}
- \item{sep}{A \code{\link{character}} giving the separator to use when the 
+ \item{sep.suffix.interval}{A \code{\link{character}} giving the separator to use in 
+            appending \code{suffix.inteval} to a growth rate. For no separator, set to 
+            \code{""}.}
+ \item{sep.levels}{A \code{\link{character}} giving the separator to use when the 
              levels of \code{individuals} are combined. This is needed to avoid 
              using a \code{\link{character}} that occurs in a \code{\link{factor}} to delimit 
              levels when the levels of \code{individuals} are combined to 

@@ -97,10 +97,9 @@
     \tab \code{data.frame} in long format over a specified \cr
     \tab time interval. \cr
     \code{\link{byIndv4Intvl_WaterUse}}
-    \tab Calculates, for a set of responses, water use traits \cr
-    \tab (WU, WUR, WUI), and the AGR, over a specified time \cr
-    \tab interval for each individual in a \code{data.frame} \cr
-    \tab in long format.\cr
+    \tab Calculates, water use traits (WU, WUR, WUI) over a \cr
+    \tab specified time interval for each individual in a \cr
+    \tab \code{data.frame} in long format.   \cr
     \code{\link{byIndv4Times_GRsDiff}}
     \tab Adds, to a 'data.frame', the growth rates \cr 
     \tab calculated for consecutive times for individuals in \cr

@@ -10,8 +10,8 @@
 \usage{
 byIndv_ValueCalc(data, response, individuals = "Snapshot.ID.Tag", 
                  FUN = "max", which.obs = FALSE, which.values = NULL, 
-                 addFUN2name = TRUE, 
-                 weights=NULL, na.rm=TRUE, sep=".", ...)}
+                 addFUN2name = TRUE, sep.FUNname = ".", 
+                 weights = NULL, na.rm=TRUE, sep.levels = ".", ...)}
 \arguments{
  \item{data}{A \code{\link{data.frame}} containing the column from which the 
              function is to be calculated.}
@@ -44,12 +44,16 @@ byIndv_ValueCalc(data, response, individuals = "Snapshot.ID.Tag",
  \item{addFUN2name}{A \code{\link{logical}} that, if \code{TRUE}, indicates that 
              the \code{FUN} name is to be added to the names of the columns in 
              the \code{\link{data.frame}} returned by \code{byIndv4Intvl_ValueCalc}.}
+ \item{sep.FUNname}{A \code{\link{character}} giving the character(s) to be used 
+             to separate the name of \code{FUN} from the \code{response} 
+             value in constructing the name for a new response. For no separator, 
+             set to \code{""}.}
  \item{weights}{A \code{\link{character}} giving the name of the column in 
              \code{data} containing the weights to be supplied as \code{w} 
              to \code{FUN}.}
  \item{na.rm}{A \code{\link{logical}}  indicating whether \code{NA} values 
               should be stripped before the calculation proceeds.}
- \item{sep}{A \code{\link{character}} giving the separator to use when the 
+ \item{sep.levels}{A \code{\link{character}} giving the separator to use when the 
             levels of \code{individuals} are combined. This is needed to avoid 
             using a \code{\link{character}} that occurs in a \code{\link{factor}} to delimit 
             levels when the levels of \code{individuals} are combined to 

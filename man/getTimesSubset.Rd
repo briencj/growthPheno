@@ -6,8 +6,8 @@
 \usage{
 getTimesSubset(data, responses, 
                individuals = "Snapshot.ID.Tag", times = "DAP", 
-               which.times, suffix = NULL, include.times = FALSE, 
-               include.individuals = FALSE)}
+               which.times, suffix = NULL, sep.suffix.times = ".", 
+               include.times = FALSE, include.individuals = FALSE)}
 \arguments{
  \item{data}{A \code{\link{data.frame}} containing the column from which the 
              growth rates are to be calculated.}
@@ -26,6 +26,9 @@ getTimesSubset(data, responses,
  \item{suffix}{A \code{\link{character}} giving the suffix to be appended to 
                \code{responses} to form the names of the columns containing the 
                subset.}
+ \item{sep.suffix.times}{A \code{\link{character}} giving the separator to use in 
+            appending a suffix for times to a trait. For no separator, set to 
+            \code{""}.}
  \item{include.times}{A \code{\link{logical}} indicating whether or not 
              to include the \code{times} in the result, the name in the result 
              having the \code{suffix} with a separating full appended.}

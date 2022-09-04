@@ -1128,7 +1128,7 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
                            smoothing.method = "direct", 
                            spline.type = "NCSS",  df=NULL, lambda = NULL, 
                            npspline.segments = NULL, correctBoundaries = FALSE, 
-                           rates = NULL, suffices.rates = NULL, 
+                           rates = NULL, suffices.rates = NULL, sep.rates = ".", 
                            extra.derivs = NULL, suffices.extra.derivs=NULL, 
                            na.x.action = "exclude", na.y.action = "trimx", ...)
 { 
@@ -1266,7 +1266,7 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
     if (is.allnull(suffices.derivs))
       fit.names <- c(fit.names, paste(response.smoothed,".dv",derivs,sep=""))
     else
-      fit.names <- c(fit.names, paste(response.smoothed, suffices.derivs, sep="."))
+      fit.names <- c(fit.names, paste(response.smoothed, suffices.derivs, sep=sep.rates))
   }
   
   #Process missing values
@@ -1349,11 +1349,11 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
       if (is.allnull(suffices.derivs))
         fit.names <- c(fit.names, paste(response.smoothed,".dv",derivs,sep=""))
       else
-        fit.names <- c(fit.names, paste(response.smoothed, suffices.derivs, sep="."))
+        fit.names <- c(fit.names, paste(response.smoothed, suffices.derivs, sep=sep.rates))
     }
     #Add extra,rate if required
     if (!is.null(extra.rate))
-      fit.names <- c(fit.names, paste(response.smoothed, names(extra.rate), sep="."))
+      fit.names <- c(fit.names, paste(response.smoothed, names(extra.rate), sep=sep.rates))
     fit <- as.data.frame(matrix(NA, nrow=nrow(data), ncol = length(fit.names)))
     colnames(fit) <- fit.names
     fit[x] <- data[[x]]
@@ -1434,7 +1434,7 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
         else
         { 
           k <- ifelse(length(derivs) == 1, 1, match(d, derivs))
-          rsmooth.dv <- paste(response.smoothed, suffices.derivs[k], sep=".")
+          rsmooth.dv <- paste(response.smoothed, suffices.derivs[k], sep=sep.rates)
         }
         if (stype == "NCSS")
           fit[[rsmooth.dv]] <- predict(fit.spline$uncorrected.fit, x = x.pred, deriv=d)$y
@@ -1451,11 +1451,11 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
         if (is.null(suffices.derivs))
           rsmooth.dv <- paste0(response.smoothed,".dv",1)
         else
-          rsmooth.dv <- paste(response.smoothed, suffices.derivs["AGR"], sep=".")
+          rsmooth.dv <- paste(response.smoothed, suffices.derivs["AGR"], sep=sep.rates)
         #get the extra derivative
         if (!(rsmooth.dv %in% names(fit)))
           stop("First derivative not available to calculate RGR")
-        fit[[paste(rsmooth,names(extra.rate),sep=".")]] <- fit[[rsmooth.dv]]/fit[[rsmooth]]
+        fit[[paste(rsmooth,names(extra.rate),sep=sep.rates)]] <- fit[[rsmooth.dv]]/fit[[rsmooth]]
       }
       #Add AGR if required
       if (!is.null(extra.rate) && extra.rate == "AGR")
@@ -1464,11 +1464,11 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
         if (is.null(suffices.derivs))
           rsmooth.dv <- paste0(response.smoothed,".dv",1)
         else
-          rsmooth.dv <- paste(response.smoothed, suffices.derivs["RGR"], sep=".")
+          rsmooth.dv <- paste(response.smoothed, suffices.derivs["RGR"], sep=sep.rates)
         #get the extra derivative
         if (!(rsmooth.dv %in% names(fit)))
           stop("First derivative not available to calculate AGR")
-        fit[[paste(rsmooth,names(extra.rate),sep=".")]] <- fit[[rsmooth.dv]]*fit[[rsmooth]]
+        fit[[paste(rsmooth,names(extra.rate),sep=sep.rates)]] <- fit[[rsmooth.dv]]*fit[[rsmooth]]
       }
     }
     fit <- as.data.frame(fit)

@@ -11,8 +11,10 @@
 \usage{
 byIndv4Intvl_GRsDiff(data, responses, 
                      individuals = "Snapshot.ID.Tag", times = "DAP", 
-                     which.rates = c("AGR","PGR","RGR"), suffices.rates=NULL, 
-                     start.time, end.time, suffix.interval)}
+                     which.rates = c("AGR","PGR","RGR"), 
+                     suffices.rates=NULL, sep.rates = ".", 
+                     start.time, end.time, 
+                     suffix.interval, sep.suffix.interval = ".")}
 \arguments{
  \item{data}{A \code{\link{data.frame}} containing the column from which the 
              growth rates are to be calculated.}
@@ -37,6 +39,10 @@ byIndv4Intvl_GRsDiff(data, responses,
                     The order of the suffices in \code{suffices.rates} should 
                     correspond to the order of the elements of 
                     \code{which.rates}.}
+ \item{sep.rates}{A \code{\link{character}} giving the character(s) to be used 
+             to separate the \code{suffices.rates} value from a \code{response} 
+             value in constructing the name for a new rate. For no separator, 
+             set to \code{""}.}
  \item{start.time}{A \code{\link{numeric}} giving the times,
                    in terms of values in \code{times}, that will give a 
                    single value for each \code{Snapshot.ID.Tag} and that will 
@@ -50,6 +56,9 @@ byIndv4Intvl_GRsDiff(data, responses,
  \item{suffix.interval}{A \code{\link{character}} giving the suffix to be 
                appended to \code{response} to form the names of the columns 
                containing the calculated the growth rates.}
+ \item{sep.suffix.interval}{A \code{\link{character}} giving the separator to use in 
+            appending \code{suffix.inteval} to a growth rate. For no separator, set to 
+            \code{""}.}
 }
 \value{A \code{\link{data.frame}} with the growth rates. 
        The name of each column is the concatenation of (i) one of 

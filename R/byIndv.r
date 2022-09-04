@@ -1,8 +1,8 @@
 #A function to compute a FUN from the response for each individual
 "byIndv_ValueCalc" <- function(data, response, individuals = "Snapshot.ID.Tag", 
                                FUN = "max", which.obs = FALSE, which.values = NULL, 
-                               addFUN2name = TRUE, 
-                               weights=NULL, na.rm=TRUE, sep=".", ...)
+                               addFUN2name = TRUE, sep.FUNname = ".", 
+                               weights=NULL, na.rm=TRUE, sep.levels = ".", ...)
   #response is a character string giving the name of the response in data
   #individuals is a character vector giving the factors that index the individuals 
   #   for each of which a single value of funct is obtained from their observations
@@ -49,12 +49,12 @@
                       response=response, weights=weights, FUNC=funct, na.rm=na.rm, ...)
   val.dat <- as.data.frame(do.call(rbind, val.dat))
   if (addFUN2name)
-    names(val.dat) <- paste(response,FUN,sep=".")
+    names(val.dat) <- paste(response, FUN, sep = sep.FUNname)
   else
     names(val.dat) <- response
   val.dat[[1]][is.infinite(val.dat[[1]])] <- NA
   indices <- rownames(val.dat)
-  indices <- strsplit(indices, split=sep, fixed=TRUE)
+  indices <- strsplit(indices, split=sep.levels, fixed=TRUE)
   for (fac in 1:length(individuals))
   { 
     val.dat[[individuals[fac]]] <- unlist(lapply(indices, 

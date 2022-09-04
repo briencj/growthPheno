@@ -1,8 +1,8 @@
 \name{growthPheno-deprecated}
 \alias{growthPheno-deprecated}
-\alias{getDates}
 \alias{anomPlot}
 \alias{corrPlot}
+\alias{getDates}
 \alias{imagetimesPlot}
 \alias{longiPlot}
 \alias{probeDF}
@@ -21,6 +21,7 @@ anomPlot(...)
 corrPlot(...)
 imagetimesPlot(...)
 longiPlot(...)
+probeDF(...)
 }
 \arguments{
   \item{...}{absorbs arguments passed from the old functions of the style foo.bar().}

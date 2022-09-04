@@ -34,27 +34,25 @@ test_that("Rice2015_growthPheno", {
   responses.image <- c("PSA")
   responses.smooth <- paste0("s", responses.image)
   
-  #'## Form growth rates for each observation of a subset of responses by differencing
-  longi.dat <- byIndv4Times_GRsDiff(data = longi.dat, responses.image, 
-                                    times = "DAP", avail.times.diffs = FALSE, 
+  # Form growth rates for each observation of a subset of responses by differencing
+  longi.dat <- byIndv4Times_GRsDiff(longi.dat, responses = responses.image, 
+                                    times = "DAP", 
                                     which.rates = c("AGR","RGR"))
-  testthat::expect_equal(nrow(longi.dat), 280)
-  testthat::expect_equal(ncol(longi.dat), 48)
   
-  #'## Form Area.WUI 
+  # Form PSA.WUI 
   longi.dat <- within(longi.dat, 
-                      Area.WUI <- WUI(PSA.AGR*DAP.diffs, WU))
+                      PSA.WUI <- WUI(PSA.AGR*DAP.diffs, WU))
   
-  #'## Add cumulative responses 
+  # Add cumulative responses 
   longi.dat <- within(longi.dat, 
                       { 
                         WU.cum <- unlist(by(WU, Snapshot.ID.Tag, 
                                             cumulate, exclude.1st=TRUE))
                         WUI.cum <- PSA / WU.cum 
                       })
-  testthat::expect_equal(nrow(longi.dat), 280)
-  testthat::expect_equal(ncol(longi.dat), 51)
-  
+  # Check longi.dat
+  head(longi.dat)
+
   #'# Step 4: Fit splines to smooth the longitudinal trends in the primary traits and calculate their growth rates
   #'
   #'## Smooth responses and form growth rates by differences
@@ -119,18 +117,15 @@ test_that("Rice2015_growthPheno", {
   testthat::expect_true(all(c( "PSA.first", "PSA.last", "WUI.cum.last", 
                                "sPSA.first", "sPSA.last") %in% names(cart.dat)))
   
-  #'### Growth rates over whole period.
-  #+
+  # Growth rates over whole period.
   (tottime <- DAP.endpts[length(DAP.endpts)] - DAP.endpts[1]) #= 11
-  testthat::expect_equal(tottime,11)  
   cart.dat <- within(cart.dat, 
                      { 
                        PSA.AGR.full <- (PSA.last - PSA.first)/tottime
                        PSA.RGR.full <- log(PSA.last / PSA.first)/tottime
                      })
   
-  #'### Calculate water index over whole period
-  tmp.dat <- cart.dat
+  # Calculate water index over whole period
   cart.dat <- merge(cart.dat, 
                     byIndv4Intvl_WaterUse(data = longi.dat, 
                                           water.use = "WU", response = "PSA", 
@@ -139,21 +134,8 @@ test_that("Rice2015_growthPheno", {
                                           start.time = DAP.endpts[1], 
                                           end.time = DAP.endpts[length(DAP.endpts)]),
                     by = c("Snapshot.ID.Tag"))
-  testthat::expect_equal(nrow(cart.dat), 20)
-  testthat::expect_equal(ncol(cart.dat), 24)
-  #Check same value of the WUR for cart.dat and when calculated for tmp.dat
-  tmp.dat <- merge(tmp.dat, 
-                   byIndv4Intvl_WaterUse(data = longi.dat, 
-                                         water.use = "WU", responses = "PSA", 
-                                         trait.types = c("WU", "WUI"), 
-                                         times = "DAP", 
-                                         start.time = DAP.endpts[1], 
-                                         end.time = DAP.endpts[length(DAP.endpts)], 
-                                         suffix.interval = NULL),
-                   by = c("Snapshot.ID.Tag"))
-  tmp.dat$WUR <- tmp.dat$WU / (42 - 31)
-  testthat::expect_true(all(abs(cart.dat$WUR - tmp.dat$WUR) < 1e-05))
   
+
   #'## 6c) Add growth rates and water indices for intervals
   
   #'### Rates for specific intervals from the smoothed data by differencing
@@ -183,20 +165,19 @@ test_that("Rice2015_growthPheno", {
                       byIndv4Intvl_WaterUse(data = longi.dat, 
                                             water.use = "WU", responses = "PSA", 
                                             times = "DAP", 
-                                            trait.types = c("WU","WUR","AGR","WUI"), 
+                                            trait.types = c("WU","WUR","WUI"), 
                                             start.time = DAP.starts[k], 
                                             end.time = DAP.stops[k], 
                                             suffix.interval = suffices[k]),
                       by = "Snapshot.ID.Tag")
   }
-  testthat::expect_true(all(c(paste("PSA.AGR", suffices, sep = "."), 
-                              paste("WU", suffices, sep = "."),
+  testthat::expect_true(all(c(paste("WU", suffices, sep = "."),
                               paste("PSA.WUI", suffices, sep = "."), 
                               paste("WU", suffices, sep = ".")) %in% names(cart.dat)))
   
   cart.dat <- with(cart.dat, cart.dat[order(Snapshot.ID.Tag), ])
   testthat::expect_equal(nrow(cart.dat), 20)
-  testthat::expect_equal(ncol(cart.dat), 48)
+  testthat::expect_equal(ncol(cart.dat), 44)
   
   #'# Step 7: Form continuous and interval SIITs
   #'

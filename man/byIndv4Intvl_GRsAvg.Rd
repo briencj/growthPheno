@@ -12,9 +12,10 @@
 byIndv4Intvl_GRsAvg(data, responses, 
                     individuals = "Snapshot.ID.Tag", times = "DAP", 
                     which.rates = c("AGR","RGR"), 
-                    suffices.rates=c("AGR","RGR"), 
-                    start.time, end.time, suffix.interval, 
-                    sep=".", na.rm=TRUE)}
+                    suffices.rates=c("AGR","RGR"), sep.rates = ".",
+                    start.time, end.time, 
+                    suffix.interval, sep.suffix.interval = ".", 
+                    sep.levels=".", na.rm=TRUE)}
 \arguments{
  \item{data}{A \code{\link{data.frame}} containing the columns from which the 
              growth rates are to be calculated.}
@@ -43,6 +44,10 @@ byIndv4Intvl_GRsAvg(data, responses,
                containing the calculated the growth rates and in which growth 
                rates are to be stored. Their elements will be matched with 
                those of \code{which.rates}.}
+ \item{sep.rates}{A \code{\link{character}} giving the character(s) to be used 
+             to separate the \code{suffices.rates} value from a \code{response} 
+             value in constructing the name for a new rate. For no separator, 
+             set to \code{""}.}
  \item{start.time}{A \code{\link{numeric}} giving the times,
                    in terms of values in \code{times}, that will give a 
                    single value for each \code{Snapshot.ID.Tag} and that will 
@@ -56,7 +61,10 @@ byIndv4Intvl_GRsAvg(data, responses,
  \item{suffix.interval}{A \code{\link{character}} giving the suffix to be 
                appended to \code{response}.\code{suffices.rates} to form the 
                names of the columns containing the calculated the growth rates.}
- \item{sep}{A \code{\link{character}} giving the separator to use when the 
+ \item{sep.suffix.interval}{A \code{\link{character}} giving the separator to use in 
+            appending \code{suffix.inteval} to a growth rate. For no separator, set to 
+            \code{""}.}
+ \item{sep.levels}{A \code{\link{character}} giving the separator to use when the 
             levels of \code{individuals} are combined. This is needed to avoid 
             using a \code{\link{character}} that occurs in a \code{\link{factor}} to delimit 
             levels when the levels of \code{individuals} are combined to 

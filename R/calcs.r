@@ -82,8 +82,8 @@
 #Function to get the values for specified times and, optionally, a column with the times factor 
 "getTimesSubset" <- function(data, responses, 
                              individuals = "Snapshot.ID.Tag", times = "DAP", 
-                             which.times, suffix = NULL, include.times = FALSE,
-                             include.individuals = FALSE)
+                             which.times, suffix = NULL, sep.suffix.times = ".", 
+                             include.times = FALSE, include.individuals = FALSE)
 { 
   n <- dim(data)[1]
   subset <- rep(FALSE, n)
@@ -96,7 +96,7 @@
   data.sub <- data.sub[do.call(order, data.sub), ]
   if (!is.null(suffix))
     new.responses <- unlist(lapply(responses, 
-                                   function(name, suffix){paste(name,suffix,sep=".")}, 
+                                   function(name, suffix){paste(name, suffix, sep=sep.suffix.times)}, 
                                    suffix=suffix))
   else
     new.responses <- responses
@@ -109,7 +109,7 @@
   {
     responses <- c(responses,times)
     if (!is.null(suffix))
-      new.responses <- c(new.responses, paste(times,suffix,sep="."))
+      new.responses <- c(new.responses, paste(times, suffix, sep = sep.suffix.times))
     else
       new.responses <- c(new.responses,times)
   }

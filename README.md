@@ -1,19 +1,10 @@
----
-title: growthPheno
-output:
-  html_document:
-    keep_md: yes
-  pdf_document: default
----
-
-
-
+# growthPheno
 
 [![Project Status: Active:  The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![minimal R version](https://img.shields.io/badge/R%3E%3D-3.5.0-6666ff.svg)](https://cran.r-project.org/)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/growthPheno)](https://cran.r-project.org/package=growthPheno)
-[![packageversion](https://img.shields.io/badge/Package%20version-2.0.16-orange.svg?style=flat-square)](/commits/master)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2022--08--01-yellowgreen.svg)](/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-2.0.17-orange.svg?style=flat-square)](/commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2022--09--04-yellowgreen.svg)](/commits/master)
 [![Licence](https://img.shields.io/badge/license-GPL%20(%3E%3D2)-green.svg)](http://choosealicense.com/licenses/gpl-2.0/)
 [![Downloads](https://cranlogs.r-pkg.org/badges/last-week/growthPheno)](commits/master)
 

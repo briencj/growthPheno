@@ -1,5 +1,15 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.0-17 (2022-09-04)}{
+  \itemize{
+  \item{Fix a bug in traitExtractFeatures associated with responses.water and allow parallel looping over multiple values for both water.use and responses.water.}
+  \item{Add new arguments \code{responses4overall.rates}, \code{water.use4overall.water} and \code{responses4overall.water} to traitExtractFeatures and make changes to byIndv4Intvl_GRsDiff to allow suffix.interval to be NULL.}
+  \item{Change arguments \code{responses.singletimes}. \code{response.rates}, \code{rates.method}, \code{water.use}, \code{responses.water}, \code{responses.total}, \code{responses.max}, \code{times.whole} and \code{suffix.whole} to \code{responses4singletimes}, \code{responses4intvl.rates}, \code{growth.rates.method}, \code{water.use4intvl.traits}, \code{responses4water}, \code{responses4overall.totals}, \code{responses4overall.max}, \code{times.overall} and \code{suffix.overall} in traitExtractFeatures.}
+  \item{Add new argument \code{sep.rates} to byIndv4Intvl_GRsDiff, byIndv4Intvl_GRsAvg, byIndv4Times_GRsDiff and byIndv4Times_SplinesGRs, and \code{sep.growth.rates} to traitExtractFeatures.}
+  \item{Add new argument \code{sep.water.traits} to byIndv4Intvl_WaterUse and traitExtractFeatures.}
+  \item{Add new argument \code{sep.suffix.interval} to byIndv4Intvl_GRsDiff, byIndv4Intvl_GRsAvg, byIndv4Intvl_ValueCalc and byIndv4Intvl_WaterUse, as well as \code{sep.suffix.interval} togetTimesSubset and  traitExtractFeatures.}
+  \item{Add new argument \code{sep.FUNname} to byIndv_ValueCalc and byIndv4Intvl_ValueCalc.}
+  }}
 \section{growthPheno Version 2.0-16 (2022-08-01)}{
   \itemize{
   \item{Fix a bug in plotSmoothsCompaison that meant that attempting to change the x-axis breaks using the function \code{ggplot2::scale_x_continuous} were ignored.}

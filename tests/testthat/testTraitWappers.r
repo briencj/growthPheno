@@ -70,20 +70,195 @@ test_that("tomato_traitExtractFeatures", {
                                      kcol[omit] <- NA
                                      return(kcol)
                                    }, omit = omit)
-  
-  #'## Extract single-valued traits for each individual
+  #Set up for individual traits
   indv.cols <- c("Snapshot.ID.Tag", "Lane", "Position", "Block", "Cart", "AMF", "Zn")
-  indv.dat <- subset(tom.dat, subset = DAP == DAP.endpts[1], 
+  indv.ini <- subset(tom.dat, subset = DAP == DAP.endpts[1], 
                      select = indv.cols)
+
+  #'## Extract single-valued smoothed traits for each individual
   indv.dat <- traitExtractFeatures(data = tom.dat, 
                                    starts.intvl = DAP.starts, stops.intvl = DAP.stops, 
-                                   responses.singletimes = "sPSA", 
-                                   responses.rates = "sPSA", growth.rates = c("AGR", "RGR"), 
-                                   water.use = "sWU", responses.water = "sPSA", 
-                                   responses.total = "sWU",
-                                   responses.max = "sPSA.AGR",
-                                   mergedata = indv.dat)
+                                   responses4singletimes = "sPSA", 
+                                   responses4intvl.rates = "sPSA", growth.rates = c("AGR", "RGR"), 
+                                   water.use4intvl.traits = "sWU", 
+                                   responses4water = "sPSA", 
+                                   responses4overall.total = "sWU",
+                                   responses4overall.max = "sPSA.AGR",
+                                   mergedata = indv.ini)
   testthat::expect_equal(nrow(indv.dat), 32)
   testthat::expect_equal(ncol(indv.dat), 47)
+
+  #'## Extract single-valued unsmoothed and smoothed traits in parallel for each individual
+  indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
+                                   starts.intvl = DAP.starts, stops.intvl = DAP.stops, 
+                                   responses4singletimes = c("PSA", "sPSA"), 
+                                   responses4intvl.rates = c("PSA", "sPSA"), growth.rates = c("AGR", "RGR"), 
+                                   water.use4intvl.traits = c("WU","sWU"), 
+                                   responses4water = c("PSA","sPSA"),
+                                   responses4overall.rates = c("PSA", "sPSA"),
+                                   water.use4overall.water = c("WU","sWU"), 
+                                   responses4overall.water = c("PSA","sPSA"),
+                                   times.overall = c(18,51),
+                                   mergedata = indv.ini)
+  testthat::expect_equal(nrow(indv.dat), 32)
+  testthat::expect_equal(ncol(indv.dat), 7 + (2*7) + (4*6) + (6*6) + 4 + 6) #91
+  suffs <- paste(DAP.starts, DAP.stops, sep = "to")
+  testthat::expect_true(all(names(indv.dat)[-(1:7)] == c(as.vector(outer(c("PSA","sPSA"), DAP.endpts, paste, sep = ".")),
+                                                         as.vector(outer(c("PSA.AGR","PSA.RGR"), suffs, paste, sep = ".")),
+                                                         as.vector(outer(c("sPSA.AGR","sPSA.RGR"), suffs, paste, sep = ".")),
+                                                         as.vector(outer(c("WU","WUR","PSA.WUI"), suffs, paste, sep = ".")),
+                                                         as.vector(outer(c("sWU","sWUR","sPSA.sWUI"), suffs, paste, sep = ".")),
+                                                         "PSA.AGR","PSA.RGR","sPSA.AGR","sPSA.RGR","WU","WUR","PSA.WUI",
+                                                         "sWU","sWUR","sPSA.sWUI")))
+
+  #'## Extract single-valued unsmoothed and smoothed traits in parallel for each individual with "_" separator
+  indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
+                                   starts.intvl = DAP.starts, stops.intvl = DAP.stops, 
+                                   responses4singletimes = c("PSA", "sPSA"), 
+                                   responses4intvl.rates = c("PSA", "sPSA"), growth.rates = c("AGR", "RGR"), 
+                                   water.use4intvl.traits = c("WU","sWU"), 
+                                   responses4water = c("PSA","sPSA"), 
+                                   responses4overall.rates = c("PSA", "sPSA"),
+                                   water.use4overall.water = c("WU","sWU"), 
+                                   responses4overall.water = c("PSA","sPSA"),
+                                   times.overall = c(18,51),
+                                   sep.growth.rates = "_", sep.water.traits = "_", 
+                                   sep.suffix.times = "_", sep.times.intvl = "_", 
+                                   mergedata = indv.ini)
+  testthat::expect_equal(nrow(indv.dat), 32)
+  testthat::expect_equal(ncol(indv.dat), 7 + (2*7) + (4*6) + (6*6) + 4 + 6) #91
+  suffs <- paste(DAP.starts, DAP.stops, sep = "_")
+  testthat::expect_true(all(names(indv.dat)[-(1:7)] == c(as.vector(outer(c("PSA","sPSA"), DAP.endpts, paste, sep = "_")),
+                                                         as.vector(outer(c("PSA_AGR","PSA_RGR"), suffs, paste, sep = "_")),
+                                                         as.vector(outer(c("sPSA_AGR","sPSA_RGR"), suffs, paste, sep = "_")),
+                                                         as.vector(outer(c("WU","WU_R","PSA_WU_I"), suffs, paste, sep = "_")),
+                                                         as.vector(outer(c("sWU","sWU_R","sPSA_sWU_I"), suffs, paste, sep = "_")),
+                                                         "PSA_AGR","PSA_RGR","sPSA_AGR","sPSA_RGR","WU","WU_R","PSA_WU_I",
+                                                         "sWU","sWU_R","sPSA_sWU_I")))
+  #Check the overall values
+  testthat::expect_true(all((indv.dat[1, c("PSA_AGR","PSA_RGR","sPSA_AGR","sPSA_RGR","WU","WU_R","PSA_WU_I",
+                                           "sWU","sWU_R","sPSA_sWU_I")] - 
+                               c( 4.899273,0.08852807,4.897457,0.08655332,932,28.24242,0.1734721,
+                                  921.4677,27.92326,0.1753898)) < 1e-04))
+  
+  
+  #'## Extract single-valued unsmoothed and smoothed traits in parallel for each individual with no separator
+  indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
+                                   starts.intvl = DAP.starts, stops.intvl = DAP.stops, 
+                                   responses4singletimes = c("PSA", "sPSA"), 
+                                   responses4intvl.rates = c("PSA", "sPSA"), growth.rates = c("AGR", "RGR"), 
+                                   water.use4intvl.traits = c("WU","sWU"), 
+                                   responses4water = c("PSA","sPSA"), 
+                                   responses4overall.rates = c("PSA", "sPSA"),
+                                   water.use4overall.water = c("WU","sWU"), 
+                                   responses4overall.water = c("PSA","sPSA"),
+                                   times.overall = c(18,51),
+                                   sep.growth.rates = "", sep.water.traits = "", 
+                                   sep.suffix.times = "", sep.times.intvl = "",
+                                   mergedata = indv.ini)
+  testthat::expect_equal(nrow(indv.dat), 32)
+  testthat::expect_equal(ncol(indv.dat), 7 + (2*7) + (4*6) + (6*6) + 4 + 6) #91
+  suffs <- paste(DAP.starts, DAP.stops, sep = "")
+  testthat::expect_true(all(names(indv.dat)[-(1:7)] == c(as.vector(outer(c("PSA","sPSA"), DAP.endpts, paste, sep = "")),
+                                                         as.vector(outer(c("PSAAGR","PSARGR"), suffs, paste, sep = "")),
+                                                         as.vector(outer(c("sPSAAGR","sPSARGR"), suffs, paste, sep = "")),
+                                                         as.vector(outer(c("WU","WUR","PSAWUI"), suffs, paste, sep = "")),
+                                                         as.vector(outer(c("sWU","sWUR","sPSAsWUI"), suffs, paste, sep = "")),
+                                                         "PSAAGR","PSARGR","sPSAAGR","sPSARGR","WU","WUR","PSAWUI",
+                                                         "sWU","sWUR","sPSAsWUI")))
+  
+  #one AGR for sPSA and its overall AGR
+  indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
+                                   starts.intvl = DAP.starts, stops.intvl = DAP.stops, 
+                                   responses4intvl.rates = "sPSA",
+                                   growth.rates = "AGR", 
+                                   responses4overall.rates = "sPSA",
+                                   times.overall = c(18,51),
+                                   mergedata = indv.ini)
+  testthat::expect_equal(nrow(indv.dat), 32)
+  testthat::expect_equal(ncol(indv.dat), 14)
+  
+  #Overall values only for both unsmoothed and smoothed traits in parallel
+  indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
+                                   growth.rates = c("AGR", "RGR"), 
+                                   responses4overall.rates = c("PSA", "sPSA"),
+                                   water.use4overall.water = c("WU","sWU"), 
+                                   responses4overall.water = c("PSA","sPSA"),
+                                   times.overall = c(18,51),
+                                   mergedata = indv.ini)
+  #Check the overall values
+  testthat::expect_true(all((indv.dat[1, c("PSA.AGR","PSA.RGR","sPSA.AGR","sPSA.RGR","WU","WUR","PSA.WUI",
+                                           "sWU","sWUR","sPSA.sWUI")] - 
+                               c( 4.899273,0.08852807,4.897457,0.08655332,932,28.24242,0.1734721,
+                                  921.4677,27.92326,0.1753898)) < 1e-04))
+  testthat::expect_equal(nrow(indv.dat), 32)
+  testthat::expect_equal(ncol(indv.dat), 17)
+  
+  #Overall values only for smoothed traits
+  testthat::expect_error(indv.diff.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
+                                                               responses4overall.rates = "sPSA",
+                                                               water.use4overall.water = "sWU", 
+                                                               responses4overall.water = "sPSA",
+                                                               times.overall = c(18,51),
+                                                               mergedata = indv.ini),
+                         regexp = "growth.rates needs to be set for responses4overall.rates")
+  
+  indv.diff.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
+                                        growth.rates = "AGR", 
+                                        responses4overall.rates = "sPSA",
+                                        water.use4overall.water = "sWU", 
+                                        responses4overall.water = "sPSA",
+                                        times.overall = c(18,51),
+                                        mergedata = indv.ini)
+  testthat::expect_equal(nrow(indv.diff.dat), 32)
+  testthat::expect_equal(ncol(indv.diff.dat), 11)
+  
+  #only overall water traits
+  indv.diff.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
+                                        water.use4overall.water = "sWU", 
+                                        responses4overall.water = "sPSA",
+                                        times.overall = c(18,51),
+                                        mergedata = indv.ini)
+  testthat::expect_equal(nrow(indv.diff.dat), 32)
+  testthat::expect_equal(ncol(indv.diff.dat), 10)
+  
+  
+  #Overall values only for unsmoothed and smoothed traits in parallel using ratesaverage
+  testthat::expect_silent(
+    indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
+                                     growth.rates = c("AGR", "RGR"), rates.method = "ratesaverage",
+                                     responses4overall.rates = c("PSA", "sPSA"),
+                                     water.use4overall.water = c("WU","sWU"), 
+                                     responses4overall.water = c("PSA","sPSA"),
+                                     times.overall = c(18,51),
+                                     mergedata = indv.ini))
+  testthat::expect_equal(nrow(indv.dat), 32)
+  testthat::expect_equal(ncol(indv.dat), 17)
+  
+  #Overall values only for smoothed traits using ratesaverage
+  indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
+                                   starts.intvl = DAP.starts, stops.intvl = DAP.stops, 
+                                   responses.rates = "sPSA",
+                                   growth.rates = "AGR", rates.method = "ratesaverage",
+                                   responses4overall.rates = "sPSA",
+                                   water.use4overall.water = "sWU", 
+                                   responses4overall.water = "sPSA",
+                                   times.overall = c(18,51),
+                                   mergedata = indv.ini)
+  testthat::expect_equal(nrow(indv.dat), 32)
+  testthat::expect_equal(ncol(indv.dat), 11)
+  
+  #Check the overall values
+  indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
+                                   growth.rates = c("AGR", "RGR"), rates.method = "ratesaverage",
+                                   responses4overall.rates = c("PSA","sPSA"),
+                                   water.use4overall.water = c("WU","sWU"), 
+                                   responses4overall.water = c("PSA","sPSA"),
+                                   times.overall = c(18,51),
+                                   mergedata = indv.ini)
+  testthat::expect_true(all((indv.dat[1, c("PSA.AGR","PSA.RGR","sPSA.AGR","sPSA.RGR","WU","WUR","PSA.WUI",
+                                           "sWU","sWUR","sPSA.sWUI")] - 
+                               c( 4.899273,0.08852807,4.897457,0.08655332,932,28.24242,0.1734721,
+                                  921.4677,27.92326,0.1753898)) < 1e-04))
   
 })

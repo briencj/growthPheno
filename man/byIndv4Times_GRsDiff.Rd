@@ -13,7 +13,8 @@
 \usage{
 byIndv4Times_GRsDiff(data, responses, 
                      individuals = "Snapshot.ID.Tag", times = "DAP", 
-                     which.rates = c("AGR","PGR","RGR"), suffices.rates=NULL, 
+                     which.rates = c("AGR","PGR","RGR"), 
+                     suffices.rates=NULL, sep.rates = ".", 
                      avail.times.diffs = FALSE, ntimes2span = 2)}
 \arguments{
  \item{data}{A \code{\link{data.frame}} containing the columns for which 
@@ -43,6 +44,10 @@ byIndv4Times_GRsDiff(data, responses,
              suffices in \code{suffices.rates} should correspond to the order 
              of the elements of \code{which.rates}. If \code{NULL}, the values 
              of \code{which.rates} are used.}
+ \item{sep.rates}{A \code{\link{character}} giving the character(s) to be used 
+             to separate the \code{suffices.rates} value from a \code{response} 
+             value in constructing the name for a new rate. For no separator, 
+             set to \code{""}.}
  \item{avail.times.diffs}{A \code{\link{logical}} indicating whether there is an 
              appropriate column of \code{times} diffserences that can be used as 
              the denominator in computing the growth rates. If \code{TRUE}, it will 

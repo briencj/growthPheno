@@ -36,10 +36,11 @@ byIndv4Times_SplinesGRs(data, response, response.smoothed = NULL,
                         npspline.segments = NULL, 
                         correctBoundaries = FALSE, 
                         rates.method = "differences", 
-                        which.rates = c("AGR","RGR"), suffices.rates = NULL, 
+                        which.rates = c("AGR","RGR"), 
+                        suffices.rates = NULL, sep.rates = ".", 
                         avail.times.diffs = FALSE, ntimes2span = 2, 
                         extra.derivs = NULL, suffices.extra.derivs=NULL, 
-                        sep = ".", 
+                        sep.levels = ".", 
                         na.x.action="exclude", na.y.action = "trimx", ...)}
 \arguments{
  \item{data}{A \code{\link{data.frame}} containing the column to be smoothed.}
@@ -119,6 +120,10 @@ byIndv4Times_SplinesGRs(data, response, response.smoothed = NULL,
              suffices in \code{suffices.rates} should correspond to the order 
              of the elements of \code{which.rates}. If \code{NULL}, the values 
              of \code{which.rates} are used.}
+ \item{sep.rates}{A \code{\link{character}} giving the character(s) to be used 
+             to separate the \code{suffices.rates} value from a \code{response} 
+             value in constructing the name for a new rate. For no separator, 
+             set to \code{""}.}
  \item{avail.times.diffs}{A \code{\link{logical}} indicating whether there is an 
              appropriate column of \code{times} diffserences that can be used as 
              the denominator in computing the growth rates. If \code{TRUE}, it will 
@@ -148,7 +153,7 @@ byIndv4Times_SplinesGRs(data, response, response.smoothed = NULL,
             If \code{NULL} and the derivatives are to be retained, then \code{.dv} 
             followed by the order of the derivative is appended to 
             \code{response.method}}.
- \item{sep}{A \code{\link{character}} giving the separator to use when the 
+ \item{sep.levels}{A \code{\link{character}} giving the separator to use when the 
             levels of \code{individuals} are combined. This is needed to avoid 
             using a \code{\link{character}} that occurs in a \code{\link{factor}} to delimit 
             levels when the levels of \code{individuals} are combined to identify 

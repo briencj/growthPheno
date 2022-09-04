@@ -33,7 +33,7 @@ smoothSpline(data, response, response.smoothed = NULL, x,
              smoothing.method = "direct", 
              spline.type = "NCSS", df = NULL, lambda = NULL, 
              npspline.segments = NULL, correctBoundaries = FALSE, 
-             rates = NULL, suffices.rates = NULL, 
+             rates = NULL, suffices.rates = NULL, sep.rates = ".", 
              extra.derivs = NULL, suffices.extra.derivs=NULL, 
              na.x.action = "exclude", na.y.action = "trimx", ...)}
 \arguments{
@@ -87,6 +87,10 @@ smoothSpline(data, response, response.smoothed = NULL, x,
              suffices in \code{suffices.rates} should correspond to the order 
              of the elements of \code{which.rates}. If \code{NULL}, the values 
              of \code{rates} are used.}
+ \item{sep.rates}{A \code{\link{character}} giving the character(s) to be used 
+             to separate the \code{suffices.rates} value from a \code{response} 
+             value in constructing the name for a new rate. For no separator, 
+             set to \code{""}.}
  \item{extra.derivs}{A \code{numeric} specifying one or more orders of derivatives 
              that are required, in addition to any required for calculating the growth 
              rates. When \code{rates.method} is \code{derivatives}, these can be 

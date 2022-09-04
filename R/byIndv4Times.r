@@ -1,7 +1,8 @@
 #Functions to produce values for all times for eacfh individual
 "byIndv4Times_GRsDiff" <- function(data, responses, 
                                    individuals = "Snapshot.ID.Tag", times = "DAP", 
-                                   which.rates = c("AGR","PGR","RGR"), suffices.rates=NULL, 
+                                   which.rates = c("AGR","PGR","RGR"), 
+                                   suffices.rates=NULL, sep.rates = ".", 
                                    avail.times.diffs = FALSE, ntimes2span = 2)
 { 
   options <- c("AGR","PGR","RGR")
@@ -68,9 +69,9 @@
   if ("AGR" %in% opt)
   { 
     if (is.null(suffices.rates))
-      responses.GR <- paste(responses, "AGR", sep=".")
+      responses.GR <- paste(responses, "AGR", sep=sep.rates)
     else
-      responses.GR <- paste(responses, suffices.rates[match("AGR",opt)], sep=".")
+      responses.GR <- paste(responses, suffices.rates[match("AGR",opt)], sep=sep.rates)
     tmp[responses.GR] <- as.data.frame(lapply(tmp[responses], 
                                               FUN = AGRdiff, 
                                               time.diffs = tmp[[times.diffs]], lag = lag))
@@ -81,9 +82,9 @@
   if ("PGR" %in% opt)
   { 
     if (is.null(suffices.rates))
-      responses.GR <- paste(responses, "PGR", sep=".")
+      responses.GR <- paste(responses, "PGR", sep=sep.rates)
     else
-      responses.GR <- paste(responses, suffices.rates[match("PGR",opt)], sep=".")
+      responses.GR <- paste(responses, suffices.rates[match("PGR",opt)], sep=sep.rates)
     tmp[responses.GR] <- as.data.frame(lapply(tmp[responses], 
                                               FUN = PGR, 
                                               time.diffs = tmp[[times.diffs]], lag = lag))
@@ -94,9 +95,9 @@
   if ("RGR" %in% opt)
   { 
     if (is.null(suffices.rates))
-      responses.GR <- paste(responses, "RGR", sep=".")
+      responses.GR <- paste(responses, "RGR", sep=sep.rates)
     else
-      responses.GR <- paste(responses, suffices.rates[match("RGR",opt)], sep=".")
+      responses.GR <- paste(responses, suffices.rates[match("RGR",opt)], sep=sep.rates)
     tmp[responses.GR] <- as.data.frame(lapply(tmp[responses], 
                                               FUN = RGRdiff, 
                                               time.diffs = tmp[[times.diffs]], lag = lag))
@@ -155,11 +156,11 @@
                           rates, suffices.rates, 
                           extra.derivs, suffices.extra.derivs, 
                           #deriv, suffices.deriv, extra.rate, 
-                          na.x.action, na.y.action, sep, ...)
+                          na.x.action, na.y.action, sep.levels, ...)
 {
   #Split data frame by each combination of the individuals factors
   old.names <- names(data)
-  tmp <- split(data, as.list(data[individuals]), sep=sep)
+  tmp <- split(data, as.list(data[individuals]), sep=sep.levels)
   #Fit splines for each combination of the individuals factors
   tmp <- lapply(tmp, smoothSpline, 
                 response = response, response.smoothed = response.smoothed, 
@@ -176,7 +177,7 @@
   tmp <- do.call(rbind, tmp)
   ncols <- ncol(tmp)
   indices <- rownames(tmp)
-  indices <- strsplit(indices, split=sep, fixed=TRUE)
+  indices <- strsplit(indices, split=sep.levels, fixed=TRUE)
   for (fac in 1:length(individuals))
   { 
     tmp[[individuals[fac]]] <- unlist(lapply(indices, 
@@ -214,10 +215,11 @@
                                       npspline.segments = NULL, 
                                       correctBoundaries = FALSE,
                                       rates.method = "differences", 
-                                      which.rates = c("AGR","RGR"), suffices.rates = NULL, 
+                                      which.rates = c("AGR","RGR"), 
+                                      suffices.rates = NULL, sep.rates = ".",
                                       avail.times.diffs = FALSE, ntimes2span = 2, 
                                       extra.derivs = NULL, suffices.extra.derivs=NULL, 
-                                      sep=".", 
+                                      sep.levels=".", 
                                       na.x.action="exclude", na.y.action = "trimx", ...)
 { 
 
@@ -303,18 +305,20 @@
                         smethod = smethod, stype = stype, df=df, 
                         lambda = lambda, npspline.segments = npspline.segments, 
                         correctBoundaries = correctBoundaries, 
-                        rates = splrates, suffices.rates = splsuffices,
+                        rates = splrates, 
+                        suffices.rates = splsuffices, sep.rates = sep.rates,
                         extra.derivs = extra.derivs, 
                         suffices.extra.derivs = suffices.extra.derivs, 
 #                        deriv = derivs, suffices.deriv = suffices.derivs, 
 #                        extra.rate = extra.rate, 
                         na.x.action = na.x.action, na.y.action = na.y.action, 
-                        sep = sep, ...)
+                        sep.levels = sep.levels, ...)
     if (rates.method == "differences")
     {
       smth <- byIndv4Times_GRsDiff(data = smth, response.smoothed, 
                                    individuals=individuals,times=times, 
-                                   which.rates = grates, ntimes2span = ntimes2span, 
+                                   which.rates = grates, sep.rates = sep.rates, 
+                                   ntimes2span = ntimes2span, 
                                    avail.times.diffs = avail.times.diffs)
     }
     smth[times] <- convertTimesExnumeric(smth[[times]], data[[times]])
@@ -338,11 +342,13 @@
                            suffices.extra.derivs = suffices.extra.derivs, 
 #                           deriv = derivs, suffices.deriv = suffices.derivs, 
 #                           extra.rate = extra.rate, 
-                           na.x.action=na.x.action, na.y.action=na.y.action, sep = sep, ...)
+                           na.x.action=na.x.action, na.y.action=na.y.action, 
+                           sep.levels = sep.levels, ...)
       if (rates.method == "differences" && ntimes2span != 2)
         smth <- byIndv4Times_GRsDiff(data = smth, response.smoothed, 
                                      individuals=individuals,times=times, 
-                                     which.rates = grates, ntimes2span = ntimes2span, 
+                                     which.rates = grates, sep.rates = sep.rates, 
+                                     ntimes2span = ntimes2span, 
                                      avail.times.diffs = avail.times.diffs)
       subdat[times] <- convertTimesExnumeric(subdat[[times]], data[[times]])
       smth <- rbind(smth, subdat)
@@ -351,7 +357,8 @@
     if (rates.method == "differences" && ntimes2span == 2)
       smth <- byIndv4Times_GRsDiff(data = smth, response.smoothed, 
                                    individuals=individuals,times=times, 
-                                   which.rates = grates, ntimes2span = ntimes2span, 
+                                   which.rates = grates, sep.rates = sep.rates, 
+                                   ntimes2span = ntimes2span, 
                                    avail.times.diffs = avail.times.diffs)
   }
   
