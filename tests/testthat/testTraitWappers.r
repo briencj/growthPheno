@@ -1,4 +1,4 @@
-#Tesat for the trait wrapper functions
+#Tests for the trait wrapper functions
 
 cat("#### Test traitSmooth with small example\n")
 test_that("exampleData_traitSmooth", {
@@ -78,10 +78,10 @@ test_that("tomato_traitExtractFeatures", {
   #'## Extract single-valued smoothed traits for each individual
   indv.dat <- traitExtractFeatures(data = tom.dat, 
                                    starts.intvl = DAP.starts, stops.intvl = DAP.stops, 
-                                   responses4singletimes = "sPSA", 
                                    responses4intvl.rates = "sPSA", growth.rates = c("AGR", "RGR"), 
                                    water.use4intvl.traits = "sWU", 
                                    responses4water = "sPSA", 
+                                   responses4singletimes = "sPSA", 
                                    responses4overall.total = "sWU",
                                    responses4overall.max = "sPSA.AGR",
                                    mergedata = indv.ini)
@@ -91,14 +91,14 @@ test_that("tomato_traitExtractFeatures", {
   #'## Extract single-valued unsmoothed and smoothed traits in parallel for each individual
   indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
                                    starts.intvl = DAP.starts, stops.intvl = DAP.stops, 
-                                   responses4singletimes = c("PSA", "sPSA"), 
                                    responses4intvl.rates = c("PSA", "sPSA"), growth.rates = c("AGR", "RGR"), 
                                    water.use4intvl.traits = c("WU","sWU"), 
                                    responses4water = c("PSA","sPSA"),
+                                   responses4singletimes = c("PSA", "sPSA"), 
                                    responses4overall.rates = c("PSA", "sPSA"),
                                    water.use4overall.water = c("WU","sWU"), 
                                    responses4overall.water = c("PSA","sPSA"),
-                                   times.overall = c(18,51),
+                                   intvl.overall = c(18,51),
                                    mergedata = indv.ini)
   testthat::expect_equal(nrow(indv.dat), 32)
   testthat::expect_equal(ncol(indv.dat), 7 + (2*7) + (4*6) + (6*6) + 4 + 6) #91
@@ -114,14 +114,14 @@ test_that("tomato_traitExtractFeatures", {
   #'## Extract single-valued unsmoothed and smoothed traits in parallel for each individual with "_" separator
   indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
                                    starts.intvl = DAP.starts, stops.intvl = DAP.stops, 
-                                   responses4singletimes = c("PSA", "sPSA"), 
                                    responses4intvl.rates = c("PSA", "sPSA"), growth.rates = c("AGR", "RGR"), 
                                    water.use4intvl.traits = c("WU","sWU"), 
                                    responses4water = c("PSA","sPSA"), 
+                                   responses4singletimes = c("PSA", "sPSA"), 
                                    responses4overall.rates = c("PSA", "sPSA"),
                                    water.use4overall.water = c("WU","sWU"), 
                                    responses4overall.water = c("PSA","sPSA"),
-                                   times.overall = c(18,51),
+                                   intvl.overall = c(18,51),
                                    sep.growth.rates = "_", sep.water.traits = "_", 
                                    sep.suffix.times = "_", sep.times.intvl = "_", 
                                    mergedata = indv.ini)
@@ -145,14 +145,14 @@ test_that("tomato_traitExtractFeatures", {
   #'## Extract single-valued unsmoothed and smoothed traits in parallel for each individual with no separator
   indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
                                    starts.intvl = DAP.starts, stops.intvl = DAP.stops, 
-                                   responses4singletimes = c("PSA", "sPSA"), 
                                    responses4intvl.rates = c("PSA", "sPSA"), growth.rates = c("AGR", "RGR"), 
                                    water.use4intvl.traits = c("WU","sWU"), 
                                    responses4water = c("PSA","sPSA"), 
+                                   responses4singletimes = c("PSA", "sPSA"), 
                                    responses4overall.rates = c("PSA", "sPSA"),
                                    water.use4overall.water = c("WU","sWU"), 
                                    responses4overall.water = c("PSA","sPSA"),
-                                   times.overall = c(18,51),
+                                   intvl.overall = c(18,51),
                                    sep.growth.rates = "", sep.water.traits = "", 
                                    sep.suffix.times = "", sep.times.intvl = "",
                                    mergedata = indv.ini)
@@ -173,7 +173,7 @@ test_that("tomato_traitExtractFeatures", {
                                    responses4intvl.rates = "sPSA",
                                    growth.rates = "AGR", 
                                    responses4overall.rates = "sPSA",
-                                   times.overall = c(18,51),
+                                   intvl.overall = c(18,51),
                                    mergedata = indv.ini)
   testthat::expect_equal(nrow(indv.dat), 32)
   testthat::expect_equal(ncol(indv.dat), 14)
@@ -184,7 +184,7 @@ test_that("tomato_traitExtractFeatures", {
                                    responses4overall.rates = c("PSA", "sPSA"),
                                    water.use4overall.water = c("WU","sWU"), 
                                    responses4overall.water = c("PSA","sPSA"),
-                                   times.overall = c(18,51),
+                                   intvl.overall = c(18,51),
                                    mergedata = indv.ini)
   #Check the overall values
   testthat::expect_true(all((indv.dat[1, c("PSA.AGR","PSA.RGR","sPSA.AGR","sPSA.RGR","WU","WUR","PSA.WUI",
@@ -199,7 +199,7 @@ test_that("tomato_traitExtractFeatures", {
                                                                responses4overall.rates = "sPSA",
                                                                water.use4overall.water = "sWU", 
                                                                responses4overall.water = "sPSA",
-                                                               times.overall = c(18,51),
+                                                               intvl.overall = c(18,51),
                                                                mergedata = indv.ini),
                          regexp = "growth.rates needs to be set for responses4overall.rates")
   
@@ -208,7 +208,7 @@ test_that("tomato_traitExtractFeatures", {
                                         responses4overall.rates = "sPSA",
                                         water.use4overall.water = "sWU", 
                                         responses4overall.water = "sPSA",
-                                        times.overall = c(18,51),
+                                        intvl.overall = c(18,51),
                                         mergedata = indv.ini)
   testthat::expect_equal(nrow(indv.diff.dat), 32)
   testthat::expect_equal(ncol(indv.diff.dat), 11)
@@ -217,7 +217,7 @@ test_that("tomato_traitExtractFeatures", {
   indv.diff.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
                                         water.use4overall.water = "sWU", 
                                         responses4overall.water = "sPSA",
-                                        times.overall = c(18,51),
+                                        intvl.overall = c(18,51),
                                         mergedata = indv.ini)
   testthat::expect_equal(nrow(indv.diff.dat), 32)
   testthat::expect_equal(ncol(indv.diff.dat), 10)
@@ -230,7 +230,7 @@ test_that("tomato_traitExtractFeatures", {
                                      responses4overall.rates = c("PSA", "sPSA"),
                                      water.use4overall.water = c("WU","sWU"), 
                                      responses4overall.water = c("PSA","sPSA"),
-                                     times.overall = c(18,51),
+                                     intvl.overall = c(18,51),
                                      mergedata = indv.ini))
   testthat::expect_equal(nrow(indv.dat), 32)
   testthat::expect_equal(ncol(indv.dat), 17)
@@ -243,7 +243,7 @@ test_that("tomato_traitExtractFeatures", {
                                    responses4overall.rates = "sPSA",
                                    water.use4overall.water = "sWU", 
                                    responses4overall.water = "sPSA",
-                                   times.overall = c(18,51),
+                                   intvl.overall = c(18,51),
                                    mergedata = indv.ini)
   testthat::expect_equal(nrow(indv.dat), 32)
   testthat::expect_equal(ncol(indv.dat), 11)
@@ -254,11 +254,22 @@ test_that("tomato_traitExtractFeatures", {
                                    responses4overall.rates = c("PSA","sPSA"),
                                    water.use4overall.water = c("WU","sWU"), 
                                    responses4overall.water = c("PSA","sPSA"),
-                                   times.overall = c(18,51),
+                                   intvl.overall = c(18,51),
                                    mergedata = indv.ini)
   testthat::expect_true(all((indv.dat[1, c("PSA.AGR","PSA.RGR","sPSA.AGR","sPSA.RGR","WU","WUR","PSA.WUI",
                                            "sWU","sWUR","sPSA.sWUI")] - 
                                c( 4.899273,0.08852807,4.897457,0.08655332,932,28.24242,0.1734721,
                                   921.4677,27.92326,0.1753898)) < 1e-04))
+  
+  #Only singletimes
+  #'## Extract single-valued unsmoothed and smoothed traits in parallel for each individual with no separator
+  indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
+                                   responses4singletimes = c("PSA", "sPSA"), 
+                                   times.single = DAP.endpts,
+                                   mergedata = indv.ini)
+  testthat::expect_equal(nrow(indv.dat), 32)
+  testthat::expect_equal(ncol(indv.dat), 21)
+  suffs <- paste(DAP.starts, DAP.stops, sep = "")
+  testthat::expect_true(all(names(indv.dat)[-(1:7)] == as.vector(outer(c("PSA","sPSA"), DAP.endpts, paste, sep = "."))))
   
 })

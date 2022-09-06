@@ -29,7 +29,6 @@
 traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP", 
                      starts.intvl = NULL, stops.intvl = NULL, 
                      suffices.intvl = NULL, 
-                     responses4singletimes = NULL, 
                      responses4intvl.rates = NULL, 
                      growth.rates = NULL, 
                      growth.rates.method = "differences", 
@@ -38,12 +37,13 @@ traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP",
                      responses4water = NULL, 
                      water.trait.types = c("WU", "WUR", "WUI"), 
                      suffix.water.rate = "R", suffix.water.index = "I", 
+                     responses4singletimes = NULL, times.single = NULL, 
                      responses4overall.rates = NULL, 
                      water.use4overall.water = NULL, 
                      responses4overall.water = NULL, 
                      responses4overall.totals = NULL, 
                      responses4overall.max = NULL, 
-                     times.overall = NULL, suffix.overall = NULL, 
+                     intvl.overall = NULL, suffix.overall = NULL, 
                      sep.times.intvl = "to", sep.suffix.times = ".", 
                      sep.growth.rates = ".", sep.water.traits = "", 
                      mergedata = NULL, ...)
@@ -76,13 +76,6 @@ traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP",
             specified using \code{starts.intvl} and \code{stops.intvl}. If \code{NULL}, 
             the suffices are automatically generated using \code{starts.intvl}, 
             \code{stops.intvl} and \code{sep.times.intvl}.}
- \item{responses4singletimes}{A \code{\link{character}} specifying the names of the 
-             columns containing \code{responses} for which a column of the values is 
-             to be formed for each response for each of the unique values in 
-             combined \code{starts.intvl} and \code{stops.intvl}. If no interval 
-             \code{responses} are specified, then all of the times for 
-             \code{responses4singletimes} can be specified using \code{start.intvl}.  
-             leaving \code{stops.intvl} set to \code{NULL}.}
  \item{responses4intvl.rates}{A \code{\link{character}} specifying the names of the columns 
              containing responses for which growth rates are to be obtained for 
              the intervals specified by \code{starts.intvl} and \code{stops.intvl}. 
@@ -155,18 +148,29 @@ traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP",
              to the value of \code{water.use4intvl.traits} to form the name of the WUR.}
  \item{suffix.water.index}{A \code{\link{character}} giving the label to be appended 
              to the value of \code{water.use4intvl.traits} to form the name of the WUI.}
+ \item{responses4singletimes}{A \code{\link{character}} specifying the names of the 
+             columns containing \code{responses} for which a column of the values is 
+             to be formed for each response for each of the times values specified in 
+             \code{times.single}. If  \code{times.single} is \code{NULL}, then the  
+             unique values in the combined \code{starts.intvl} and \code{stops.intvl} 
+             will be used.}
+ \item{times.single}{A \code{\link{numeric}} giving the times of imaging, for each of 
+             which, the values of each \code{responses4singletimes} will be stored in 
+             a column of the resulting \code{\link{data.frame}}. If \code{NULL}, then 
+             the  unique values in the combined \code{starts.intvl} and \code{stops.intvl} 
+             will be used.}
  \item{responses4overall.rates}{A \code{\link{character}} specifying the names of the  
              columns containing responses for which growth rates are to be obtained 
              for the whole imaging period i.e. the interval specified by 
-             \code{times.overall}. The settings of \code{growth.rates.method}, 
+             \code{intvl.overall}. The settings of \code{growth.rates.method}, 
              \code{growth.rates}, \code{suffices.growth.rates}, 
-             \code{sep.growth.rates}, \code{suffix.overall} and \code{times.overall} 
+             \code{sep.growth.rates}, \code{suffix.overall} and \code{intvl.overall} 
              will be used in producing the growth rates. See \code{responses4intvl.rates} 
              for more information about how these arguments are used.}
  \item{water.use4overall.water}{A \code{\link{logical}} indicating whether the overall 
              water.traits are to be obtained. The settings of \code{water.trait.types}, 
              \code{suffix.water.rate}, \code{suffix.water.index}, \code{sep.water.traits}, 
-             \code{suffix.overall} and \code{times.overall} will be used in producing the 
+             \code{suffix.overall} and \code{intvl.overall} will be used in producing the 
              overall water traits. See \code{water.use4intvl.traits} for more information about 
              how these arguments are used.}
  \item{responses4overall.water}{A \code{\link{character}} giving the names of the columns  
@@ -182,7 +186,7 @@ traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP",
              columns containing responses for which columns of the values are 
              to be formed that relate to the maximum of the response for each 
              individual over the whole of the imaging period.}
- \item{times.overall}{A \code{\link{numeric}} giving the starts and stop times of imaging. 
+ \item{intvl.overall}{A \code{\link{numeric}} giving the starts and stop times of imaging. 
              If \code{NULL}, the start time will be the minimum of \code{starts.intvl} 
              and the stop time will be the maximum of \code{stops.intvl}.}
  \item{suffix.overall}{A \code{\link{character}} giving the suffix to be appended to  

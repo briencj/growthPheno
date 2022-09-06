@@ -1,5 +1,10 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.0-18 (2022-09-06)}{
+  \itemize{
+  \item{Move argument \code{responses4singletimes} and add argument \code{times.single} in traitExtractFeatures.}
+  \item{Rename arguments \code{times.overall} to \code{intvl.overall} in traitExtractFestures.}
+  }}
 \section{growthPheno Version 2.0-17 (2022-09-04)}{
   \itemize{
   \item{Fix a bug in traitExtractFeatures associated with responses.water and allow parallel looping over multiple values for both water.use and responses.water.}

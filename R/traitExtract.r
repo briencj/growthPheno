@@ -4,7 +4,6 @@
 traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = "DAP", 
                                  starts.intvl = NULL, stops.intvl = NULL, 
                                  suffices.intvl = NULL, 
-                                 responses4singletimes = NULL, 
                                  responses4intvl.rates = NULL, 
                                  growth.rates = NULL, 
                                  growth.rates.method = "differences", 
@@ -12,11 +11,12 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
                                  water.use4intvl.traits = NULL, responses4water = NULL, 
                                  water.trait.types = c("WU", "WUR", "WUI"), 
                                  suffix.water.rate = "R", suffix.water.index = "I", 
+                                 responses4singletimes = NULL, times.single = NULL, 
                                  responses4overall.rates = NULL, 
                                  water.use4overall.water = NULL, responses4overall.water = NULL, 
                                  responses4overall.totals = NULL, 
                                  responses4overall.max = NULL, 
-                                 times.overall = NULL, suffix.overall = NULL, 
+                                 intvl.overall = NULL, suffix.overall = NULL, 
                                  sep.times.intvl = "to", sep.suffix.times = ".", 
                                  sep.growth.rates = ".", sep.water.traits = "", 
                                  mergedata = NULL, ...)
@@ -39,25 +39,30 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
   water.traits <- c("WU", "WUR", "WUI")[c("WU", "WUR", "WUI") %in% water.traits]
   names(water.traits) <- water.traits
   
-  
-  if (!is.allnull(times.overall))
+  #Process times arguments
+  times.all <- NULL
+  if(!is.allnull(c(starts.intvl, stops.intvl)))
+    times.all <- c(starts.intvl, stops.intvl)
+  #Process intvl.overall
+  if (!is.allnull(intvl.overall))
   {
-    if (length(times.overall) !=  2 && times.overall[1] >= times.overall[1])
-      stop("times.overall should contain the two values, the second value being greater than the first")
+    if (length(intvl.overall) !=  2 && intvl.overall[1] >= intvl.overall[1])
+      stop("intvl.overall should contain the two values, the second value being greater than the first")
   }
   else 
   {
-    if(!is.allnull(c(starts.intvl, stops.intvl)))
-    {
-      times.overall <- c(starts.intvl, stops.intvl)
-      times.overall <- range(times.overall, na.rm = TRUE)
-    }
+    if(!is.null(times.all))
+      intvl.overall <- range(times.all, na.rm = TRUE)
   }
+  
+  #Process times.single
+  if (is.null(times.single)  && !is.null(times.all))
+    times.single <- sort(unique(c(starts.intvl, stops.intvl)))
   
   #Check starts.intvl and stops.intvl and set up suffices.intvl
   if (is.allnull(starts.intvl) || is.allnull(stops.intvl))
   {   
-    if (!is.allnull(c(responses4singletimes, responses4intvl.rates, water.use4intvl.traits, responses4water)))
+    if (!is.allnull(c(responses4intvl.rates, water.use4intvl.traits, responses4water)))
       stop("Neither starts.intvl nor stops.intvl can be NULL")
   }
   else
@@ -92,10 +97,9 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
   ####Get the single times
   if (!is.allnull(responses4singletimes))
   {
-    times1 <- sort(unique(c(starts.intvl, stops.intvl)))
-    if (is.allnull(times1))
-      stop("No times have been specified using starts.intvl or stops.intvl")
-    for (t1 in times1)
+    if (is.allnull(times.single))
+      stop("No times available for single-time traits")
+    for (t1 in times.single)
       indv.dat <- merge(indv.dat, 
                         getTimesSubset(data = data, 
                                        responses = responses4singletimes, 
@@ -232,6 +236,8 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
   ####Get the overall responses rates
   if (!is.allnull(responses4overall.rates))
   {
+    if (is.allnull(intvl.overall))
+      stop("No times available for overall traits")
     if (length(grates) == 0)
       stop("growth.rates needs to be set for responses4overall.rates")
     if (is.allnull(suffices.growth.rates))
@@ -247,8 +253,8 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
                                                which.rates = grates, 
                                                suffices.rates = suffices.growth.rates, 
                                                sep.rates = sep.growth.rates, 
-                                               start.time = times.overall[1], 
-                                               end.time = times.overall[2], 
+                                               start.time = intvl.overall[1], 
+                                               end.time = intvl.overall[2], 
                                                suffix.interval = suffix.overall, 
                                                sep.suffix.interval = sep.suffix.times),
                           by = individuals, sort = FALSE)
@@ -269,8 +275,8 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
                                               which.rates = grates,
                                               suffices.rates = suffices.growth.rates, 
                                               sep.rates = sep.growth.rates, 
-                                              start.time = times.overall[1], 
-                                              end.time = times.overall[2], 
+                                              start.time = intvl.overall[1], 
+                                              end.time = intvl.overall[2], 
                                               suffix.interval = suffix.overall, 
                                               sep.suffix.interval = sep.suffix.times,
                                               sep.levels = "_"),
@@ -289,6 +295,8 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
     # suffix.index <- "I"
     # if (grepl(".", water.use, fixed = TRUE))
     #   suffix.index <- ".Index"
+    if (is.allnull(intvl.overall))
+      stop("No times available for overall traits")
     if (length(water.use4overall.water) > 1 && length(responses4overall.water) > 1)
     {
       if (length(water.use4overall.water) != length(responses4overall.water))
@@ -306,8 +314,8 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
                                                 suffix.index = suffix.water.index, 
                                                 sep.water.traits = sep.water.traits, 
                                                 sep.responses = sep.growth.rates, 
-                                                start.time = times.overall[1], 
-                                                end.time = times.overall[2], 
+                                                start.time = intvl.overall[1], 
+                                                end.time = intvl.overall[2], 
                                                 suffix.interval = suffix.overall, 
                                                 sep.suffix.interval = sep.suffix.times),
                           by = individuals, sort = FALSE)
@@ -327,8 +335,8 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
                                                   suffix.rate = suffix.water.rate, 
                                                   sep.water.traits = sep.water.traits, 
                                                   suffix.index = suffix.water.index, 
-                                                  start.time = times.overall[1], 
-                                                  end.time = times.overall[2], 
+                                                  start.time = intvl.overall[1], 
+                                                  end.time = intvl.overall[2], 
                                                   suffix.interval = suffix.overall, 
                                                   sep.suffix.interval = sep.suffix.times),
                             by = individuals, sort = FALSE)
@@ -347,8 +355,8 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
                                                response = r, 
                                                individuals = individuals, times = times, 
                                                FUN = "sum", addFUN2name = FALSE, 
-                                               start.time = times.overall[1], 
-                                               end.time = times.overall[2], 
+                                               start.time = intvl.overall[1], 
+                                               end.time = intvl.overall[2], 
                                                suffix.interval = suffix.overall, 
                                                sep.suffix.interval = sep.suffix.times))
     }
@@ -364,8 +372,8 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
                                                response = r, 
                                                individuals = individuals, times = times, 
                                                FUN = "max", which.obs = FALSE, which.values = times, 
-                                               start.time = times.overall[1], 
-                                               end.time = times.overall[2], 
+                                               start.time = intvl.overall[1], 
+                                               end.time = intvl.overall[2], 
                                                suffix.interval = NULL),
                         by = individuals, sort = FALSE)
     }
