@@ -804,9 +804,9 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
   if (!all(c(intervals, timePositions, groupVariable, colourVariable) %in% names(data)))
   {
     miss.names <- c(intervals, timePositions, groupVariable, 
-                    colourVariable)[c(intervals, timePositions, groupVariable, colourVariable) 
-                                    %in% names(data)]
-    stop(paste(paste(miss.names, collapse = ",")," is/are not present in the data", sep=""))
+                    colourVariable)[!(c(intervals, timePositions, groupVariable, colourVariable) 
+                                      %in% names(data))]
+    stop(paste(paste(miss.names, collapse = ", ")," is/are not present in the data", sep=""))
   }
    if (!(is.numeric(data[[intervals]])))
     data[intervals] <- dae::as.numfac(data[[intervals]])

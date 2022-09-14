@@ -59,7 +59,7 @@ traitSmooth(data, response, response.smoothed, individuals, times,
                                  lambda = NULL,
                                  smoothing.method = "logarithmic"), 
              facet.x.chosen = ".", facet.y.chosen = ".", 
-             labeller.chosen = NULL, breaks.spacing.x.chosen = 2, 
+             labeller.chosen = NULL, breaks.spacing.x.chosen = -2, 
              colour.chosen = "black", colour.column.chosen = NULL, 
              colour.values.chosen = NULL, alpha.chosen = 0.3, 
              addMediansWhiskers.chosen = TRUE, 
@@ -128,9 +128,16 @@ traitSmooth(data, response, response.smoothed, individuals, times,
               facets of plots produced using the \code{\link{ggplot}} function, 
               including profile plots for the chosen smooth and plots produced using 
               \code{\link{probeSmooths}}. For more information see \code{\link{ggplot}}.}
- \item{breaks.spacing.x.chosen}{A \code{\link{numeric}} specifying the distance between 
-             breaks for the x-axis in a sequnce beginning with the minimum x value and 
-             continuing up to the maximum x value.}
+ \item{breaks.spacing.x.chosen}{A \code{\link{numeric}} whose absolute values specifies the 
+             distance between breaks for the x-axis in a sequence beginning with the 
+             minimum x value and continuing up to the maximum x value. If it is negative, 
+             the breaks that do not have x values in \code{data} will be omitted. 
+             Minor breaks will be at half this value or, if these do not correspond to 
+             x-values in \code{data} when \code{breaks.spacing.x} is negative, have 
+             a spacing of one. Thus, when \code{breaks.spacing.x} is negative,  
+             grid lines will only be included for x-values that occur in \code{data}.  
+             These settings can be overwritten by supplying a \code{scale_x_continuous} 
+             function from \code{ggplot2} in  \code{ggplotFuncsChosen}.}
  \item{colour.chosen}{A \code{\link{character}} specifying a single colour to use in 
               drawing the lines for the profiles. If colouring according to the 
               values of a variable is required then use \code{colour.column.chosen}.}
@@ -186,7 +193,8 @@ traitSmooth(data, response, response.smoothed, individuals, times,
        either an unsmoothed or a smoothed trait are in a single column. 
        
        A \code{\link{smooths.frame}} will be returned when \code{chosen.smooth} is 
-       \code{NULL}. It will contains the smooths for a trait for the different 
+       \code{NULL} and there is more than one smooth specified by the smoothing 
+       parameter arguments. It will contains the smooths for a trait for the different 
        combinatons of the smoothing parameters, the values for the different smooths 
        being placed in rows one below the other. The columns that are included in the 
        \code{\link{smooths.frame}} are \code{Type}, \code{TunePar}, \code{TuneVal}, 
@@ -198,9 +206,10 @@ traitSmooth(data, response, response.smoothed, individuals, times,
        has the attributes described in \code{\link{smooths.frame}}. 
 
        A \code{\link{data.frame}} will be returned when \code{chosen.smooth} is 
-       not \code{NULL}. It will be the same as \code{data}, but with \code{response}, 
-       \code{response.smoothed} for the chosen smooth and their AGRs and RGRs 
-       added, the added columns replacing any pre-existing columns of the same name 
+       not \code{NULL} or it is \code{NULL} and there is only one smooth specified by 
+       the smoothing parameter arguments. It will be the same as \code{data}, but with 
+       \code{response}, \code{response.smoothed} for the chosen smooth and their AGRs and 
+       RGRs added, the added columns replacing any pre-existing columns of the same name 
        in \code{data}.
 
        The \code{\link{smooths.frame}}/\code{\link{data.frame}} is returned invisibly.}

@@ -1,5 +1,11 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.0-19 (2022-09-14)}{
+  \itemize{
+  \item{Changed the return value for traitSmooth in the case that there is only one smooth specified by the smoothing parameters and the argument \code{Chosen.smooth} \code{NULL}. Now the smooth will be merged with the data and returned as a \code{data.frame}.}
+  \item{Modify \code{breaks.spacing.x} in plotSmoothsComparison, plotMedianDeviations, probeSmooths and traitSmooth to allow for negative values that signify breaks or minor breaks are to be omitted for values that do not occur in the data. Change defaults for \code{breaks.spacing.x} to be negative.}
+  \item{Fix bug in the error message in plotImagetimes for columns not in \code{data}.}
+  }}
 \section{growthPheno Version 2.0-18 (2022-09-06)}{
   \itemize{
   \item{Move argument \code{responses4singletimes} and add argument \code{times.single} in traitExtractFeatures.}
@@ -17,9 +23,9 @@
   }}
 \section{growthPheno Version 2.0-16 (2022-08-01)}{
   \itemize{
-  \item{Fix a bug in plotSmoothsCompaison that meant that attempting to change the x-axis breaks using the function \code{ggplot2::scale_x_continuous} were ignored.}
+  \item{Fix a bug in plotSmoothsComparison that meant that attempting to change the x-axis breaks using the function \code{ggplot2::scale_x_continuous} were ignored.}
   \item{Fix a bug in plotSmoothsMedianDevn in plotting the envelope note when there are more than two variables in \code{facet.x.med}.}
-  \item{Add \code{breaks.spacing.x}, argument to plotSmoothsComparison and probeSmooths.}
+  \item{Add \code{breaks.spacing.x}, argument to plotSmoothsComparison, plotMedianDeviations, probeSmooths and traitSmooth.}
   \item{Add \code{collapse.facets.x.pf} and \code{collapse.facets.y.pf} arguments and replace \code{plots.include.raw} with the \code{include.raw.pf} argument in plotSmoothsComparison and probeSmooths so that facetting can be based on an arbitrary combinations of smoothing-parameters and other factors.}
   \item{Change the argument \code{suffices.rates} in traitExtractFeatures to \code{suffices.growth.rates} abd add the arguments \code{water.trait.types}, \code{suffix.water.rate}, \code{suffix.water.index}.}
   \item{Add check to probeSmooths that there is no more than one observation for each combination of individuals and times.}

@@ -197,6 +197,18 @@ test_that("chickpea_growthPheno", {
                     "the combinations of the smoothing-parameter values in the smooths.frame")),
     regexp = "NaNs produced")
   
+  
+  #Check breaks.spacing.x = -1
+  testthat::expect_silent(
+    plotSmoothsComparison(data = t, response="ShootArea1000", 
+                          times = "TimeAfterPlanting", 
+                          trait.types = ("response"), 
+                          breaks.spacing.x = -1, 
+                          plots.by.pf = "Smarthouse", 
+                          facet.x.pf = c("Method", "Treatment.1", "Tuning"), 
+                          collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
+  
+
   #Plot medians.deviations only with only facet.y.med set
   testthat::expect_warning(t <- probeSmooths(data = dat1, response="ShootArea1000", 
                                              times = "TimeAfterPlanting", 
@@ -995,7 +1007,49 @@ test_that("RicePrepped_growthPheno", {
   testthat::expect_true(all(c("fac.by", "Smarthouse", "Salinity", "SmoothParams", "PSA.devn", "DAST") 
                             %in% names(t$med.devn.dat)))
   
+  
+  #Test breaks.spacing.x
+  testthat::expect_silent(
+    plotSmoothsComparison(data = smth, response="PSA", response.smoothed = "sPSA",
+                          times = "DAST", trait.types = "response", 
+                          breaks.spacing.x = -2, 
+                          plots.by.pf = "Smarthouse", 
+                          facet.x.pf = c("Method", "Tuning"), facet.y.pf = "Salinity", 
+                          collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
+  
+  testthat::expect_silent(
+    plotSmoothsComparison(data = smth, response="PSA", response.smoothed = "sPSA",
+                          times = "DAST", trait.types = "response", 
+                          breaks.spacing.x = -3, 
+                          plots.by.pf = "Smarthouse", 
+                          facet.x.pf = c("Method", "Tuning"), facet.y.pf = "Salinity", 
+                          collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
+  
+  testthat::expect_silent(
+    plotSmoothsComparison(data = smth[smth$DAST != 1, ], response="PSA", response.smoothed = "sPSA",
+                          times = "DAST", trait.types = "response", 
+                          breaks.spacing.x = -3, 
+                          plots.by.pf = "Smarthouse", 
+                          facet.x.pf = c("Method", "Tuning"), facet.y.pf = "Salinity", 
+                          collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
+  
+  testthat::expect_silent(
+    plotSmoothsComparison(data = smth[smth$DAST != 1, ], response="PSA", response.smoothed = "sPSA",
+                          times = "DAST", trait.types = "response", 
+                          breaks.spacing.x = 2, 
+                          plots.by.pf = "Smarthouse", 
+                          facet.x.pf = c("Method", "Tuning"), facet.y.pf = "Salinity", 
+                          collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
+  
   testthat::expect_warning(
+    testthat::expect_silent(
+      plotSmoothsComparison(data = smth[smth$DAST != 1, ], response="PSA", response.smoothed = "sPSA",
+                            times = "DAST", trait.types = "response", 
+                            breaks.spacing.x = 3, 
+                            plots.by.pf = "Smarthouse", 
+                            facet.x.pf = c("Method", "Tuning"), facet.y.pf = "Salinity", 
+                            collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
+    
     smth <- probeSmooths(data = RicePrepped.dat, response = "PSA", response.smoothed = "sPSA", 
                          times = "DAST", 
                          spline.types = c("NCSS", "PS"), smoothing.methods = "logarithmic",

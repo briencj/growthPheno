@@ -32,7 +32,7 @@ plotSmoothsMedianDevns(data, response, response.smoothed = NULL,
                        individuals = "Snapshot.ID.Tag",  times = "DAP", 
                        trait.types = c("response", "AGR", "RGR"), 
                        x.title = NULL, y.titles = NULL, labeller = NULL, 
-                       breaks.spacing.x = 4, 
+                       breaks.spacing.x = -4, 
                        plots.by.med = NULL, plots.group.med = NULL, 
                        facet.x.med = ".", facet.y.med = ".", 
                        colour.values.med = NULL, shape.values.med = NULL, 
@@ -92,9 +92,16 @@ plotSmoothsMedianDevns(data, response, response.smoothed = NULL,
 \item{labeller}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
              facets of a plot produced using the \code{\link{ggplot}} function. 
              For more information see \code{\link{ggplot}}.}
-\item{breaks.spacing.x}{A \code{\link{numeric}} specifying the distance between breaks for 
-             the x-axis in a sequnce beginning with the minimum x value and continuing 
-             up to the maximum x value.}
+ \item{breaks.spacing.x}{A \code{\link{numeric}} whose absolute values specifies the 
+             distance between breaks for the x-axis in a sequence beginning with the 
+             minimum x value and continuing up to the maximum x value. If it is negative, 
+             the breaks that do not have x values in \code{data} will be omitted. 
+             Minor breaks will be at half this value or, if these do not correspond to 
+             x-values in \code{data} when \code{breaks.spacing.x} is negative, have 
+             a spacing of one. Thus, when \code{breaks.spacing.x} is negative,  
+             grid lines will only be included for x-values that occur in \code{data}.  
+             These settings can be overwritten by supplying a \code{scale_x_continuous} 
+             function from \code{ggplot2} in \code{ggplotFuncsMedDevn}.}
 \item{plots.by.med}{A \code{\link{character}} that give the names of the set of 
              \code{\link{factor}}s by which medians deviations data is to be 
              grouped and a separate plot produced for each group. If \code{NULL}, 

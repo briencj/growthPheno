@@ -77,10 +77,10 @@ convertTimesExnumeric <- function(x, times.data)
   }
   else
   { 
-    if (!is.null(terms))  
+    if (!is.null(formula))  
       formula <- as.formula(formula)
   }
-  if (is.null(terms))
+  if (is.null(formula))
     facs <- NULL
   else
     facs <- rownames(attr(terms(with(data, formula)), which="factor"))

@@ -239,6 +239,35 @@ checkPlotsArgs <- function(data, plts.by, plts.group = NULL, facet.x, facet.y)
   return(data)
 }  
 
+#Function to set up scale_x_continuous for times
+setScaleTime <- function(times, breaks.spacing.x = -2)
+{
+  abs.spacing.x <- abs(breaks.spacing.x)
+  time.vals <- sort(unique(times))
+  time.vals <- time.vals[!is.na(time.vals)]
+  brks <- seq(min(times, na.rm = TRUE),
+              max(times, na.rm = TRUE), 
+              by = abs.spacing.x)
+  if (breaks.spacing.x < 0)
+    brks <- brks[brks %in% time.vals]
+  minbrks <- seq(min(time.vals), max(time.vals), 
+                 by = abs.spacing.x/2)
+  if (breaks.spacing.x < 0)
+  {  
+    minbrks <- minbrks[minbrks %in% time.vals]
+    if (length(minbrks) == length(brks) && all(minbrks == brks))
+    { 
+      minbrks <- seq(min(time.vals), max(time.vals), 
+                     by = 1)
+      if (breaks.spacing.x < 0)
+        minbrks <- minbrks[minbrks %in% time.vals]
+    }
+  }
+  scale.time <- scale_x_continuous(limits = range(time.vals),
+                                   breaks = brks, minor_breaks = minbrks)
+  return(scale.time)
+}
+
 #Function to produce a single plot of deviations boxplots 
 plotDeviationsBoxes <- function(data, observed, smoothed, x.factor, 
                                 x.title = NULL, y.titles = NULL,
@@ -341,7 +370,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                                      individuals = "Snapshot.ID.Tag", times = "DAP", 
                                      trait.types = c("response", "AGR", "RGR"), 
                                      x.title = NULL, y.titles = NULL, labeller = NULL, 
-                                     breaks.spacing.x = 4, 
+                                     breaks.spacing.x = -4, 
                                      plots.by.med = NULL, plots.group.med = NULL, 
                                      facet.x.med = ".", facet.y.med = ".", 
                                      colour.values.med = NULL, shape.values.med = NULL, 
@@ -509,6 +538,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
   #Plot the median deviations for each trait
   if (is.null(shape.values.med))
     shape.values.med <- c(21:24,7,9,10,11,3,4)
+  
   plts <- list()
   for (k in kresp)
   {
@@ -529,9 +559,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
       plts[[k]][[p]] <- ggplot(tmp, aes_string(x = times, kresp.devn[k]), ...) +
         ggfacet +
         geom_hline(yintercept=0, linetype="solid", size=0.5, colour = "maroon", alpha=0.7) +
-        scale_x_continuous(breaks = seq(min(tmp[[times]], na.rm = TRUE),
-                                        max(tmp[[times]], na.rm = TRUE), 
-                                        by = breaks.spacing.x)) + 
+        setScaleTime(tmp[[times]], breaks.spacing.x = breaks.spacing.x) +
         xlab(x.title) + ylab(y.titles[k]) + theme_bw() +
         theme(strip.text = element_text(size=strip.text.size, face="bold"),
               axis.title = element_text(face="bold"),
@@ -663,7 +691,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                                     trait.types = c("response", "AGR", "RGR"), 
                                     x.title = NULL, y.titles = NULL, labeller = NULL, 
                                     which.plots = "profiles", printPlot = TRUE, 
-                                    breaks.spacing.x = 4, 
+                                    breaks.spacing.x = -4, 
                                     plots.by.pf = NULL, facet.x.pf = ".", facet.y.pf = ".", 
                                     collapse.facets.x.pf = TRUE, collapse.facets.y.pf = FALSE, 
                                     include.raw.pf = "no", 
@@ -783,9 +811,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
   data <- modfacet$data
 
   #Do the plots
-  x.axis <- list(scale_x_continuous(breaks = seq(min(data[[times]], na.rm = TRUE),
-                                                 max(data[[times]], na.rm = TRUE), 
-                                                 by = breaks.spacing.x)),
+  x.axis <- list(setScaleTime(data[[times]], breaks.spacing.x = breaks.spacing.x),
                  theme(axis.text.x = element_text(size = 7.5)))
   plts <- list()
   for (k in kresp)
@@ -1573,7 +1599,7 @@ smoothSchemes <- function(tmp, spar.schemes,
                            external.smooths = NULL, 
                            correctBoundaries = FALSE, 
                            x.title = NULL, y.titles = NULL, labeller = NULL, 
-                           which.plots = "profiles", breaks.spacing.x = 4, 
+                           which.plots = "profiles", breaks.spacing.x = -4, 
                            plots.by.pf = NULL, facet.x.pf = ".", facet.y.pf = ".", 
                            collapse.facets.x.pf = TRUE, collapse.facets.y.pf = FALSE, 
                            include.raw.pf = "no",
@@ -1963,7 +1989,7 @@ smoothSchemes <- function(tmp, spar.schemes,
                                                lambda = NULL,
                                                smoothing.method = "logarithmic"), 
                           facet.x.chosen = ".", facet.y.chosen = ".", 
-                          labeller.chosen = NULL, breaks.spacing.x.chosen = 2, 
+                          labeller.chosen = NULL, breaks.spacing.x.chosen = -2, 
                           colour.chosen = "black", colour.column.chosen = NULL, 
                           colour.values.chosen = NULL, alpha.chosen = 0.3, 
                           addMediansWhiskers.chosen = TRUE, 
@@ -2138,9 +2164,7 @@ smoothSchemes <- function(tmp, spar.schemes,
                                                        tunepar,tuneval), collapse = "-"))
     
     #Call plot longitudinal with just the plotProfile args from inargs
-    x.axis <- list(scale_x_continuous(breaks = seq(min(smth[[times]], na.rm = TRUE),
-                                                   max(smth[[times]], na.rm = TRUE), 
-                                                   by = breaks.spacing.x.chosen)))
+    x.axis <- list(setScaleTime(smth[[times]], breaks.spacing.x = breaks.spacing.x.chosen)) 
     for (kresp in responses.plot)
       do.call(plotProfiles, c(list(data = smth, times = times,response = kresp,
                                        individuals = individuals,
@@ -2157,7 +2181,16 @@ smoothSchemes <- function(tmp, spar.schemes,
                                        printPlot = TRUE,
                                        ggplotFuncs = c(x.axis, ggplotFuncsChosen)),
                                   pltProfile.args))
-  }
+  } else # merge with the original data if there is only one smooth
+  {
+    if (all(sapply(smth[smooth.cols], function(x) nlevels(x) == 1)))
+    {
+      smth <- subset(smth, select = setdiff(names(smth), c("Type","TunePar","TuneVal","Method","Tuning")))
+      class(smth) <- "data.frame"
+      tmp <- subset(tmp, select = c(individuals, times, setdiff(names(tmp), names(smth))))
+      smth <- merge(tmp, smth, sort = FALSE)
+      smth <- smth[c(names(data),setdiff(names(smth), names(data)))]
+    }}
 
   #Make sure that times is of the same type as times in data
   smth[times] <- convertTimesExnumeric(smth[[times]], data[[times]])
