@@ -1,273 +1,3 @@
-#Function to check that arguments that come in via the ellipsis are all arguments to the allowed functions
-#Usually funcs should be the current function and any to which ... is allowed to pass arguments
-checkEllipsisArgs <- function(funcs, inargs)
-{
-  inargs <- names(inargs)
-  if (length(inargs))
-  {
-    args <- unique(unlist(lapply(funcs, formalArgs)))
-    args <- args[-match("...", args)]
-    foreignArgs <- inargs[!(inargs %in% args)]
-    if (length(foreignArgs))
-      stop("the argument(s) ", paste0(foreignArgs, collapse = ", "), " are not legal arguments for ", 
-           paste0(paste0("'",funcs, collapse = "', "), "'"))
-  }
-  invisible()
-}
-
-#Function to get the number of combinations of the factors in cols that are in data
-getNschemes <- function(data, cols)
-{
-  if (!all(is.factor(data[cols])))
-    data[cols] <- lapply(data[cols], as.factor)
-  nsch <- length(levels(dae::fac.combine(as.list(data[cols]), 
-                                         combine.levels = TRUE, sep = "-")))
-}
-
-#Function to combine just the smoothing-parameter factors 
-fac.tunecombine <- function(dat, factors, smooth.cols)
-{
-  tune.facs <- intersect(factors, smooth.cols)
-  if ("Method" %in% tune.facs)
-    dat["Method"] <- dae::fac.recast(dat[["Method"]], 
-                                     newlevels = substring(levels(dat[["Method"]]), 
-                                                           first = 1, last = 3))
-  if (length(tune.facs) <= 0) 
-    fac <- NULL  
-  else
-  {
-    if (length(tune.facs) == 1)
-      fac <- dat[[tune.facs]]
-    else
-      fac <- with(dat, dae::fac.combine(as.list(dat[tune.facs]),
-                                        combine.levels = TRUE, sep = "-"))
-  }
-  return(fac)
-}
-
-#Function to have commas between non-smoothing-parameter factors and 
-#hyphens between smoothing-parameter factors 
-fac.mixcombine <- function(dat, factors, smooth.cols)
-{
-  tune.facs <- factors[factors %in% smooth.cols]
-  if ("Method" %in% tune.facs)
-    dat["Method"] <- dae::fac.recast(dat[["Method"]], 
-                                     newlevels = substring(levels(dat[["Method"]]), 
-                                                           first = 1, last = 3))
-  if (length(tune.facs) > 0)
-  {
-    factors <- setdiff(factors, tune.facs)
-    fac <- with(dat, dae::fac.combine(as.list(dat[tune.facs]),
-                                      combine.levels = TRUE, sep = "-"))
-    dat$tune.fac <- fac
-    if (length(factors) > 0)
-      fac <- with(dat, dae::fac.combine(as.list(dat[c(factors,"tune.fac")]),
-                                        combine.levels = TRUE, sep = ", "))
-  }
-  else
-    fac <- with(dat, dae::fac.combine(as.list(dat[factors]),
-                                      combine.levels = TRUE, sep = ", "))
-  return(fac)
-}
-
-#Function to set up a facet using fac.mixcombine, fac.tunecombine and fac.combine
-"setupFacet" <- function(data, facet, collapse.facets, combined.name = "SmoothParams", smooth.cols)
-{
-  newfacet <- facet
-  if (any(smooth.cols %in% newfacet))
-  {
-    if (collapse.facets)
-    {  
-      data[combined.name] <- fac.mixcombine(data, facet, smooth.cols = smooth.cols)
-      newfacet <- combined.name
-    } else
-    {
-      data[combined.name] <- fac.tunecombine(data, facet, smooth.cols = smooth.cols)
-      newfacet <- c(setdiff(newfacet, smooth.cols), combined.name)
-    }
-  } else #no smooth.cols & several factors to collapse
-  { 
-    if (!all(newfacet == ".") && (length(newfacet) > 1) && collapse.facets)
-    { 
-      data[combined.name] <- dae::fac.combine(as.list(data[newfacet]), combine.levels = TRUE)
-      newfacet <- combined.name
-    }
-  }
-  return(list(newfacet = newfacet, data = data))
-}
-
-#Functions for setting up and checking a smooths.frame
-
-"is.smooths.frame" <- function(object)
-{
-  inherits(object, "smooths.frame") && inherits(object, "data.frame")
-}
-
-"validSmoothsFrame" <- function(object)
-{
-  smooth.cols <- c("Type","TunePar","TuneVal","Tuning","Method")
-  issmoothsframe <- TRUE 
-  #Check have only legal attributes
-  if (!all(names(attributes(object)) %in% c("names", "row.names", "class", "n", "t", "nschemes", 
-                                            "individuals", "times")))
-  {
-    issmoothsframe[1] <- FALSE
-    issmoothsframe <- c(issmoothsframe, 
-                        "\n  An unexpected attribute is present in a smooths.frame")
-  }
-  #Check that have non-null values for smooths.frames attributes
-  smooth.attr <- c("n", "t", "nschemes", "individuals", "times")
-  which.null <- unlist(lapply(smooth.attr, function(x, object) is.null(attr(object, which = x)), 
-                              object = object))
-  if (any(which.null))
-  {
-    issmoothsframe[1] <- FALSE
-    issmoothsframe <- c(issmoothsframe, 
-                        paste0("\n  The followng attributes of a smooths.frame are NULL: ", 
-                               paste(smooth.attr[which.null],collapse=", ")))
-  }
-  #Check that is a data.frame
-  if (!is.data.frame(object))
-  {
-    issmoothsframe[1] <- FALSE
-    issmoothsframe <- c(issmoothsframe, 
-                        "\n  smooths.frame is not a data.frame")
-  }
-  #Check have all the smoothing parameter columns 
-  if (!all(smooth.cols %in% names(object)))
-  {
-    issmoothsframe[1] <- FALSE
-    issmoothsframe <- c(issmoothsframe, 
-                        paste0("\n  Do not have the following required smoothing-parameters columns in a smooths.frame: ", 
-                               paste(smooth.cols[!(smooth.cols %in% names(object))],collapse=", ")))
-  } else
-  {
-    #Check that the number of smoothing parameter sets in object is equal to the nschemes attribute
-    nschemes <- getNschemes(object, smooth.cols)
-    if (attr(object, which = "nschemes") != nschemes)
-    {
-      issmoothsframe[1] <- FALSE
-      issmoothsframe <- c(issmoothsframe, 
-                          paste0("\n The number of different combinations of the smoothing-parameter values ", 
-                                 "in the smooths.frame does not match the number in its 'nschemes' attribute"))
-    }
-  }
-  
-  #Check the times.cols
-  id.cols <- c(attr(object, which = "times"), attr(object, which = "individuals"))
-  if (!(all(id.cols %in% names(object))))
-  { 
-    issmoothsframe[1] <- FALSE
-    issmoothsframe <- c(issmoothsframe, 
-                        paste0("\n  Do not have columns  for ", 
-                               paste(id.cols[!(id.cols %in% names(object))],collapse=" or "), 
-                               " in the smooths.frame"))
-  }
-  
-  if (length(issmoothsframe) > 1)
-    issmoothsframe[1] <- "Error in validSmoothsFrame : "
-  return(issmoothsframe)
-}
-
-"as.smooths.frame" <- function(data, individuals = NULL, times = NULL)
-{
-  smooth.cols <- c("Type","TunePar","TuneVal","Tuning","Method")
-  if (!all(smooth.cols %in% names(data)))
-    stop(paste0("Cannot assign smooths.frame class to supplied data.frame",  
-                " because it does not contain the following smoothing-parameters columns: ", 
-                paste0(smooth.cols[!(smooth.cols %in% names(data))],collapse=", ")))
-  #Set attributes of data
-  class(data) <- c("smooths.frame", class(data))
-  attr(data, which = "individuals") <- individuals
-  attr(data, which = "n") <- length(unique(data[[individuals]]))
-  attr(data, which = "times") <- times
-  attr(data, which = "t") <- length(unique(data[[times]]))
-  attr(data, which = "nschemes") <- getNschemes(data, smooth.cols)
-  
-  return(data) 
-}  
-
-methods::setOldClass("smooths.frame")
-
-
-checkLayoutArgs <- function(data, plts.by, plts.group, facet.x, facet.y)
-{  
-  if (any(facet.x == ".")) facet.x <- NULL
-  if (any(facet.y == ".")) facet.y <- NULL
-  
-  subfacs <- c(plts.by, plts.group, facet.x, facet.y)
-  
-  if (!is.allnull(subfacs) && !is.null(data) && !all(unique(subfacs) %in% names(data)))
-    stop("The factor(s) ", paste0(unique(subfacs)[!(unique(subfacs) %in% names(data))], collapse = ", "), 
-         " are not included in the smooths.frame")
-  
-  norepeats <- TRUE
-  if (length(unique(subfacs)) < length(subfacs))
-  {
-    repfacs <- names(table(subfacs)[table(subfacs) > 1])
-    stop("The factor(s) ", paste0(repfacs, collapse = ", "), 
-         " occur(s) in more than one of the facet/plots arguments")
-  }
-  return(norepeats)
-}
-
-checkPlotsArgs <- function(data, plts.by, plts.group = NULL, facet.x, facet.y)
-{
-  smooth.cols <- c("Type","TunePar","TuneVal","Tuning","Method")
-  
-  #Check that smoothing-parameter factors in the plots subsetting arguments account for 
-  # all of the smoothing parameter sets in data
-  subfacs <- unique(c(plts.by, plts.group, facet.x, facet.y))
-  if (is.allnull(subfacs))
-    stop("There are no factors assigned to the plots and facet arguments ", 
-         "- enough smoothing-parameter factors need to be assigned so that they uniquely index the combinations ", 
-         "of the smoothing-parameter values in the smooths.frame")
-  else
-  {
-    spar.facs <- subfacs[subfacs %in% smooth.cols]
-    if (!any(smooth.cols %in% subfacs))
-      stop("There are no smoothing-parameter factors assigned to the plots and facet arguments ", 
-           "- enough of them need to be assigned so that they uniquely index the combinations ", 
-           "of the smoothing-parameter values in the smooths.frame")
-  }
-  
-  ncombos <- getNschemes(data, spar.facs)
-  if (ncombos != attr(data, which = "nschemes"))
-    stop(paste0("\n The number of different combinations of the smoothing-parameter values in ", 
-                "the smooths.frame and of the levels combination of the following factors nominated ",
-                "in the facet/plots arguments are not equal: ", paste0(spar.facs, collapse = ", ")))
-  return(data)
-}  
-
-#Function to set up scale_x_continuous for times
-setScaleTime <- function(times, breaks.spacing.x = -2)
-{
-  abs.spacing.x <- abs(breaks.spacing.x)
-  time.vals <- sort(unique(times))
-  time.vals <- time.vals[!is.na(time.vals)]
-  brks <- seq(min(times, na.rm = TRUE),
-              max(times, na.rm = TRUE), 
-              by = abs.spacing.x)
-  if (breaks.spacing.x < 0)
-    brks <- brks[brks %in% time.vals]
-  minbrks <- seq(min(time.vals), max(time.vals), 
-                 by = abs.spacing.x/2)
-  if (breaks.spacing.x < 0)
-  {  
-    minbrks <- minbrks[minbrks %in% time.vals]
-    if (length(minbrks) == length(brks) && all(minbrks == brks))
-    { 
-      minbrks <- seq(min(time.vals), max(time.vals), 
-                     by = 1)
-      if (breaks.spacing.x < 0)
-        minbrks <- minbrks[minbrks %in% time.vals]
-    }
-  }
-  scale.time <- scale_x_continuous(limits = range(time.vals),
-                                   breaks = brks, minor_breaks = minbrks)
-  return(scale.time)
-}
-
 #Function to produce a single plot of deviations boxplots 
 plotDeviationsBoxes <- function(data, observed, smoothed, x.factor, 
                                 x.title = NULL, y.titles = NULL,
@@ -369,17 +99,17 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
 "plotSmoothsMedianDevns" <- function(data, response, response.smoothed = NULL, 
                                      individuals = "Snapshot.ID.Tag", times = "DAP", 
                                      trait.types = c("response", "AGR", "RGR"), 
-                                     x.title = NULL, y.titles = NULL, labeller = NULL, 
-                                     breaks.spacing.x = -4, 
-                                     plots.by.med = NULL, plots.group.med = NULL, 
-                                     facet.x.med = ".", facet.y.med = ".", 
-                                     colour.values.med = NULL, shape.values.med = NULL, 
-                                     alpha.med = 0.5, 
-                                     propn.note.med = TRUE, propn.types.med = c(0.1, 0.5, 0.75), 
-                                     ggplotFuncsMedDevn = NULL, printPlot = TRUE, ...)  
+                                     x.title = NULL, y.titles = NULL, 
+                                     meddevn.plot.args = 
+                                       args4meddevn.plot(plots.by = NULL, plots.group = NULL,
+                                                         facet.x = ".", facet.y = ".", 
+                                                         propn.note = TRUE, 
+                                                         propn.types = c(0.1, 0.5, 0.75)), 
+                                     printPlot = TRUE, ...)  
 {
+  meddevn.plot.args <- meddevn.plot.args
   inargs <- list(...)
-  checkEllipsisArgs(c("plotSmoothsMedianDevns","plotProfiles"), inargs)
+  checkEllipsisArgs("plotSmoothsMedianDevns", inargs)
   
   if (is.null(response.smoothed))
     response.smoothed <- paste0("s", response)
@@ -391,8 +121,22 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
   if ("all" %in% traits)
     traits <- c("response", "AGR", "RGR")
   
-  #Checking of the arguments that control the plots layout
-  checkLayoutArgs(data = data, plots.by.med, plots.group.med, facet.x.med, facet.y.med)
+  #Get the options for the median deviations plots options from the list
+  plots.by.med <- meddevn.plot.args$plots.by
+  plots.group.med <- meddevn.plot.args$plots.group
+  facet.x.med <- meddevn.plot.args$facet.x
+  facet.y.med <- meddevn.plot.args$facet.y
+  facet.labeller = meddevn.plot.args$facet.labeller
+  facet.scales.med <- meddevn.plot.args$facet.scales 
+  breaks.spacing.x <- meddevn.plot.args$breaks.spacing.x
+  angle.x <- meddevn.plot.args$angle.x
+  colour.values.med <- meddevn.plot.args$colour.values
+  shape.values.med <- meddevn.plot.args$shape.values
+  alpha.med <- meddevn.plot.args$alpha
+  propn.note.med <- meddevn.plot.args$propn.note
+  propn.types.med <- meddevn.plot.args$propn.types 
+  ggplotFuncsMedDevn <- meddevn.plot.args$ggplotFuncs
+  
   plts.by <- plots.by.med
   plts.group <- plots.group.med
   
@@ -437,20 +181,16 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
   if (all(facet.y.med != "."))
     id.cols <- c(id.cols, fac.getinFormula(facet.y.med))
   
-  if (!all(id.cols %in% names(dat)))
-    stop(paste("Do not have the following required columns in data: ", 
-               paste(id.cols[!(id.cols %in% names(dat))],collapse=", "), "\n", sep=""))
-  
   #Set up facet
   ggfacet <- list()
   facet.cols <- NULL
   if (all(xfacet != ".") || all(facet.y.med != "."))
   {
     facet.form <- facet.char2formula(xfacet, facet.y.med)
-    if (is.null(labeller))
-      ggfacet <- list(facet_grid(facet.form, scales = "free_x"))
+    if (is.null(facet.labeller))
+      ggfacet <- list(facet_grid(facet.form, scales = facet.scales.med))
     else
-      ggfacet <- list(facet_grid(facet.form, scales = "free_x", labeller = labeller))
+      ggfacet <- list(facet_grid(facet.form, scales = facet.scales.med, labeller = facet.labeller))
     facet.cols <- c(xfacet, facet.y.med)
     facet.cols <- facet.cols[facet.cols != "."]
   }
@@ -468,6 +208,11 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
   }
   kresp <- addRates(traits, response = response)
   kresp.sm <- addRates(traits, response = response.smoothed)
+  id.cols <- c(id.cols, kresp, kresp.sm)
+  if (!all(id.cols %in% names(dat)))
+    stop(paste("Do not have the following required columns in data: ", 
+               paste(id.cols[!(id.cols %in% names(dat))],collapse=", "), "\n", sep=""))
+  
   kresp.devn <- paste(kresp, "devn", sep = ".")
   names(kresp.sm) <- kresp
   names(kresp.devn) <- kresp
@@ -506,6 +251,8 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
   med.devn.dat[times] <- dae::as.numfac(unlist(med.devn.dat[times.factor]))
   #Remove the times.factor
   med.devn.dat <- med.devn.dat[,-match(times.factor, names(med.devn.dat))]
+  #Remove any missing values
+  med.devn.dat <- med.devn.dat[which(!is.na(med.devn.dat[kresp.devn[1]])), ]
   
   #Calculate the median responses
   if (propn.note.med && !is.null(propn.types.med))
@@ -533,6 +280,8 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
     med.resp.dat[times] <- dae::as.numfac(unlist(med.resp.dat[times.factor]))
     #Remove the times.factor
     med.resp.dat <- med.resp.dat[,-match(times.factor, names(med.resp.dat))]
+    #Remove any missing values
+    med.resp.dat <- med.resp.dat[which(!is.na(med.resp.dat[kresp[1]])), ]
   }
   
   #Plot the median deviations for each trait
@@ -552,7 +301,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
       if (is.allnull(plts.by))
         tmp <- med.devn.dat
       else
-        tmp <- subset(med.devn.dat, med.devn.dat$fac.by == p)
+        tmp <- med.devn.dat[med.devn.dat$fac.by == p,]
       if ("Method" %in% names(tmp))
         tmp$Method <- with(tmp, dae::fac.recast(Method, 
                                                 newlevels = substring(levels(Method),1,3)))
@@ -562,7 +311,8 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
         setScaleTime(tmp[[times]], breaks.spacing.x = breaks.spacing.x) +
         xlab(x.title) + ylab(y.titles[k]) + theme_bw() +
         theme(strip.text = element_text(size=strip.text.size, face="bold"),
-              axis.title = element_text(face="bold"),
+              axis.title = element_text(face="bold"), 
+              axis.text.x = element_text(angle = angle.x), 
               panel.grid.major = element_line(colour = "grey60", size = 0.5), 
               panel.grid.minor = element_line(colour = "grey80", size = 0.5))
       
@@ -619,7 +369,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
         if (is.allnull(plts.by))
           med.resp.tmp <- med.resp.dat
         else
-          med.resp.tmp <- subset(med.resp.dat, med.resp.dat$fac.by == p)
+          med.resp.tmp <- med.resp.dat[med.resp.dat$fac.by == p, ]
         #Construct message to be plotted
         if (propn.note.med)
         {
@@ -689,45 +439,51 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
 "plotSmoothsComparison" <- function(data, response, response.smoothed = NULL,
                                     individuals = "Snapshot.ID.Tag", times = "DAP", 
                                     trait.types = c("response", "AGR", "RGR"), 
-                                    x.title = NULL, y.titles = NULL, labeller = NULL, 
-                                    which.plots = "profiles", printPlot = TRUE, 
-                                    breaks.spacing.x = -4, 
-                                    plots.by.pf = NULL, facet.x.pf = ".", facet.y.pf = ".", 
-                                    collapse.facets.x.pf = TRUE, collapse.facets.y.pf = FALSE, 
-                                    include.raw.pf = "no", 
-                                    colour.pf = "black", colour.column.pf = NULL, 
-                                    colour.values.pf = NULL, alpha.pf = 0.3, 
-                                    addMediansWhiskers.pf = TRUE,
-                                    ggplotFuncsProfile = NULL, ggplotFuncsDevnBoxes = NULL, 
-                                    ...)
+                                    which.plots =  "profiles", 
+                                    x.title = NULL, y.titles = NULL, 
+                                    profile.plot.args = args4profile.plot(plots.by = NULL, 
+                                                                          facet.x = ".", facet.y = ".", 
+                                                                          include.raw = "no"),
+                                    ggplotFuncsDevnBoxes = NULL, 
+                                    printPlot = TRUE, ...)
 {
+  profile.plot.args <- profile.plot.args
   inargs <- list(...)
   checkEllipsisArgs(c("plotSmoothsComparison","plotProfiles"), inargs)
   
-  #Find out if any plotProfiles arguments that probeSmooths handles have been supplied in '...'
+  #Find out if any plotProfiles arguments that args4profile.plot handles have been supplied in '...'
   if (length(inargs))
   {
-    usedProfile.args <- c("data","times","response","individuals","facet.x","facet.y",
-                          "labeller","colour","colour.column","colour.values",
-                          "alpha","y.title","printPlot","ggplotFuncs", "addMediansWhiskers")
+    usedProfile.args <- formalArgs(args4profile.plot)
     doubleargs <- intersect(names(inargs), usedProfile.args)
     if (length(doubleargs))
       stop("the  'plotProfiles' arguments ",paste0(doubleargs, collapse = ", "), 
-           " conflict with 'traitSmooth' arguments")
-    #extract any remaining plotProfiles arguments from inargs
-    pltProfile.args <- setdiff(formalArgs(plotProfiles), c(usedProfile.args))
-    pltProfile.args <- names(inargs)[names(inargs) %in% pltProfile.args]
-    if (length(pltProfile.args))
-      pltProfile.args <- inargs[pltProfile.args]
-    else
-      pltProfile.args <- NULL
-  } else
-    pltProfile.args <- NULL
+           " conflict with 'args4profile.plot' arguments")
+  }
+  pltProfile.args <- NULL
   
   options <- c("response", "AGR", "RGR", "all")
   traits <- options[unlist(lapply(trait.types, check.arg.values, options=options))]
   if ("all" %in% traits)
     traits <- c("response", "AGR", "RGR")
+  
+  #Get the options for the profile plots options from the list
+  plots.by.pf <- profile.plot.args$plots.by
+  facet.x.pf <- profile.plot.args$facet.x
+  facet.y.pf <- profile.plot.args$facet.y 
+  include.raw.pf <- profile.plot.args$include.raw
+  collapse.facets.x.pf <- profile.plot.args$collapse.facets.x
+  collapse.facets.y.pf <- profile.plot.args$collapse.facets.y
+  facet.labeller <- profile.plot.args$facet.labeller
+  facet.scales.pf <- profile.plot.args$facet.scales
+  breaks.spacing.x <- profile.plot.args$breaks.spacing.x
+  angle.x <- profile.plot.args$angle.x
+  colour.pf <- profile.plot.args$colour
+  colour.column.pf <- profile.plot.args$colour.column
+  colour.values.pf <- profile.plot.args$colour.values
+  alpha.pf <- profile.plot.args$alpha
+  addMediansWhiskers.pf <- profile.plot.args$addMediansWhiskers
+  ggplotFuncsProfile <- profile.plot.args$ggplotFuncs
   
   #Check include.raw.pf value
   incl.raw.opt <- c("no", "alone", "facet.x", "facet.y")
@@ -742,8 +498,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
   validsmoothsframe <- validSmoothsFrame(data)  
   if (is.character(validsmoothsframe))
     stop(validsmoothsframe)
-  checkPlotsArgs(data, plts.by, facet.x = facet.x.pf, facet.y = facet.y.pf)
-  
+  checkPlotsArgs(data, plts.by = plts.by, facet.x = facet.x.pf, facet.y = facet.y.pf)
   options <- c("none", "profiles", "absolute.boxplots", "relative.boxplots", "medians.deviations")
   plots <- options[unlist(lapply(which.plots, check.arg.values, options=options))]
   if ("none" %in% plots & length(plots) > 1)
@@ -797,8 +552,8 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
   #Determine whether there are any smooth.cols on the facets - if not must be in plots.by.pf
   smoothing.facets <- length(intersect(union(facet.x.pf, facet.y.pf), smooth.cols)) != 0
   if (incl.raw.opt %in% c("facet.x", "facet.y") && all(c(facet.x.pf, facet.y.pf) == "."))
-    stop(paste0("The argument incl.raw.pf is set to ", include.raw.pf, 
-               ", but ", include.raw.pf, ".pf has not been set to include a variable"))
+    stop(paste0("The argument incl.raw is set to ", include.raw.pf, 
+                ", but ", include.raw.pf, " has not been set to include a variable"))
   
   #Set up the facets  
   modfacet <- setupFacet(data = data, facet = facet.x.pf, collapse.facets = collapse.facets.x.pf, 
@@ -809,10 +564,10 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                          combined.name = "Combined.y", smooth.cols = smooth.cols)
   yfacet <- modfacet$newfacet
   data <- modfacet$data
-
+  
   #Do the plots
   x.axis <- list(setScaleTime(data[[times]], breaks.spacing.x = breaks.spacing.x),
-                 theme(axis.text.x = element_text(size = 7.5)))
+                 theme(axis.text.x = element_text(size = 7.5, angle = angle.x)))
   plts <- list()
   for (k in kresp)
   {
@@ -823,7 +578,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
     { 
       #Get a single instance of the unsmoothed data
       tmp <- split(data, data[smooth.cols])[[1]]
-      #Removing smoothing factos from facets
+      #Removing smoothing factors from facets
       xfacet.tmp <- setdiff(xfacet, smooth.cols)
       if (length(xfacet.tmp) == 0)
         xfacet.tmp <- "."
@@ -835,7 +590,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                 c(list(data = tmp, times = times, response = k, 
                        individuals = individuals, 
                        facet.x=xfacet.tmp, facet.y=yfacet, 
-                       labeller = labeller, 
+                       labeller = facet.labeller, scales = facet.scales.pf, 
                        colour = colour.pf, 
                        colour.column = colour.column.pf, 
                        colour.values = colour.values.pf, 
@@ -849,7 +604,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
       if (printPlot)
         print(plts[[k]][["profiles"]][["Unsmoothed"]])
     }
-
+    
     if (is.allnull(plts.by)) #all profiles in a single plot
       levs.by <- "all"
     else
@@ -870,6 +625,10 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
         {
           title <- paste0("Plot for ", by)
           tmp1 <- data[data$plots.by.pf==by,]
+          if ("Combined.x" %in% names(tmp1)) 
+            tmp1["Combined.x"] <- factor(tmp1[["Combined.x"]])
+          if ("Combined.y" %in% names(tmp1)) 
+            tmp1["Combined.y"] <- factor(tmp1[["Combined.y"]])
         }
         if (incl.raw.opt %in% c("facet.x", "facet.y"))
         {
@@ -888,7 +647,8 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                          response = kresp.sm[k], 
                          individuals = individuals, 
                          facet.x=xfacet, facet.y=yfacet, 
-                         labeller = labeller, 
+                         labeller = facet.labeller, 
+                         scales = facet.scales.pf,
                          colour = colour.pf, 
                          colour.column = colour.column.pf, 
                          colour.values = colour.values.pf, 
@@ -922,6 +682,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                                    deviations.plots = plots, 
                                    x.title = x.title, y.titles = y.titles.devn, 
                                    facet.x=xfacet, facet.y=facet.y.pf, 
+                                   labeller = facet.labeller, 
                                    df = degfree, ggplotFuncs = ggplotFuncsDevnBoxes,
                                    printPlot = printPlot)
         plts[[k]][["deviations"]][["absolute"]][[by]] <- plt[["absolute"]]
@@ -1213,7 +974,7 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
   if (!is.null(extra.derivs) & !is.null(suffices.extra.derivs))
     if (length(extra.derivs) != length(extra.derivs))
       stop("The number of names supplied must equal the number of derivatives specified")
-
+  
   #Determine what is required from spline fitting
   if (!is.allnull(grates))
   {
@@ -1469,7 +1230,7 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
                                                npspline.segments = fit.spline$uncorrected.fit$npspline.segments, 
                                                deriv=d)$y
       }
-
+      
       #Add RGR if required
       if (!is.null(extra.rate) && extra.rate == "RGR")
       { 
@@ -1514,107 +1275,31 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
   return(list(predictions = fit, fit.spline = fit.spline))    
 }
 
-#Function to perform the smooths specified by a set of smoothing-parameter schemes
-smoothSchemes <- function(tmp, spar.schemes, 
-                          response, response.smooth, times, individuals, 
-                          traits, get.rates, ratemeth.opt, grates, 
-                          ntimes2span = 2, nseg, correctBoundaries, 
-                          na.x.action, na.y.action)
-{
-  
-  #Form smoothed traits and grates for each scheme
-  smth <- list()
-  for (k in 1:nrow(spar.schemes))
-  {
-    scheme.lab <- paste(spar.schemes[k,], collapse = "-")
-    scheme.type <- spar.schemes$Type[k]
-    scheme.tpar <- spar.schemes$TunePar[k]
-    scheme.tval <- spar.schemes$TuneVal[k]
-    scheme.meth <- spar.schemes$Method[k]
-    if (scheme.type == "NCSS")
-    {
-      if (scheme.tpar == "df")
-      {
-        scheme.df <- scheme.tval
-        scheme.lambda <- NULL
-      } else
-      {
-        scheme.df <- NULL
-        scheme.lambda <- scheme.tval
-      }
-    } else #PS
-    {
-      scheme.df <- NULL
-      scheme.lambda <- scheme.tval
-    }
-    
-    rates.meth <- ratemeth.opt
-    if (get.rates)
-      responses.smooth <- c(response.smooth, 
-                            paste(response.smooth, grates, sep="."))
-    else
-      rates.meth <- "none"
-    
-    smth[[scheme.lab]] <- byIndv4Times_SplinesGRs(data = tmp, response, response.smoothed = response.smooth, 
-                                                  individuals = individuals, times = times, 
-                                                  rates.method = rates.meth, which.rates = grates, 
-                                                  smoothing.method = scheme.meth, 
-                                                  spline.type = scheme.type, 
-                                                  df= scheme.df, lambda = scheme.lambda, 
-                                                  npspline.segments = nseg, 
-                                                  correctBoundaries = correctBoundaries, 
-                                                  na.x.action = na.x.action, 
-                                                  na.y.action = na.y.action)
-    smth[[scheme.lab]] <- cbind(Type = scheme.type, TunePar = scheme.tpar, TuneVal = scheme.tval, 
-                                Tuning = paste(scheme.tpar, scheme.tval, sep = "-"), 
-                                Method = scheme.meth, 
-                                smth[[scheme.lab]])
-  }
-  
-  #Form single data.frame 
-  smth <- do.call(rbind, smth)
-  cols <- names(smth)
-  resps <- names(smth)[grepl(response, names(smth), fixed = TRUE)]
-  cols <- setdiff(cols,resps)
-  smth <- smth[c(cols,resps)]
-  rownames(smth) <- NULL
-  #Convert smoothing combinations to factors, paying attention to levels order 
-  smth[c("Type","TunePar","TuneVal","Tuning","Method")] <- 
-    mapply(function(x, sch) factor(x, levels = as.character(unique(sch))), 
-           smth[c("Type","TunePar","TuneVal","Tuning","Method")], spar.schemes, SIMPLIFY = FALSE)
-  
-  return(smth)
-}
-
 "probeSmooths" <- function(data, response = "PSA", response.smoothed = NULL, 
                            individuals="Snapshot.ID.Tag", times = "DAP", 
                            keep.columns = NULL, 
+                           get.rates = TRUE, 
+                           rates.method="differences", ntimes2span = NULL, 
                            trait.types = c("response", "AGR", "RGR"), 
-                           get.rates = TRUE, rates.method="differences", 
-                           ntimes2span = NULL, 
-                           smoothing.methods = "direct", smoothing.segments = NULL, 
-                           spline.types = "NCSS", df=NULL, lambdas = NULL, 
-                           npspline.segments = NULL, smoothing.schemes = NULL, 
-                           na.x.action="exclude", na.y.action = "trimx", 
-                           external.smooths = NULL, 
-                           correctBoundaries = FALSE, 
-                           x.title = NULL, y.titles = NULL, labeller = NULL, 
-                           which.plots = "profiles", breaks.spacing.x = -4, 
-                           plots.by.pf = NULL, facet.x.pf = ".", facet.y.pf = ".", 
-                           collapse.facets.x.pf = TRUE, collapse.facets.y.pf = FALSE, 
-                           include.raw.pf = "no",
-                           colour.pf = "black", colour.column.pf = NULL, 
-                           colour.values.pf = NULL, alpha.pf = 0.3, 
-                           addMediansWhiskers.pf = TRUE,
-                           ggplotFuncsProfile = NULL, 
-                           plots.by.med = NULL, plots.group.med = NULL, 
-                           facet.x.med = ".", facet.y.med = ".",
-                           colour.values.med = NULL, shape.values.med = NULL, 
-                           alpha.med = 0.5, 
-                           propn.note.med = TRUE, propn.types.med = c(0.1, 0.5, 0.75), 
-                           ggplotFuncsMedDevn = NULL, 
+                           smoothing.args = 
+                             args4smoothing(smoothing.methods = "direct", 
+                                            spline.types = "NCSS", 
+                                            df = NULL, lambdas = NULL), 
+                           x.title = NULL, y.titles = NULL, which.plots = "profiles", 
+                           profile.plot.args = 
+                             args4profile.plot(plots.by = NULL, 
+                                               facet.x = ".", facet.y = ".", 
+                                               include.raw = "no"), 
+                           meddevn.plot.args = 
+                             args4meddevn.plot(plots.by = NULL, plots.group = NULL, 
+                                               facet.x = ".", facet.y = ".",
+                                               propn.note = TRUE, 
+                                               propn.types = c(0.1, 0.5, 0.75)), 
                            ggplotFuncsDevnBoxes = NULL, ...)
 { 
+  smoothing.args <- smoothing.args
+  profile.plot.args <- profile.plot.args
+  meddevn.plot.args <- meddevn.plot.args
   #check input arguments
   impArgs <- match.call()
   if ("na.rm" %in% names(impArgs))
@@ -1628,87 +1313,57 @@ smoothSchemes <- function(tmp, spar.schemes,
   
   
   smooth.cols <- c("Type","TunePar","TuneVal","Tuning","Method")
+  data[times] <- convertTimes2numeric(data[[times]])
   
-  options <- c("differences","derivatives")
-  ratemeth.opt <- options[check.arg.values(rates.method, options=options)]
-  if (get.rates && is.null(ntimes2span))
-  {
-    if (ratemeth.opt == "differences")
-      ntimes2span <- 2
-    if (ratemeth.opt == "derivatives")
-      ntimes2span <- 3
-  }
-  
+  #Deal with plot arguments
   options <- c("none", "profiles", "absolute.boxplots", "relative.boxplots", "medians.deviations")
   plots <- options[unlist(lapply(which.plots, check.arg.values, options=options))]
   if ("none" %in% plots & length(plots) > 1)
     plots <- "none"
   if (is.null(x.title))
     x.title <- times
-  data[times] <- convertTimes2numeric(data[[times]])
-  if (length(npspline.segments) > 1)
-  { 
-    if (is.null(smoothing.segments))
-      stop("npspline.segments must be of length one in an unsegmented spline fit")
-    else
-    {
-      if (length(npspline.segments) != length(smoothing.segments))
-        stop("the number of values of npspline.segments should be one or ",
-             "equal to the number of segments in a segmented spline fit")
-    }
-    if (!all(diff(unlist(smoothing.segments)) > 0))
-      stop("the smoothing.segments are not a set of non-overlapping, successive intervals")
-  }
   
-  #Checking of the arguments that control the plots layout for profiles plots
-  if (any(c("profiles", "absolute.boxplots", "relative.boxplots") %in% plots))
+  #Get the options for the profile plots options from the list
+  plots.by.pf <- profile.plot.args$plots.by
+  facet.x.pf <- profile.plot.args$facet.x
+  facet.y.pf <- profile.plot.args$facet.y 
+  include.raw.pf <- profile.plot.args$include.raw
+  collapse.facets.x.pf <- profile.plot.args$collapse.facets.x
+  collapse.facets.y.pf <- profile.plot.args$collapse.facets.y
+  facet.labeller <- profile.plot.args$facet.labeller
+  scales.pf <- profile.plot.args$scales
+  breaks.spacing.x <- profile.plot.args$breaks.spacing.x
+  colour.pf <- profile.plot.args$colour
+  colour.column.pf <- profile.plot.args$colour.column
+  colour.values.pf <- profile.plot.args$colour.values
+  alpha.pf <- profile.plot.args$alpha
+  addMediansWhiskers.pf <- profile.plot.args$addMediansWhiskers
+  ggplotFuncsProfile <- profile.plot.args$ggplotFuncs
+  #Checking of the arguments that control the plots layout for boxplots
+  if (any(c("absolute.boxplots", "relative.boxplots") %in% plots))
     checkLayoutArgs(data = NULL, plots.by.pf, plts.group = NULL, facet.x.pf, facet.y.pf)
   plts.by <- plots.by.pf
   
-  #Checking of the arguments that control the plots layout for the medians deviations plots 
-  if ("medians.deviations" %in% plots)
-    checkLayoutArgs(data = NULL, plots.by.med, plots.group.med, facet.x.med, facet.y.med)
+  #Get the options for the median deviations plots options from the list
+  plots.by.med <- meddevn.plot.args$plots.by
+  plots.group.med <- meddevn.plot.args$plots.group
+  facet.x.med <- meddevn.plot.args$facet.x
+  facet.y.med <- meddevn.plot.args$facet.y
+  facet.labeller = meddevn.plot.args$facet.labeller
+  facet.scales.med <- meddevn.plot.args$facet.scales
+  breaks.spacing.x <- meddevn.plot.args$breaks.spacing.x
+  colour.values.med <- meddevn.plot.args$colour.values
+  shape.values.med <- meddevn.plot.args$shape.values
+  alpha.med <- meddevn.plot.args$alpha
+  propn.note.med <- meddevn.plot.args$propn.note
+  propn.types.med <- meddevn.plot.args$propn.types 
+  ggplotFuncsMedDevn <- meddevn.plot.args$ggplotFuncs
   
   plts.by.med <- plots.by.med
   plts.group.med <- plots.group.med
-  smethods.opt <- c("direct", "logarithmic")
-  smethods <- smethods.opt[unlist(lapply(smoothing.methods, check.arg.values, options=smethods.opt))]
-  methlabs <- c("Direct", "Log")
-  names(methlabs) <- smethods.opt
-  methlabs <- methlabs[smethods]
-  stypes.opt <- c("NCSS", "PS")
-  stypes <- stypes.opt[unlist(lapply(spline.types, check.arg.values, options=stypes.opt))]
   
-  options <- c("response", "AGR", "RGR", "all")
-  traits <- options[unlist(lapply(trait.types, check.arg.values, options=options))]
-  if ("all" %in% traits)
-    traits <- c("response", "AGR", "RGR")
-  #If trait.types and get.rates don't match, go with option that is not the default
-  grates <- NULL
-  if (!any(c("AGR","RGR") %in% traits) && get.rates)
-  {
-    if (get.rates) 
-    {
-      get.rates <- FALSE
-      warning("trait.types does not include AGR or RGR and so get.rates changed to FALSE")
-    }
-  } else
-  {
-    if (!get.rates)
-    {
-      if (length(traits) > 1 || traits != "response")
-      {
-        traits <- "response"
-        propn.types.med <- propn.types.med[1]
-        warning("get.rates is FALSE; trait.types changed to response and propn.types.med reduced to its first value")
-      }
-    }
-    else
-      grates <- c("AGR","RGR")[c("AGR","RGR") %in% traits]
-  }
-  
-  #Form data.frame with columns needed 
-  id.cols <- c(individuals, times, keep.columns, colour.column.pf)
+  #Get columns need for facets
+  id.cols <- colour.column.pf
   if (all(facet.x.pf != "."))
     id.cols <- c(id.cols, fac.getinFormula(facet.x.pf))
   if (all(facet.x.med != "."))
@@ -1717,200 +1372,283 @@ smoothSchemes <- function(tmp, spar.schemes,
     id.cols <- c(id.cols, fac.getinFormula(facet.y.pf))
   if (all(facet.y.med != "."))
     id.cols <- c(id.cols, fac.getinFormula(facet.y.med))
-  v <- unique(c(id.cols, response))
-  v <- setdiff(v, c("Type","TunePar","TuneVal","Tuning","Method")) #remove names yet to come
+  id.cols <- c(individuals, times, response, keep.columns, id.cols)
   
-  #Check that required cols are in data
-  checkNamesInData(v, data = data)
-  #Check that there is no more than one observation for each individuals-times combinations
-  if (!all(table(data[c(individuals, times)]) <= 1))
-    stop("There is more than one observation for one or more combinations of the individuals and times")
-  
-  tmp <- data[v]
-  times.diffs.in.data <- paste0(times, ".diffs") %in% names(data)
-  
-  #Smooth response and form growth rates
+  #Set up name  for smoothed response
   if (is.null(response.smoothed))
     response.smooth <- paste0("s", response)
   else
     response.smooth <- response.smoothed
   responses.smooth <- response.smooth
-  #Always get rates if get.rates is TRUE so that they are in the returned data
-  #Do for all data even if segmented so that only the observation for the very first time is NA  
-  if (get.rates) 
-    tmp <- byIndv4Times_GRsDiff(data = tmp, response, 
-                                individuals=individuals, 
-                                times=times, avail.times.diffs = FALSE, 
-                                which.rates = grates, ntimes2span = ntimes2span)
   
-  #Construct combinations of smoothing parameters
-  if (is.null(smoothing.schemes))
+  
+  #Argument for what traits are to be plotted
+  options <- c("response", "AGR", "RGR", "all")
+  traits <- options[unlist(lapply(trait.types, check.arg.values, options=options))]
+  if ("all" %in% traits)
+    traits <- c("response", "AGR", "RGR")
+  grates <- c("AGR","RGR")[c("AGR","RGR") %in% traits]
+  
+  if (is.smooths.frame(data))
   {
-    if (!is.allnull(lambdas))
-    {  
-      if  (!is.list(lambdas))
-      {  
-        warning("lambdas have been converted to a list with the single component names PS")
-        lambdas <- list(PS = lambdas)
-      }
-      if (!all(names(lambdas) %in% stypes))
-        stop("The following names for the components of lambdas are not in the specified spline.types: ",
-             paste0(names(lambdas)[!(names(lambdas) %in% stypes)]))
-    }
-    spar.schemes.NCSS <- spar.schemes.PS <- data.frame()
-    for (stype in stypes)
+    #Check that required cols are in data
+    checkNamesInData(unique(id.cols), data = data)
+    smth <- data
+    if (!is.allnull(smoothing.args))
     {
-      if (stype == "NCSS")
-      {
-        if (is.allnull(df) && (is.allnull(lambdas) || !("NCSS" %in% names(lambdas))))
-          stop("one and only one of df and lambda must be specified for spline.type NCSS")
-        if (!is.allnull(df))
-        {
-          spar.schemes.NCSS <-  do.call(rbind, lapply(df, 
-                                                      function(kdf, TTlabs) 
-                                                        cbind(TTlabs, TuneVal = kdf, 
-                                                              Tuning = paste(TTlabs$TunePar, kdf, 
-                                                                             sep = "-")), 
-                                                      TTlabs = data.frame(Type = "NCSS",
-                                                                          TunePar = "df")))
-        }
-        if (!is.allnull(lambdas) && ("NCSS" %in% names(lambdas))) #add lambdas if specified
-        { 
-          
-          spar.schemes.NCSS <-  rbind(spar.schemes.NCSS, 
-                                      do.call(rbind, lapply(lambdas[["NCSS"]], 
-                                                            function(lambda, TTlabs) 
-                                                              cbind(TTlabs, 
-                                                                    TuneVal = lambda, 
-                                                                    Tuning = paste(TTlabs$TunePar, lambda, 
-                                                                                   sep = "-")), 
-                                                            TTlabs = data.frame(Type = "NCSS",
-                                                                                TunePar = "lambda"))))
-        }
-        #Expand to include Methods
-        spar.schemes.NCSS <- do.call(rbind, lapply(smethods, 
-                                                   function(smethod, spar.schemes.PS) 
-                                                     cbind(spar.schemes.NCSS, Method = smethod), 
-                                                   spar.schemes.PS = spar.schemes.PS))
-      } else
-      {
-        if (stype == "PS")
-        {
-          if (is.allnull(lambdas) || !("PS" %in% names(lambdas)))
-            stop("At least one value needs to be specfied for lambdas when spine.type is PS")
-          spar.schemes.PS <-  do.call(rbind, lapply(lambdas[["PS"]], 
-                                                    function(lambda, TTlabs) 
-                                                      cbind(TTlabs, 
-                                                            TuneVal = lambda, 
-                                                            Tuning = paste(TTlabs$TunePar, lambda, 
-                                                                           sep = "-")), 
-                                                    TTlabs = data.frame(Type = "PS",
-                                                                        TunePar = "lambda")))
-          spar.schemes.PS <- do.call(rbind, lapply(smethods, 
-                                                   function(smethod, spar.schemes.PS) 
-                                                     cbind(spar.schemes.PS, Method = smethod), 
-                                                   spar.schemes.PS = spar.schemes.PS))
-        } else
-          stop("unknown spline type")
-      }
-    }
-    spar.schemes <- rbind(spar.schemes.NCSS, spar.schemes.PS)
-    rownames(spar.schemes) <- NULL
+      #Extract smooths specified by smoothing.args from smth  
+      if (is.allnull(smoothing.args$df) && is.allnull(smoothing.args$lambdas))
+        stop("It must be that at least one of df and lambda is not NULL in smoothing.args")
+      
+      #Get the smoothing arguments
+      smethods = smoothing.args$smoothing.methods
+      stypes = smoothing.args$spline.types
+      df = smoothing.args$df
+      lambdas = smoothing.args$lambdas 
+      
+      #Construct the set of schemes for which smooths are to be generated
+      spar.schemes <- makeSmoothSchemes(combinations = smoothing.args$combinations, 
+                                        smethods = smethods, stypes = stypes, 
+                                        df = df, lambdas = lambdas)
+      
+      #Convert smoothing combinations to factors, paying attention to levels order 
+      spar.schemes[c("Type","TunePar","TuneVal","Tuning","Method")] <- 
+        lapply(spar.schemes[c("Type","TunePar","TuneVal","Tuning","Method")], 
+               function(x) factor(x, levels = as.character(unique(x))))
+      
+      selection <- levels(with(spar.schemes, fac.combine(list(Type,TunePar,TuneVal,Method), 
+                                                      combine.levels = TRUE, sep = "-")))
+      
+      combos.fac <- (with(smth, fac.combine(list(Type,TunePar,TuneVal,Method), 
+                                            combine.levels = TRUE, sep = "-")))
+      combos <- levels(combos.fac)
+      
+      if (!all(selection %in% combos))
+        stop("Not all combinations of the values of smoothing parameters specified by smoothing.args ", 
+             "amongst those for the set of smooths in data")
     
-  } else
-  { 
-    spar.schemes <- smoothing.schemes
-    spar.schemes$Type <- stypes.opt[unlist(lapply(as.list(spar.schemes$Type), 
-                                                  check.arg.values, options=stypes.opt))]
-    spar.schemes$Method <- smethods.opt[unlist(lapply(as.list(spar.schemes$Method), 
-                                                      check.arg.values, options=smethods.opt))]
-    TPar.opt <- c("df","lambda")
-    spar.schemes$TunePar <- TPar.opt[unlist(lapply(as.list(spar.schemes$TunePar), 
-                                                   check.arg.values, options=TPar.opt))]
-    spar.schemes$Tuning <- with(spar.schemes, paste(TunePar, TuneVal, sep = "-"))
-    spar.schemes <- spar.schemes[smooth.cols]
-    attr(spar.schemes, which = "nschemes") <- nrow(spar.schemes)
-  }
-  
-  #Generate the smooths
-  if (is.allnull(smoothing.segments))
-    smth <- smoothSchemes(tmp = tmp, spar.schemes = spar.schemes,
-                          response = response, response.smooth = response.smooth, 
-                          times=times, ntimes2span = ntimes2span, 
-                          individuals = individuals, traits = traits, 
-                          get.rates = get.rates, ratemeth.opt = ratemeth.opt, grates = grates, 
-                          nseg = npspline.segments, correctBoundaries = correctBoundaries, 
-                          na.x.action = na.x.action, na.y.action = na.y.action)
-  else    
-  {
-    knseg <- npspline.segments[1]
-    smth <- data.frame()
-    for (k in 1:length(smoothing.segments))
-    {
-      segm <- smoothing.segments[[k]]
-      subdat <- tmp[(tmp[times] >= segm[1]) & (tmp[times] <= segm[2]),] 
-      if (length(npspline.segments) > 1) knseg <- npspline.segments[k]
-      #only get smooths when difference growth rates are required and ntimes2span is 2 
-      smth <- rbind(smth, 
-                    smoothSchemes(tmp = subdat, spar.schemes = spar.schemes,
-                                  response = response, response.smooth = response.smooth, 
-                                  times=times, ntimes2span = ntimes2span, 
-                                  individuals = individuals, traits = traits, 
-                                  get.rates = ifelse((ntimes2span == 2 && get.rates && 
-                                                        ratemeth.opt == "differences"),
-                                                     FALSE, get.rates), 
-                                  ratemeth.opt = ratemeth.opt, grates = grates, 
-                                  nseg = knseg, correctBoundaries = correctBoundaries, 
-                                  na.x.action = na.x.action, na.y.action = na.y.action))
-    }
-    smth <- smth[do.call(order, smth), ]
-    #get overall difference growth rates for ntimes2apn == 2
-    if (ntimes2span == 2 && get.rates && ratemeth.opt == "differences") 
-    {
-      smth <- split(smth, fac.combine(as.list(smth[c("Type","Tuning","Method")])))
-      smth <- lapply(smth, byIndv4Times_GRsDiff, responses = response.smooth, 
-                     individuals = individuals, 
-                     times=times, ntimes2span = ntimes2span, 
-                     which.rates = grates)
+      #Get subset
+      tmp <- split(smth, combos.fac)
+      names(tmp) <- combos
+      smth <- lapply(selection, function(seln, tmp) tmp[[seln]], tmp = tmp)
       smth <- do.call(rbind, smth)
-      smth <- smth[do.call(order, smth), ]
-    } 
-  }
-  
-  #Add external.smooths, if required
-  if (!is.null(external.smooths))
-  { 
-    #Determine which smoothing-parameter columns are in external.smooths & check have required other columns 
-    external.smooths <- as.data.frame(external.smooths)
-    smth.cols <- intersect(smooth.cols, names(external.smooths))
-    extra.vars <- setdiff(names(smth), smooth.cols)
-    if (all(extra.vars %in% names(external.smooths)))
-      external.smooths <- external.smooths[c(smth.cols, extra.vars)]
+      smth[c("Type","TunePar","TuneVal","Method")] <- lapply(smth[c("Type","TunePar","TuneVal","Method")], factor)
+      smth <- as.smooths.frame(smth, individuals, times)
+    }
+  } else 
+  {
+    if (is.allnull(smoothing.args))
+      stop("data is not a smooths.frame and smoothing.args is NULL so that there are no smooths available")
+    #Deal with data arguments for a data.frame
+    #Argument for which response the rates are to be computed
+    options <- c("none", "raw","smoothed")
+    if (is.logical(get.rates)) 
+    { 
+      if (get.rates)
+        get.which <- c("raw","smoothed")
+      else
+        get.which <- "none"
+    }
     else
-      stop(paste("Do not have the following required columns in data: ", 
-                 paste(extra.vars[!(extra.vars %in% names(external.smooths))],collapse=", "), "\n", sep=""))
+      get.which <- options[unlist(lapply(get.rates, check.arg.values, options=options))]
     
-    #Add missing smoothing-parameter columns
-    smth.cols <- setdiff(smooth.cols, smth.cols)
-    smooth.pars <- rep("Other", length(smth.cols))
-    names(smooth.pars) <- smth.cols
-    smooth.pars <- rbind(smooth.pars)
-    rownames(smooth.pars) <- NULL
-    tmp <- cbind(smooth.pars, external.smooths)
-    tmp <- tmp[names(smth)]
-    #Add extra smooths to smth
-    smth <- rbind(smth,tmp)
-    #Update the smoothing-parameter schemes
-    tmp <- split(tmp, dae::fac.combine(as.list(lapply(tmp[smooth.cols], as.factor)), 
-                                       combine.levels = TRUE, sep = "-"))
-    sch <- lapply(tmp, function(x) x[1, smooth.cols])
-    sch <- do.call(rbind, sch)
-    rownames(sch) <- NULL
-    spar.schemes <- rbind(spar.schemes, sch[colnames(spar.schemes)])
-  } 
-  
-  #Form a smooths.frame and check that it is valid
-  smth <- as.smooths.frame(smth, individuals, times)
+    if (length(grates) == 0 && !("none" %in% get.which))
+    {
+      get.which <- "none"
+      warning("trait.types does not include AGR or RGR and so get.rates has been set to none")
+    } else
+    {
+      if (length(traits) > 1 || traits != "response")
+      {  
+        if ("none" %in% get.which || !("smoothed" %in% get.which))
+        {
+          traits <- "response"
+          grates <- c("AGR","RGR")[c("AGR","RGR") %in% traits]
+          propn.types.med <- propn.types.med[1]
+          warning(paste("The calculation of smoothed growth rates have not been specified;",
+                        "trait.types changed to response and propn.type reduced to its first element"))
+        }
+      }
+    }
+    
+    
+    if (!("raw" %in% get.which) && length(grates) > 0) #Check if rates are needed but not being obtained.
+    { 
+      raw.rates <- paste(response, grates, sep = ".")
+      if (all(raw.rates %in% names(data)))
+        id.cols <- c(id.cols, raw.rates)
+    }
+    
+    options <- c("differences","derivatives")
+    ratemeth.opt <- options[check.arg.values(rates.method, options=options)]
+    if ("smoothed" %in% get.which && is.null(ntimes2span))
+    {
+      if (ratemeth.opt == "differences")
+        ntimes2span <- 2
+      if (ratemeth.opt == "derivatives")
+        ntimes2span <- 3
+    }
+    
+    #Get the smoothing arguments
+    smethods = smoothing.args$smoothing.methods
+    stypes = smoothing.args$spline.types
+    df = smoothing.args$df
+    lambdas = smoothing.args$lambdas 
+    smoothing.segments = smoothing.args$smoothing.segments 
+    npspline.segments = smoothing.args$npspline.segments
+    na.x.action = smoothing.args$na.x.action
+    na.y.action = smoothing.args$na.y.action 
+    external.smooths = smoothing.args$external.smooths
+    correctBoundaries = smoothing.args$correctBoundaries
+   
+    if ((is.allnull(df) && is.allnull(lambdas)))
+      stop("It must be that at least one of df and lambdas is not NULL in smoothing.args")
+    
+    if (length(npspline.segments) > 1)
+    { 
+      if (is.null(smoothing.segments))
+        stop("npspline.segments must be of length one in an unsegmented spline fit")
+      else
+      {
+        if (length(npspline.segments) != length(smoothing.segments))
+          stop("the number of values of npspline.segments should be one or ",
+               "equal to the number of segments in a segmented spline fit")
+      }
+      if (!all(diff(unlist(smoothing.segments)) > 0))
+        stop("the smoothing.segments are not a set of non-overlapping, successive intervals")
+    }
+    
+    v <- unique(id.cols)
+    v <- setdiff(v, c("Type","TunePar","TuneVal","Tuning","Method")) #remove names yet to come
+    
+    #Check that required cols are in data
+    checkNamesInData(v, data = data)
+    
+    #Check that there is no more than one observation for each individuals-times combinations
+    if (!all(table(data[c(individuals, times)]) <= 1))
+      stop("There is more than one observation for one or more combinations of the individuals and times")
+    
+    tmp <- data[v]
+    times.diffs.in.data <- paste0(times, ".diffs") %in% names(data)
+    
+    #Form raw growth rates when get.rates includes raw.
+    #Do for all data even if segmented so that only the observation for the very first time is NA  
+    if ("raw" %in% get.which) 
+      tmp <- byIndv4Times_GRsDiff(data = tmp, response, 
+                                  individuals=individuals, 
+                                  times=times, avail.times.diffs = FALSE, 
+                                  which.rates = grates, ntimes2span = ntimes2span)
+    
+    #Construct the set of schemes for which smooths are to be generated
+    spar.schemes <- makeSmoothSchemes(combinations = smoothing.args$combinations, 
+                                       smethods = smethods, stypes = stypes, 
+                                       df = df, lambdas = lambdas)
+    
+    #Generate the smooths
+    if (is.allnull(smoothing.segments))
+      smth <- smoothSchemes(tmp = tmp, spar.schemes = spar.schemes,
+                            response = response, response.smooth = response.smooth, 
+                            times=times, ntimes2span = ntimes2span, 
+                            individuals = individuals, traits = traits, 
+                            get.rates = ("smoothed" %in% get.which), 
+                            ratemeth.opt = ratemeth.opt, grates = grates, 
+                            nseg = npspline.segments, correctBoundaries = correctBoundaries, 
+                            na.x.action = na.x.action, na.y.action = na.y.action)
+    else    
+    {
+      knseg <- npspline.segments[1]
+      smth <- data.frame()
+      for (k in 1:length(smoothing.segments))
+      {
+        segm <- smoothing.segments[[k]]
+        subdat <- tmp[(tmp[times] >= segm[1]) & (tmp[times] <= segm[2]),] 
+        if (length(npspline.segments) > 1) knseg <- npspline.segments[k]
+        #only get smooths when difference growth rates are required and ntimes2span is 2 
+        smth <- rbind(smth, 
+                      smoothSchemes(tmp = subdat, spar.schemes = spar.schemes,
+                                    response = response, response.smooth = response.smooth, 
+                                    times=times, ntimes2span = ntimes2span, 
+                                    individuals = individuals, traits = traits, 
+                                    get.rates = (ntimes2span == 2 && 
+                                                   ("smoothed" %in% get.which) && 
+                                                   ratemeth.opt == "differences"), 
+                                    ratemeth.opt = ratemeth.opt, grates = grates, 
+                                    nseg = knseg, correctBoundaries = correctBoundaries, 
+                                    na.x.action = na.x.action, na.y.action = na.y.action))
+      }
+      smth <- smth[do.call(order, smth), ]
+      
+      #get overall difference growth rates for ntimes2apn == 2
+      if (ntimes2span == 2 && ("smoothed" %in% get.which) && ratemeth.opt == "differences") 
+      {
+        smth <- split(smth, fac.combine(as.list(smth[c("Type","Tuning","Method")])))
+        smth <- lapply(smth, byIndv4Times_GRsDiff, responses = response.smooth, 
+                       individuals = individuals, 
+                       times=times, ntimes2span = ntimes2span, 
+                       which.rates = grates)
+        smth <- do.call(rbind, smth)
+        smth <- smth[do.call(order, smth), ]
+      } 
+    }
+    
+    #Add external.smooths, if required
+    if (!is.null(external.smooths))
+    { 
+      #Determine which smoothing-parameter columns are in external.smooths & check have required other columns 
+      external.smooths <- as.data.frame(external.smooths)
+      smth.cols <- intersect(smooth.cols, names(external.smooths))
+      if (length(smth.cols) == 0)
+        stop("No smoothing parameter columns have been included in ", deparse(substitute(external.smooths)))
+      if ("raw" %in% get.which) 
+      { 
+        ext.nam <- names(external.smooths)
+        tmp <- split(external.smooths, external.smooths[smth.cols])
+        tmp <- lapply(tmp, byIndv4Times_GRsDiff, responses = response, individuals=individuals, 
+                      times=times, avail.times.diffs = FALSE, 
+                      which.rates = grates, ntimes2span = ntimes2span)
+        external.smooths <- do.call(rbind, tmp)
+        external.smooths <- external.smooths[c(ext.nam, setdiff(names(external.smooths), ext.nam))]
+        external.smooths <- external.smooths[do.call(order, external.smooths),]
+      }
+      if ("smoothed" %in% get.which) 
+      { 
+        ext.nam <- names(external.smooths)
+        tmp <- split(external.smooths, external.smooths[smth.cols])
+        tmp <- lapply(tmp, byIndv4Times_GRsDiff, responses = response.smooth, individuals=individuals, 
+                      times=times, avail.times.diffs = FALSE, 
+                      which.rates = grates, ntimes2span = ntimes2span)
+        external.smooths <- do.call(rbind, tmp)
+        external.smooths <- external.smooths[c(ext.nam, setdiff(names(external.smooths), ext.nam))]
+        external.smooths <- external.smooths[do.call(order, external.smooths),]
+      }
+      extra.vars <- setdiff(names(smth), smooth.cols)
+      if (all(extra.vars %in% names(external.smooths)))
+        external.smooths <- external.smooths[c(smth.cols, extra.vars)]
+      else
+        stop(paste("Do not have the following required columns in data: ", 
+                   paste(extra.vars[!(extra.vars %in% names(external.smooths))],collapse=", "), "\n", sep=""))
+      #Add missing smoothing-parameter columns
+      smth.cols <- setdiff(smooth.cols, smth.cols)
+      smooth.pars <- rep("Other", length(smth.cols))
+      names(smooth.pars) <- smth.cols
+      smooth.pars <- rbind(smooth.pars)
+      rownames(smooth.pars) <- NULL
+      tmp <- cbind(smooth.pars, external.smooths)
+      tmp <- tmp[names(smth)]
+      #Add extra smooths to smth
+      smth <- rbind(smth,tmp)
+      #Update the smoothing-parameter schemes
+      tmp <- split(tmp, dae::fac.combine(as.list(lapply(tmp[smooth.cols], as.factor)), 
+                                         combine.levels = TRUE, sep = "-"))
+      sch <- lapply(tmp, function(x) x[1, smooth.cols])
+      sch <- do.call(rbind, sch)
+      rownames(sch) <- NULL
+      spar.schemes <- rbind(spar.schemes, sch[colnames(spar.schemes)])
+    } 
+    
+    #Form a smooths.frame and check that it is valid
+    smth <- as.smooths.frame(smth, individuals, times)
+  }
   validsmoothsframe <- validSmoothsFrame(smth)  
   if (is.character(validsmoothsframe))
     stop(validsmoothsframe)
@@ -1923,20 +1661,9 @@ smoothSchemes <- function(tmp, spar.schemes,
                           response = response, response.smoothed = response.smooth, 
                           times = times, individuals = individuals, 
                           trait.types = traits, 
-                          x.title = x.title, y.titles = y.titles, labeller = labeller, 
                           which.plots = "profiles", 
-                          breaks.spacing.x = breaks.spacing.x, 
-                          plots.by.pf = plts.by, 
-                          facet.x.pf = facet.x.pf, facet.y.pf = facet.y.pf, 
-                          collapse.facets.x.pf = collapse.facets.x.pf, 
-                          collapse.facets.y.pf = collapse.facets.y.pf, 
-                          include.raw.pf = include.raw.pf,
-                          colour.pf = colour.pf, colour.column.pf = colour.column.pf, 
-                          colour.values.pf = colour.values.pf, 
-                          alpha.pf = alpha.pf, 
-                          addMediansWhiskers.pf = addMediansWhiskers.pf, 
-                          ggplotFuncsProfile = ggplotFuncsProfile, 
-                          ggplotFuncsDevnBoxes = ggplotFuncsDevnBoxes, ...)
+                          x.title = x.title, y.titles = y.titles, 
+                          profile.plot.args = profile.plot.args, ...)
   }
   
   if ("medians.deviations" %in% plots)
@@ -1944,17 +1671,10 @@ smoothSchemes <- function(tmp, spar.schemes,
     plotSmoothsMedianDevns(data = smth, 
                            response = response, response.smoothed = response.smooth,
                            times = times, individuals = individuals,
-                           x.title = x.title, y.titles = y.titles, labeller = labeller, 
-                           breaks.spacing.x = breaks.spacing.x, 
-                           plots.by.med = plts.by.med, plots.group.med = plts.group.med,
-                           facet.x.med = facet.x.med, 
-                           facet.y.med = facet.y.med,
-                           trait.types = traits,
-                           colour.values.med = colour.values.med, 
-                           shape.values.med = shape.values.med, 
-                           alpha.med = alpha.med,
-                           propn.types.med = propn.types.med, propn.note.med = propn.note.med,
-                           ggplotFuncsMedDevn = ggplotFuncsMedDevn, ...)
+                           trait.types = traits, 
+                           x.title = x.title, y.titles = y.titles, 
+                           meddevn.plot.args = meddevn.plot.args, 
+                           ...)
   }
   
   #Plot some combination of unsmoothed and smoothed response, AGR and RGR
@@ -1966,166 +1686,126 @@ smoothSchemes <- function(tmp, spar.schemes,
                           response = response, response.smoothed = response.smooth, 
                           times = times, individuals = individuals, 
                           trait.types = traits, 
-                          x.title = x.title, y.titles = y.titles, labeller = labeller, 
                           which.plots = boxp, 
-                          facet.x.pf = facet.x.pf, facet.y.pf = facet.y.pf, 
-                          plots.by.pf = plts.by, 
-                          colour.pf = colour.pf, colour.column.pf = colour.column.pf, 
-                          colour.values.pf = colour.values.pf, 
-                          alpha.pf = alpha.pf, 
-                          addMediansWhiskers.pf = addMediansWhiskers.pf, 
-                          ggplotFuncsProfile = ggplotFuncsProfile, 
+                          x.title = x.title, y.titles = y.titles,  
+                          profile.plot.args = profile.plot.args, 
                           ggplotFuncsDevnBoxes = ggplotFuncsDevnBoxes, ...)
   }
-  
   invisible(smth)
 }
 
-"traitSmooth" <- function(data, response, response.smoothed, individuals, times, 
-                          get.rates = TRUE, keep.columns = NULL, 
-                          x.title = NULL, y.titles = NULL, 
-                          chosen.smooth = list(spline.type = "PS", 
-                                               df = NULL, 
-                                               lambda = NULL,
-                                               smoothing.method = "logarithmic"), 
-                          facet.x.chosen = ".", facet.y.chosen = ".", 
-                          labeller.chosen = NULL, breaks.spacing.x.chosen = -2, 
-                          colour.chosen = "black", colour.column.chosen = NULL, 
-                          colour.values.chosen = NULL, alpha.chosen = 0.3, 
-                          addMediansWhiskers.chosen = TRUE, 
-                          ggplotFuncsChosen = NULL, 
-                          ...)
+"traitChooseSmooth" <- function(smooths, response.smoothed, individuals, times, 
+                                keep.columns = NULL, 
+                                x.title = NULL, y.titles = NULL, 
+                                trait.types = c("response.smoothed", "AGR", "RGR"),
+                                chosen.smooth = args4chosen.smooth(), 
+                                chosen.plot.args = args4chosen.plot(), 
+                                mergedata = NULL, 
+                                ...)
 {
+  chosen.smooth <- chosen.smooth
+  chosen.plot.args <- chosen.plot.args
   inargs <- list(...)
-  checkEllipsisArgs(c("traitSmooth","probeSmooths","plotProfiles"), inargs)
+  checkEllipsisArgs(c("traitChooseSmooth", "plotProfiles"), inargs)
   
-  #Set the list of defaults that are particular to traitSmooth
-  probesmth.args <- list(
-    smoothing.methods = "logarithmic", 
-    spline.types = c("NCSS","PS"), 
-    df = 5:7, 
-    lambdas = list(PS = round(10^c(-0.5, 0, 0.5, 1), digits = 3)), 
-    which.plots = c("profiles", "medians.deviations"), 
-    include.raw.pf = "facet.x",
-    plots.by.pf = "Type", 
-    facet.x.pf = c("Method", "Tuning"), 
-    facet.x.med = c("Method","Type"), 
-    plots.group.med = "Tuning",
-    propn.types.med = NULL, 
-    printPlot = TRUE)
+  #Process chosen.smooth and other arguments
+  options <- c("allvalid","parallel","single")
+  comb.opt <- options[check.arg.values(chosen.smooth$combinations, options=options)]
+  if (comb.opt != "single")
+    stop("combinations must be single for chosen.smooth")
   
-  #Get the arguments that have been set, replace any of the traitSmooth defaults and add extras
-  inargs <- list(...)
-  if (length(inargs))
-    probesmth.args <- utils::modifyList(probesmth.args, inargs, keep.null = TRUE)
+  if (any(unlist(lapply(chosen.smooth, function(x) (length(x) > 1)))))
+    stop("All of the components of chosen.smooth must be single-valued")
+  # smethods.opt <- c("direct", "logarithmic")
+  # smethod <- smethods.opt[check.arg.values(chosen.smooth$smoothing.method, options=smethods.opt)]
+  # smethods <- levels(smooths$Method)
+  # stypes.opt <- c("NCSS", "PS")
+  # stype <- stypes.opt[check.arg.values(chosen.smooth$spline.type, options=stypes.opt)]
+  # stypes <- levels(smooths$Type)
+  # 
+  # if (!(stype %in% stypes))
+  #   stype <- setdiff(stypes, stype)[1]
+  # if (!(smethod %in% smethods))
+  #   smethod <- setdiff(smethods, smethod)[1]
+  # if (is.allnull(chosen.smooth$df) && is.allnull(chosen.smooth$lambdas))
+  # {
+  #   if (stype == "NCSS"  && ("df" %in% levels(smooths$TunePar)))
+  #   { 
+  #     df <- factor(smooths$TuneVal[smooths$TunePar == "df"])
+  #     df <- as.numeric(levels(df))
+  #     chosen.smooth$df <- df[floor((length(df)+1)/2)]
+  #   }
+  #   else
+  #   {
+  #     if ("lambda" %in% levels(smooths$TunePar))
+  #     { 
+  #       lambdas <- factor(smooths$TuneVal[smooths$TunePar == "lambda" & smooths$Type == stype])
+  #       lambdas <- as.numeric(levels(lambdas))
+  #       chosen.smooth$lambdas <- 
+  #         lambdas[floor((length(lambdas)+1)/2)]
+  #     }
+  #     else
+  #       chosen.smooth$df <- NULL
+  #   }
+  # }
+  # if (!is.allnull(chosen.smooth$df))
+  # {
+  #   tunepar = "df"
+  #   tuneval = as.character(chosen.smooth$df)
+  # } else
+  # {
+  #   tunepar = "lambda"
+  #   tuneval = as.character(chosen.smooth$lambdas)
+  # }
+  if ((!is.allnull(chosen.smooth$df) && !is.allnull(chosen.smooth$lambdas)))
+    stop("One of df and lambda must be NULL in chosen.smooth")
+  combos <- levels(with(smooths, fac.combine(list(Type,TunePar,TuneVal,Method), 
+                                             combine.levels = TRUE, sep = "-")))
+  tparams <- conv2TuneParams(smth.args = chosen.smooth, smth = smooths)
+  stype <- tparams$stype
+  tunepar <- tparams$tunepar
+  tuneval <- tparams$tuneval
+  smethod <- tparams$smethod
   
-  tmp <- data
-  tmp[times] <- convertTimes2numeric(tmp[[times]])
-  #Call probeSmooths
-  smth <- do.call(probeSmooths, c(list(data = tmp, 
-                                       response = response, response.smoothed, 
-                                       times = times, individuals =  individuals, 
-                                       get.rates = get.rates, keep.columns = keep.columns,
-                                       labeller = labeller.chosen), 
-                                  probesmth.args))
+  choice <- paste0(sapply(tparams, as.character), collapse = "-")
+  if (!(choice %in% combos))
+    stop("The combination of the values of Type, TunePar, TuneVal and Method ", 
+         "given in chosen.smooth are not amongst those for the set of smooths in data")
   
-  #Process chosen model
-  if (!is.allnull(chosen.smooth))
-  { 
-    if (any(unlist(lapply(chosen.smooth, function(x) (length(x) > 1)))))
-      stop("the components of chosen.smooth must be single-valued")
-    smethods.opt <- c("direct", "logarithmic")
-    smethod <- smethods.opt[check.arg.values(chosen.smooth$smoothing.method, options=smethods.opt)]
-    #smethods <- smethods.opt[unlist(lapply(probesmth.args$smoothing.methods, check.arg.values, options=smethods.opt))]
-    smethods <- levels(smth$Method)
-    stypes.opt <- c("NCSS", "PS")
-    stype <- stypes.opt[check.arg.values(chosen.smooth$spline.type, options=stypes.opt)]
-    #stypes <- stypes.opt[unlist(lapply(probesmth.args$spline.types, check.arg.values, options=stypes.opt))]
-    stypes <- levels(smth$Type)
+  #Get subset 
+  smth <- smooths[smooths$Type == stype & smooths$TunePar == tunepar &
+                    smooths$TuneVal == tuneval &  smooths$Method == smethod, 
+                  setdiff(names(smooths), c("Type","TunePar","TuneVal","Method","Tuning"))]
+  class(smth) <- "data.frame"
+  
+  #merge it with the mergedata
+  if (!is.null(mergedata))
+  {  
+    checkNamesInData(c(individuals, times), mergedata)
+    if (!is.null(keep.columns))
+      smth <- smth[setdiff(names(smth), keep.columns)]
+    mergedata <- mergedata[c(individuals, times, setdiff(names(mergedata), names(smth)))]
+    smth <- merge(mergedata, smth, sort = FALSE)
+    #Order the columns
+    smth <- smth[c(names(mergedata),setdiff(names(smth), names(mergedata)))]
+  }
+  
+  if (!is.allnull(chosen.plot.args))
+  {
     
-    if (!(stype %in% stypes))
-      stype <- setdiff(stypes, stype)[1]
-    if (!(smethod %in% smethods))
-      smethod <- setdiff(smethods, smethod)[1]
-    if (is.allnull(chosen.smooth$df) && is.allnull(chosen.smooth$lambda))
-    {
-      #if (stype == "NCSS"  && !is.allnull(probesmth.args$df))
-      #  chosen.smooth$df <- probesmth.args$df[floor((length(probesmth.args$df)+1)/2)]
-      if (stype == "NCSS"  && ("df" %in% levels(smth$TunePar)))
-      { 
-        df <- factor(smth$TuneVal[smth$TunePar == "df"])
-        df <- as.numeric(levels(df))
-        chosen.smooth$df <- df[floor((length(df)+1)/2)]
-      }
-      else
-      {
-        #if (!is.allnull(probesmth.args$lambda))
-        #  chosen.smooth$lambda <- 
-        #    probesmth.args$lambdas[[stype]][floor((length(probesmth.args$lambdas[[stype]])+1)/2)]
-        if ("lambda" %in% levels(smth$TunePar))
-        { 
-          lambdas <- factor(smth$TuneVal[smth$TunePar == "lambda" & smth$Type == stype])
-          lambdas <- as.numeric(levels(lambdas))
-          chosen.smooth$lambda <- 
-            lambdas[floor((length(lambdas)+1)/2)]
-        }
-        else
-          chosen.smooth$df <- NULL
-      }
-    }
-    if (!is.allnull(chosen.smooth$df))
-    {
-      tunepar = "df"
-      tuneval = as.character(chosen.smooth$df)
-    } else
-    {
-      tunepar = "lambda"
-      tuneval = as.character(chosen.smooth$lambda)
-    }
-    if ((!is.allnull(chosen.smooth$df) && !is.allnull(chosen.smooth$lambda)) ||
-        (is.allnull(chosen.smooth$df) && is.allnull(chosen.smooth$lambda)))
-      stop("It must be that one and only one of df and lambda is NULL in chosen.smooth")
-    combos <- levels(with(smth, fac.combine(list(Type,TunePar,TuneVal,Method), 
-                                            combine.levels = TRUE, sep = "-")))
-    choice <- paste0(sapply(list(stype, tunepar, tuneval, smethod), as.character), collapse = "-")
-    if (!(choice %in% combos))
-      stop("The combination of the values of Type, TunePar, TuneVal and Method ", 
-           "given in chosen.smooth are not amongst those for the set of smooths that have been investigated")
+    smth[times] <- convertTimes2numeric(smth[[times]])
     
-    #Get subset and merge it with the tmp
-    smth <- subset(smth, subset = (smth$Type == stype & smth$TunePar == tunepar &
-                                     smth$TuneVal == tuneval &  smth$Method == smethod),
-                   select = setdiff(names(smth), c("Type","TunePar","TuneVal","Method","Tuning")))
-    class(smth) <- "data.frame"
-    tmp <- subset(tmp, select = c(individuals, times, setdiff(names(tmp), names(smth))))
-    smth <- merge(tmp, smth, sort = FALSE)
-    smth <- smth[c(names(data),setdiff(names(smth), names(data)))]
- 
     #Plot the profile plots for the chosen smooth
-    grates <- NULL
-    if (get.rates)
+    options <- c("response.smoothed", "AGR", "RGR", "all")
+    traits <- options[unlist(lapply(trait.types, check.arg.values, options=options))]
+    if ("all" %in% traits)
+      grates <- c("AGR", "RGR")
+    else
     {
-      #Get trait.types set for probeSmooths
-      if (!("trait.types" %in% names(probesmth.args)))
-        grates <- c("AGR", "RGR")
-      else
-      {
-        options <- c("response", "AGR", "RGR", "all")
-        traits <- options[unlist(lapply(probesmth.args$trait.types, check.arg.values, 
-                                        options=options))]
-        grates <- traits[-match(response, traits)]
-        if ("all" %in% traits)
-          grates <- c("AGR", "RGR")
-        if (!any(c("AGR","RGR") %in% grates))
-        {
-          warning("trait.types does not include AGR or RGR and so get.rates changed to FALSE")
-          grates <- NULL
-        }
-        else
-          grates <- c("AGR","RGR")[c("AGR","RGR") %in% grates]
-      }
+      grates <- traits[-match("response.smoothed", traits)]
     }
-    if (is.null(grates))
+    grates <- c("AGR","RGR")[c("AGR","RGR") %in% grates]
+    if (length(grates) == 0)
       responses.plot <- response.smoothed
     else
       responses.plot <- c(response.smoothed, paste(response.smoothed, grates, sep = "."))
@@ -2143,16 +1823,20 @@ smoothSchemes <- function(tmp, spar.schemes,
     }
     names(y.titles) <- responses.plot
     
-    #Find out if any plotProfiles arguments that traitSmooths handles have been supplied in '...'
-    usedProfile.args <- c("data","times","response","individuals","facet.x","facet.y",
-                          "labeller","colour","colour.column","colour.values",
-                          "alpha","y.title","printPlot","ggplotFuncs")
-    doubleargs <- intersect(names(inargs), usedProfile.args)
-    if (length(doubleargs))
-      stop("the  'plotProfiles' arguments ",paste0(doubleargs, collapse = ", "),
-           " conflict with 'traitSmooth' arguments")
-    #extract any remaining plotProfiles arguments from inargs
-    pltProfile.args <- setdiff(formalArgs(plotProfiles), c(usedProfile.args))
+    #Find out if any plotProfiles arguments that args4profile.plot handles have been supplied in '...'
+    if (length(inargs))
+    {
+      usedProfile.args <- c("facet.x","facet.y","labeller","scales","colour","colour.column","colour.values",
+                            "alpha","addMediansWhiskers","ggplotFuncs") #formalArgs(args4profile.plot)
+      doubleargs <- intersect(names(inargs), usedProfile.args)
+      if (length(doubleargs) > 0)
+        stop("the  'plotProfiles' arguments ",paste0(doubleargs, collapse = ", "), 
+             " conflict with 'args4profile.plot' arguments")
+    } else
+      usedProfile.args <- NULL
+    
+    #extract any valid plotProfiles arguments from inargs
+    pltProfile.args <- setdiff(formalArgs(plotProfiles), usedProfile.args)
     pltProfile.args <- names(inargs)[names(inargs) %in% pltProfile.args]
     if (length(pltProfile.args))
       pltProfile.args <- inargs[pltProfile.args]
@@ -2164,36 +1848,143 @@ smoothSchemes <- function(tmp, spar.schemes,
                                                        tunepar,tuneval), collapse = "-"))
     
     #Call plot longitudinal with just the plotProfile args from inargs
-    x.axis <- list(setScaleTime(smth[[times]], breaks.spacing.x = breaks.spacing.x.chosen)) 
+    x.axis <- list(setScaleTime(smth[[times]], 
+                                breaks.spacing.x = chosen.plot.args$breaks.spacing.x)) 
     for (kresp in responses.plot)
-      do.call(plotProfiles, c(list(data = smth, times = times,response = kresp,
-                                       individuals = individuals,
-                                       facet.x = facet.x.chosen,
-                                       facet.y = facet.y.chosen,
-                                       labeller = labeller.chosen,
-                                       colour = colour.chosen,
-                                       colour.column = colour.column.chosen,
-                                       colour.values = colour.values.chosen,
-                                       alpha = alpha.chosen,
-                                       title = title,
-                                       x.title = x.title,
-                                       y.title = y.titles[kresp],
-                                       printPlot = TRUE,
-                                       ggplotFuncs = c(x.axis, ggplotFuncsChosen)),
-                                  pltProfile.args))
+      do.call(plotProfiles, list(data = smth, times = times, response = kresp,
+                                 individuals = individuals,
+                                 facet.x = chosen.plot.args$facet.x,
+                                 facet.y = chosen.plot.args$facet.y,
+                                 labeller = chosen.plot.args$facet.labeller,
+                                 scales = chosen.plot.args$facet.scales,
+                                 colour = chosen.plot.args$colour,
+                                 colour.column = chosen.plot.args$colour.column,
+                                 colour.values = chosen.plot.args$colour.values,
+                                 alpha = chosen.plot.args$alpha,
+                                 title = title,
+                                 x.title = x.title,
+                                 y.title = y.titles[kresp],
+                                 printPlot = TRUE,
+                                 ggplotFuncs = c(x.axis, chosen.plot.args$ggplotFuncs), 
+                                 ...))
+  } 
+  
+  #Make sure that times is of the same type as times in data
+  smth[times] <- convertTimesExnumeric(smth[[times]], mergedata[[times]])
+  
+  invisible(smth)
+}
+
+
+"traitSmooth" <- function(data, response, response.smoothed, individuals, times, 
+                          keep.columns = NULL, 
+                          get.rates = TRUE, 
+                          rates.method="differences", ntimes2span = NULL, 
+                          trait.types = c("response", "AGR", "RGR"), 
+                          smoothing.args = args4smoothing(), 
+                          x.title = NULL, y.titles = NULL, 
+                          which.plots = c("profiles", "medians.deviations"), 
+                          profile.plot.args = args4profile.plot(), 
+                          meddevn.plot.args = args4meddevn.plot(), 
+                          chosen.smooth.args = args4chosen.smooth(),
+                          chosen.plot.args = args4chosen.plot(), 
+                          ggplotFuncsDevnBoxes = NULL,
+                          mergedata = NULL, 
+                          ...)
+{
+  #This is needed to make sure that the functions have been evaluated
+  smoothing.args <- smoothing.args
+  profile.plot.args <- profile.plot.args 
+  meddevn.plot.args <- meddevn.plot.args
+  chosen.smooth.args <- chosen.smooth.args
+  chosen.plot.args <- chosen.plot.args
+  inargs <- list(...)
+  checkEllipsisArgs(c("traitSmooth","plotProfiles"), inargs)
+  
+  tmp <- data
+  tmp[times] <- convertTimes2numeric(tmp[[times]])
+  #Call probeSmooths
+  smth <- do.call(probeSmooths, list(data = tmp, 
+                                     response = response, response.smoothed, 
+                                     times = times, individuals =  individuals, 
+                                     keep.columns = keep.columns,
+                                     trait.types = trait.types, 
+                                     get.rates = get.rates, 
+                                     rates.method = rates.method, 
+                                     ntimes2span = ntimes2span, 
+                                     x.title = x.title, y.titles = y.titles, 
+                                     which.plots = which.plots, 
+                                     smoothing.args = smoothing.args, 
+                                     profile.plot.args = profile.plot.args, 
+                                     meddevn.plot.args = meddevn.plot.args, 
+                                     ggplotFuncsDevnBoxes = ggplotFuncsDevnBoxes, 
+                                     ...))
+  
+  #Process chosen model
+  if (!is.allnull(chosen.smooth.args))
+  { 
+    #Check that no smoothing parameter factors have been supplied in plots.by, facet.x and facet.y for the chosen plot
+    plotfacs <- unique(c(chosen.plot.args$plts.by, chosen.plot.args$facet.x, chosen.plot.args$facet.y))
+    if (any(smooth.cols %in% plotfacs))
+      stop("The smoothing parameter factor(s) ", paste(smooth.cols[smooth.cols %in% plotfacs], collapse = ", "), 
+           " occur(s) in chosen.plots.args - only a single smooth is to be plotted and they are unnecessary")
+    
+    traits <- c("response.smoothed", "AGR", "RGR", "all")
+    traits <- traits[unlist(lapply(inargs$trait.types, check.arg.values,
+                                   options=traits))]
+    if ("all" %in% traits)
+      traits <- c("response.smoothed", "AGR", "RGR")
+
+    #reduce ellipsis args to plotProfiles args
+    pltProfile.args <- names(inargs)[names(inargs) %in%  formalArgs(plotProfiles)]
+    if (length(pltProfile.args))
+      pltProfile.args <- inargs[pltProfile.args]
+    else
+      pltProfile.args <- NULL
+    
+    smth <- do.call(traitChooseSmooth, 
+                    c(list(smooths = smth, response.smoothed = response.smoothed, 
+                           individuals = individuals, times = times, 
+                           keep.columns = keep.columns, 
+                           x.title = x.title, y.titles = y.titles, 
+                           trait.types = traits, 
+                           chosen.smooth = chosen.smooth.args, 
+                           chosen.plot.args = chosen.plot.args, 
+                           mergedata = mergedata), 
+                      pltProfile.args))
+    
   } else # merge with the original data if there is only one smooth
   {
     if (all(sapply(smth[smooth.cols], function(x) nlevels(x) == 1)))
     {
-      smth <- subset(smth, select = setdiff(names(smth), c("Type","TunePar","TuneVal","Method","Tuning")))
-      class(smth) <- "data.frame"
-      tmp <- subset(tmp, select = c(individuals, times, setdiff(names(tmp), names(smth))))
-      smth <- merge(tmp, smth, sort = FALSE)
-      smth <- smth[c(names(data),setdiff(names(smth), names(data)))]
-    }}
-
+      if (!is.smooths.frame(data) && is.null(mergedata))
+      {
+        smth <- smth[setdiff(names(smth), c("Type","TunePar","TuneVal","Method","Tuning"))]
+        if (!is.null(keep.columns))
+          smth <- smth[setdiff(names(smth), keep.columns)]
+        class(smth) <- "data.frame"
+        tmp <- tmp[c(individuals, times, setdiff(names(tmp), names(smth)))]
+        smth <- merge(tmp, smth, sort = FALSE)
+        #Order the columns
+        smth <- smth[c(names(tmp),setdiff(names(smth), names(tmp)))]
+      } else
+      {  
+        if (!is.null(mergedata))
+        { 
+          checkNamesInData(c(individuals, times), mergedata)
+          if (!is.null(keep.columns))
+            smth <- smth[setdiff(names(smth), keep.columns)]
+          mergedata <- mergedata[c(individuals, times, setdiff(names(mergedata), names(smth)))]
+          smth <- merge(mergedata, smth, sort = FALSE)
+          #Order the columns
+          smth <- smth[c(names(mergedata),setdiff(names(smth), names(mergedata)))]
+        }
+      }
+    }
+  }
+  
   #Make sure that times is of the same type as times in data
   smth[times] <- convertTimesExnumeric(smth[[times]], data[[times]])
-
+  
   invisible(smth)
 }

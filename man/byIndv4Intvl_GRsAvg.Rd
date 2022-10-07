@@ -15,7 +15,7 @@ byIndv4Intvl_GRsAvg(data, responses,
                     suffices.rates=c("AGR","RGR"), sep.rates = ".",
                     start.time, end.time, 
                     suffix.interval, sep.suffix.interval = ".", 
-                    sep.levels=".", na.rm=TRUE)}
+                    sep.levels=".", na.rm=FALSE)}
 \arguments{
  \item{data}{A \code{\link{data.frame}} containing the columns from which the 
              growth rates are to be calculated.}

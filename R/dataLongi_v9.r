@@ -537,7 +537,8 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
                            x = NULL, title = NULL, 
                            x.title = "DAP", y.title = "PSA (kpixels)", 
                            facet.x = ".", facet.y =   ".", 
-                           labeller = NULL, colour = "black", 
+                           labeller = NULL, scales = "fixed", 
+                           colour = "black", 
                            colour.column=NULL, colour.values=NULL, 
                            alpha = 0.1, addMediansWhiskers = FALSE, 
                            ggplotFuncs = NULL, 
@@ -563,9 +564,9 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
   {
     facet.form <- facet.char2formula(facet.x, facet.y)
     if (is.null(labeller))
-      longi.plot <- longi.plot + facet_grid(facet.form)
+      longi.plot <- longi.plot + facet_grid(facet.form, scales = scales)
     else
-      longi.plot <- longi.plot + facet_grid(facet.form, labeller = labeller)
+      longi.plot <- longi.plot + facet_grid(facet.form, labeller = labeller, scales = scales)
     longi.plot <- longi.plot + theme(strip.text = element_text(size=strip.text.size, face="bold"),
                                      axis.title = element_text(face="bold"), legend.position="none")
   }

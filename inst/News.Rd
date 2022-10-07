@@ -1,8 +1,21 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.1-10 (2022-10-07)}{
+  \itemize{
+  \item{Revamp the traitSmooth, ProbeSmooths, plotSmoothsComparisons, PlotSmoothsMedians arguments so that groups of them are specified by the new functions args4chosen.plot, args4chosen.smooth, args4meddevn.plot, args4profile.plot and args4smoothing.}
+  \item{Revise the Tomato vignette.}
+  }}
+\section{growthPheno Version 2.0-20 (2022-09-26)}{
+  \itemize{
+  \item{Allow a \code{smooths.frame} as input to \code{probeSmooths} and \code{traitSmooth} via the \code{data} argument. Modify traitSmooth so that if a \code{smooths.frame} is supplied as input, then only plotting and the selection and plotting of a \code{chosen.smooth} is executed.}
+  \item{Add argument \code{mergedata} to traitSmooth and add allow the chosen smooth to be plotted and returned, possibly merged with the \code{data.frame} nominated by \code{mergedata}.}
+  \item{Modify \code{get.rates} argument to allow the specification of the options \code{raw} and \code{smoothed} so that the type of responses for which the rates that are to be computed can be specified.}
+  \item{Add \code{scales} argument to plotProfiles.}
+  \item{Add arguments \code{scales.pf}, \code{scales.med} and \code{scales.chosen} to traitSmooth,  probeSmooths, plotSmoothsComparison and plotMedianDEviatons.}
+  }}
 \section{growthPheno Version 2.0-19 (2022-09-14)}{
   \itemize{
-  \item{Changed the return value for traitSmooth in the case that there is only one smooth specified by the smoothing parameters and the argument \code{Chosen.smooth} \code{NULL}. Now the smooth will be merged with the data and returned as a \code{data.frame}.}
+  \item{Changed the return value for traitSmooth in the case that there is only one smooth specified by the smoothing parameters and the argument \code{chosen.smooth.args} \code{NULL}. Now the smooth will be merged with the data and returned as a \code{data.frame}.}
   \item{Modify \code{breaks.spacing.x} in plotSmoothsComparison, plotMedianDeviations, probeSmooths and traitSmooth to allow for negative values that signify breaks or minor breaks are to be omitted for values that do not occur in the data. Change defaults for \code{breaks.spacing.x} to be negative.}
   \item{Fix bug in the error message in plotImagetimes for columns not in \code{data}.}
   }}
@@ -52,14 +65,14 @@
   }}
 \section{growthPheno Version 2.0-13 (2022-06-19)}{
   \itemize{
-  \item{The set of functions traitSmooths, probeSmooths, plotSmoothsComparison, plotSmoothMedianDeviations, splitSplines, splitContGR, splitValueCalculate, intervalGRaverage, intervalGRdiff, intervalValueCalculate, and intervalWUI have been overhauled to make them a consistent set of functions for smoothing and calculations performed on each individual. Where possible the arguments have been simplified. The changes that have been made include:
+  \item{The set of functions traitSmooth, probeSmooths, plotSmoothsComparison, plotSmoothMedianDeviations, splitSplines, splitContGR, splitValueCalculate, intervalGRaverage, intervalGRdiff, intervalValueCalculate, and intervalWUI have been overhauled to make them a consistent set of functions for smoothing and calculations performed on each individual. Where possible the arguments have been simplified. The changes that have been made include:
   \enumerate{
   \item{To make clear what the different functions do, all of The \code{split} and \code{interval} functions have been renamed to begin with \code{byIndv} to make clear that they all repeats operates on each individual from a set of individuals. In the renaming a distinction is made between those that produce, for each individual, (i) values for all of the times (4Times) and (ii) a value for an interval (4Intvl).}
      \item{The three \code{split} functions splitSplines, splitContGR and  splitValueCalculate have been renamed to byIndv4Times_SplinesGRs and byIndv4Times_GRsDiff and byIndv_ValueCalc,}
      \item{The new function byIndv4Times_SplinesGRs can smooth and calculate growth rates, either using derivative or differencing, in a single call using simplified arguments \code{rates.method} and \code{which.rates}.}
      \item{The \code{interval} functions have been renamed to byIndv4Intvl_GRsAvg, byIndv4Intvl_GRsDiff, byIndv4Intvl_ValueCalc and byIndv4Intvl_WaterUse.}
      \item{The new function byIndv4Intvl_WaterUse can produce the three water use traits \code{WU}, \code{WUR}, \code{WUI}, as well as the \code{AGR}, for a time interval. To achieve this \code{include.water.use} has been replaced by \code{trait.types}.}
-     \item{The functions traitSmooths and probeSmooths have been revised to use the new \code{byIndv} functions.}
+     \item{The functions traitSmooth and probeSmooths have been revised to use the new \code{byIndv} functions.}
      \item{All functions now 
        \itemize{
          \item{use the \code{times} argument rather than \code{x} or \code{times.factor} and \code{times} accepts a \code{factor}, \code{character} or \code{numeric};}

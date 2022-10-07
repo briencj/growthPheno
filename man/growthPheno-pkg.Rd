@@ -27,8 +27,25 @@
     \code{\link{traitExtractFeatures}} 
     \tab Extract features, that are single-valued for each \cr
     \tab individual, from smoothed traits over time. \cr
-\cr    
-    (ii) Data\cr\cr
+    \cr    
+    (ii) Helper functions  \cr\cr
+    \code{\link{args4chosen.plot}}
+    \tab Creates a \code{list} of the values for the options of \cr 
+    \tab profile plots for the chosen smooth. \cr
+    \code{\link{args4chosen.smooth}}
+    \tab Creates a \code{list} of the values for the smoothing \cr
+    \tab parameters for which a smooth is to be extracted. \cr
+    \code{\link{args4meddevn.plot}}
+    \tab Creates a \code{list} of the values for the options of \cr 
+    \tab median deviations plots for smooths. \cr
+    \code{\link{args4profile.plot}}
+    \tab Creates a \code{list} of the values for the options of \cr 
+    \tab profile plots for comparing smooths. \cr
+    \code{\link{args4smoothing}}
+    \tab Creates a \code{list} of the values for the smoothing \cr
+    \tab parameters to be passed to a smoothing function. \cr
+    \cr
+    (iii) Data\cr\cr
     
     \code{\link{exampleData}} 
     \tab A small data set to use in function examples. \cr
@@ -42,7 +59,7 @@
     \tab Longitudinal data for an experiment to investigate \cr
     \tab tomato response to mycorrhizal fungi and zinc. \cr
     \cr
-    (iii) Plots\cr\cr
+    (iv) Plots\cr\cr
     
     \code{\link{plotAnom}} 
     \tab Identifies anomalous individuals and produces\cr
@@ -64,10 +81,6 @@
     \code{\link{plotProfiles}} 
     \tab Produces profile plots of longitudinal data for a set \cr
     \tab of individuals. \cr
-    \code{\link{probeSmooths}} 
-    \tab Computes and compares, for a set of smoothing parameters, \cr
-    \tab a response and the smooths of it, possibly along with \cr
-    \tab growth rates calculated from the smooths.\cr
     \code{\link{plotSmoothsComparison}}
     \tab Plots  several sets of smoothed values for a response, \cr
     \tab possibly along with growth rates and optionally including \cr 
@@ -76,8 +89,12 @@
     \tab Calculates and plots the medians of the deviations \cr 
     \tab from the observed values of several sets for smoothed \cr
     \tab values stored in a \code{data.frame} in long format. \cr
+    \code{\link{probeSmooths}} 
+    \tab Computes and compares, for a set of smoothing parameters, \cr
+    \tab a response and the smooths of it, possibly along with \cr
+    \tab growth rates calculated from the smooths.\cr
     \cr
-    (iv) Smoothing and calculation \cr 
+    (v) Smoothing and calculation \cr 
     of growth rates and water use traits \cr 
     for each individual (Indv) \cr\cr
 
@@ -114,17 +131,17 @@
     \tab Applies a \code{function} to calculate a single value from \cr
     \tab an individual's values for a response in a \code{data.frame} in \cr
     \tab long format.\cr
+    \code{\link{smoothSpline}} 
+    \tab Fit a spline to smooth the relationship between a \cr
+    \tab \code{response} and an \code{x} in a \code{data.frame}, \cr
+    \tab optionally computing growth rates using derivatives.\cr
     \code{\link{probeSmooths}} 
     \tab For a response in a \code{data.frame} in long format, computes and \cr
     \tab compares, for sets of smoothing parameters, smooths \cr 
     \tab of the response, possibly along with growth rates \cr
     \tab calculated from the smooths.\cr
-    \code{\link{smoothSpline}} 
-    \tab Fit a spline to smooth the relationship between a \cr
-    \tab \code{response} and an \code{x} in a \code{data.frame}, \cr
-    \tab optionally computing growth rates using derivatives.\cr
 \cr
-    (v) Data frame manipulation\cr\cr
+    (vi) Data frame manipulation\cr\cr
     
     \code{\link{as.smooths.frame}} 
     \tab Forms a \code{\link{smooths.frame}} from a \code{data.frame}, \cr
@@ -153,7 +170,7 @@
     \tab Checks that an object is a valid \code{\link{smooths.frame}}. \cr
     \cr
 
-    (vi) General calculations \cr\cr
+    (vii) General calculations \cr\cr
     
     \code{\link{anom}} 
     \tab Tests if any values in a vector are anomalous\cr
@@ -175,7 +192,7 @@
     \tab Calculates the Water Use Index (WUI) for a value \cr 
     \tab of the response and of the water use.\cr
 \cr
-    (vii) Principal variates analysis (PVA)\cr\cr
+    (viii) Principal variates analysis (PVA)\cr\cr
     
     \code{\link{intervalPVA.data.frame}} 
     \tab Selects a subset of variables using PVA, based on \cr
@@ -211,7 +228,7 @@ of traits (SET) by Brien et al. (2020), who detail the use of \code{growthPheno}
 
 The function \code{\link{traitSmooth}} utilizes the secondary functions \code{\link{probeSmooths}}, \code{\link{plotSmoothsComparison}} and \code{\link{plotSmoothsMedianDevns}} and accepts the arguments of the secondary functions. The function \code{\link{probeSmooths}} utilizes the tertiary functions \code{\link{byIndv4Times_SplinesGRs}} and \code{\link{byIndv4Times_GRsDiff}}, which in turn call the function \code{\link{smoothSpline}}. The function \code{\link{plotSmoothsComparison}} calls \code{\link{plotDeviationsBoxes}}. All of these functions play a role in choosing the smoothing method and parameters for a data set. 
 
-The primary function \code{\link{traitExtractFeatures}} uses the secondary functions \code{\link{getTimesSubset}} and the set of \code{byIndv4Intvl_} functions. These functions are concerned with the extraction of traits that have a single value for each individual in the data. 
+The primary function \code{\link{traitExtractFeatures}} uses the secondary functions \code{\link{getTimesSubset}} and the set of \code{byIndv4Intvl_} functions. These functions are concerned with the extraction of traits that yield a single value for each individual in the data. 
 
 Recourse to the secondary and terriary functions may be necessary for special cases. Their use is illustrated in the \code{Rice} vignette.
 

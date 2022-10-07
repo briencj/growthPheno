@@ -21,6 +21,8 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
                                  sep.growth.rates = ".", sep.water.traits = "", 
                                  mergedata = NULL, ...)
 {
+  inargs <- list(...)
+  checkEllipsisArgs(c("traitSmooth"), inargs)
   #Check that specified columns are in data
   req.cols <- unique(c(individuals, times, responses4singletimes, 
                        responses4intvl.rates, responses4overall.rates,
@@ -41,7 +43,7 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
   
   #Process times arguments
   times.all <- NULL
-  if(!is.allnull(c(starts.intvl, stops.intvl)))
+  if (!is.allnull(c(starts.intvl, stops.intvl)))
     times.all <- c(starts.intvl, stops.intvl)
   #Process intvl.overall
   if (!is.allnull(intvl.overall))
@@ -51,7 +53,7 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
   }
   else 
   {
-    if(!is.null(times.all))
+    if (!is.null(times.all))
       intvl.overall <- range(times.all, na.rm = TRUE)
   }
   
@@ -99,16 +101,21 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
   {
     if (is.allnull(times.single))
       stop("No times available for single-time traits")
-    for (t1 in times.single)
-      indv.dat <- merge(indv.dat, 
-                        getTimesSubset(data = data, 
-                                       responses = responses4singletimes, 
-                                       individuals = individuals, times = times, 
-                                       which.times = t1, 
-                                       suffix = t1, 
-                                       sep.suffix.times = sep.suffix.times,
-                                       include.individuals = TRUE),
-                        by = individuals, sort = FALSE)
+    tmp <- lapply(times.single, function(t1, data, responses, individuals, sep.suffix.times) 
+    { 
+      dat <- getTimesSubset(data = data, 
+                            responses = responses, 
+                            individuals = individuals, times = times, 
+                            which.times = t1, 
+                            suffix = t1, 
+                            sep.suffix.times = sep.suffix.times,
+                            include.individuals = TRUE)
+      return(dat)
+    },
+    data = data, responses = responses4singletimes, individuals = individuals, sep.suffix.times = sep.suffix.times)
+    names(tmp) <- times.single
+    for (t1 in as.character(times.single))
+        indv.dat <- merge(indv.dat, tmp[[t1]], all = TRUE, sort = FALSE)
   }
   
   ####Get the growth rates

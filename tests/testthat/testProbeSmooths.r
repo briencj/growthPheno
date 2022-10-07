@@ -5,7 +5,7 @@ test_that("smooth.frames_growthPheno", {
   skip_on_cran()
   library(growthPheno)
   library(scales)
-dat <- read.table(header = TRUE, text = "
+  dat <- read.table(header = TRUE, text = "
 Type TunePar TuneVal Tuning Method       ID  DAP   PSA      sPSA
 NCSS      df       4   df-4 direct 045451-C   28 57.446 51.18456
 NCSS      df       4   df-4 direct 045451-C   30 89.306 87.67343
@@ -50,21 +50,34 @@ test_that("chickpea_growthPheno", {
   #'## Obtain separate plots Tunings
   testthat::expect_warning(t <- probeSmooths(data = dat1, response="ShootArea1000", 
                                              times = "TimeAfterPlanting", 
-                                             df=df, 
-                                             breaks.spacing.x = 2,
-                                             plots.by.pf = "Tuning", 
-                                             facet.x.pf = "Treatment.1", facet.y.pf = "Smarthouse"),
-                           regexp = "NaNs produced")
+                                             smoothing.args = 
+                                               args4smoothing(smoothing.methods = "direct", 
+                                                              spline.types = "NCSS", 
+                                                              df = df, lambdas = NULL), 
+                                             profile.plot.args = 
+                                               args4profile.plot(breaks.spacing.x = 2,
+                                                                 plots.by = "Tuning", 
+                                                                 facet.x = "Treatment.1", 
+                                                                 facet.y = "Smarthouse")
+  ),
+  regexp = "NaNs produced")
   testthat::expect_equal(nrow(t), 16960)
   testthat::expect_equal(ncol(t), 16)
   
   #'## Obtain separate plots Tunings, when includes NCSS for lambda
   testthat::expect_warning(t <- probeSmooths(data = dat1, response="ShootArea1000", 
                                              times = "TimeAfterPlanting", 
-                                             df=df, lambdas = list(NCSS = 0.0001),
-                                             plots.by.pf = "Tuning", 
-                                             facet.x.pf = "Treatment.1", facet.y.pf = "Smarthouse",
-                                             include.raw.pf = "alone"),
+                                             smoothing.args = 
+                                               args4smoothing(smoothing.methods = "direct", 
+                                                              spline.types = "NCSS", 
+                                                              df=df, 
+                                                              lambdas = list(NCSS = 0.0001)),
+                                             profile.plot.args = 
+                                               args4profile.plot(breaks.spacing.x = 2,
+                                                                 plots.by = "Tuning", 
+                                                                 facet.x = "Treatment.1", 
+                                                                 facet.y = "Smarthouse",
+                                                                 include.raw = "alone")),
                            regexp = "NaNs produced")
   testthat::expect_equal(nrow(t), 25440)
   testthat::expect_equal(ncol(t), 16)
@@ -73,125 +86,183 @@ test_that("chickpea_growthPheno", {
   #'## Obtain separate plots Tunings, when includes NCSS & PS for lambda
   testthat::expect_error(t <- probeSmooths(data = dat1, response="ShootArea1000", 
                                            times = "TimeAfterPlanting", 
-                                           df=7, lambdas = list(NCSS = 0.0001, PS = 1),
-                                           plots.by.pf = "Tuning", 
-                                           facet.x.pf = "Treatment.1", facet.y.pf = "Smarthouse"),
-                         regexp = "The following names for the components of lambdas are not in the specified spline.types: PS")
+                                           smoothing.args = 
+                                             args4smoothing(smoothing.methods = "direct", 
+                                                            spline.types = "NCSS", 
+                                                            df=7, 
+                                                            lambdas = list(NCSS = 0.0001, PS = 1)),
+                                           profile.plot.args = 
+                                             args4profile.plot(breaks.spacing.x = 2,
+                                                               plots.by = "Tuning", 
+                                                               facet.x = "Treatment.1", 
+                                                               facet.y = "Smarthouse")
+  ),
+  regexp = "The following names for the components of lambdas are not in the specified spline.types: PS")
   
   #'## Obtain separate plots Tunings, when includes NCSS & PS for lambda
   testthat::expect_warning(t <- probeSmooths(data = dat1, response="ShootArea1000", 
                                              times = "TimeAfterPlanting", 
-                                             spline.types = c("NCSS","PS"),
-                                             df=7, lambdas = list(NCSS = 0.0001, PS = 1),
-                                             plots.by.pf = c("Type","Tuning"), 
-                                             facet.x.pf = "Treatment.1", facet.y.pf = "Smarthouse",  
-                                             include.raw.pf = "facet.x"),
+                                             smoothing.args = 
+                                               args4smoothing(smoothing.methods = "direct", 
+                                                              spline.types = c("NCSS","PS"), 
+                                                              df=7, 
+                                                              lambdas = list(NCSS = 0.0001, PS = 1)),
+                                             profile.plot.args = 
+                                               args4profile.plot(breaks.spacing.x = 2,
+                                                                 plots.by = c("Type","Tuning"), 
+                                                                 facet.x = "Treatment.1", facet.y = "Smarthouse",  
+                                                                 include.raw = "facet.x")),
                            regexp = "NaNs produced")
   testthat::expect_equal(nrow(t), 25440)
   testthat::expect_equal(ncol(t), 16)
   
-  #'## Obtain separate plots Tunings, when includes NCSS & PS for lambda and set include.raw.pf to "alone"
+  #'## Obtain separate plots Tunings, when includes NCSS & PS for lambda and set include.raw to "alone"
   testthat::expect_warning(t <- probeSmooths(data = dat1, response="ShootArea1000", 
                                              times = "TimeAfterPlanting", 
-                                             spline.types = c("NCSS","PS"),
-                                             df=7, lambdas = list(NCSS = 0.0001, PS = 1),
-                                             plots.by.pf = c("Type","Tuning"), 
-                                             facet.x.pf = "Treatment.1", facet.y.pf = "Smarthouse",  
-                                             include.raw.pf = "alone"),
+                                             smoothing.args = 
+                                               args4smoothing(smoothing.methods = "direct", 
+                                                              spline.types = c("NCSS","PS"), 
+                                                              df=7, 
+                                                              lambdas = list(NCSS = 0.0001, PS = 1)),
+                                             profile.plot.args = 
+                                               args4profile.plot(breaks.spacing.x = 2,
+                                                                 plots.by = c("Type","Tuning"), 
+                                                                 facet.x = "Treatment.1", facet.y = "Smarthouse",  
+                                                                 include.raw = "alone")),
                            regexp = "NaNs produced")
   testthat::expect_equal(nrow(t), 25440)
   testthat::expect_equal(ncol(t), 16)
   
   
-  #Test various combinations of smoothing and non-smoothing factors in facet.x.pf
+  #Test various combinations of smoothing and non-smoothing factors in facet.x
   testthat::expect_warning(t <- probeSmooths(data = dat1, response="ShootArea1000", 
                                              times = "TimeAfterPlanting", 
                                              get.rates = FALSE, 
                                              keep.columns = c("Smarthouse", "Treatment.1"),
-                                             df = df, which.plots = "none"),
-                           repexp = "get.rates is FALSE; trait.types changed to response and propn.types.med reduced to its first value")
+                                             smoothing.args = 
+                                               args4smoothing(smoothing.methods = "direct", 
+                                                              spline.types = "NCSS", 
+                                                              df = df, lambdas = NULL), 
+                                             which.plots = "none"),
+                           repexp = paste0("The calculation of smoothed growth rates have not been specified; ",
+                                           "trait.types changed to response and propn.type.med reduced to its first element"))
   testthat::expect_equal(nrow(t), 16960)
   testthat::expect_equal(ncol(t), 11)
   testthat::expect_true(all(c("Smarthouse", "Treatment.1") %in% names(t)))
   #test for incorrect trait.types
   testthat::expect_error(plotSmoothsComparison(data = t, response="ShootArea1000", 
                                                times = "TimeAfterPlanting", 
-                                               plots.by.pf = "Smarthouse", 
-                                               facet.x.pf = c("Treatment.1", "Method", "Tuning")),
+                                               profile.plot.args = 
+                                                 args4profile.plot(plots.by = "Smarthouse", 
+                                                                   facet.x = c("Treatment.1", "Method", "Tuning"), 
+                                                                   facet.y = ".", 
+                                                                   include.raw = "no")),
                          regexp = paste0("The following traits are not in the smooths.frame: ShootArea1000.AGR, ",
                                          "ShootArea1000.RGR; perhaps, trait.types needs to be set differently"))
   testthat::expect_silent(plotSmoothsComparison(data = t, response="ShootArea1000", 
                                                 times = "TimeAfterPlanting", 
                                                 trait.types = ("response"), 
-                                                plots.by.pf = "Tuning", 
-                                                facet.x.pf = c("Smarthouse", "Treatment.1")))
+                                                profile.plot.args = 
+                                                  args4profile.plot(plots.by = "Tuning", 
+                                                                    facet.x = c("Smarthouse", "Treatment.1"), 
+                                                                    facet.y = ".", 
+                                                                    include.raw = "no")))
   testthat::expect_silent(plotSmoothsComparison(data = t, response="ShootArea1000", 
                                                 times = "TimeAfterPlanting", 
                                                 trait.types = ("response"), 
-                                                plots.by.pf = "Smarthouse", 
-                                                facet.x.pf = c("Method", "Treatment.1", "Tuning")))
+                                                profile.plot.args = 
+                                                  args4profile.plot(plots.by = "Smarthouse", 
+                                                                    facet.x = c("Method", "Treatment.1", "Tuning"), 
+                                                                    facet.y = ".", 
+                                                                    include.raw = "no")))
   testthat::expect_silent(plotSmoothsComparison(data = t, response="ShootArea1000", 
                                                 times = "TimeAfterPlanting", 
                                                 trait.types = ("response"), 
-                                                plots.by.pf = "Smarthouse", 
-                                                facet.x.pf = c("Method", "Treatment.1", "Tuning"), 
-                                                collapse.facets.x.pf = FALSE))
+                                                profile.plot.args = 
+                                                  args4profile.plot(plots.by = "Smarthouse", 
+                                                                    facet.x = c("Method", "Treatment.1", "Tuning"), 
+                                                                    collapse.facets.x = FALSE, 
+                                                                    facet.y = ".", 
+                                                                    include.raw = "no")))
   testthat::expect_silent(plotSmoothsComparison(data = t, response="ShootArea1000", 
                                                 times = "TimeAfterPlanting", 
                                                 trait.types = ("response"), 
-                                                plots.by.pf = "Smarthouse", 
-                                                facet.x.pf = c("Method", "Treatment.1", "Tuning"),
-                                                include.raw.pf = "facet.x"))
+                                                profile.plot.args = 
+                                                  args4profile.plot(plots.by = "Smarthouse", 
+                                                                    facet.x = c("Method", "Treatment.1", "Tuning"),
+                                                                    facet.y = ".", 
+                                                                    include.raw = "facet.x")))
   #Don't collapse the facet.x
   testthat::expect_silent(plotSmoothsComparison(data = t, response="ShootArea1000", 
                                                 times = "TimeAfterPlanting", 
                                                 trait.types = ("response"), 
-                                                plots.by.pf = "Smarthouse", 
-                                                facet.x.pf = c("Method", "Treatment.1", "Tuning"), 
-                                                collapse.facets.x.pf = FALSE))
+                                                profile.plot.args = 
+                                                  args4profile.plot(plots.by = "Smarthouse", 
+                                                                    facet.x = c("Method", "Treatment.1", "Tuning"), 
+                                                                    facet.y = ".", 
+                                                                    include.raw = "no", 
+                                                                    collapse.facets.x = FALSE)))
   #Inclusion of raw with both smoothing-parameter and other factors in facet.x
   testthat::expect_silent(
     plotSmoothsComparison(data = t, response="ShootArea1000", 
                           times = "TimeAfterPlanting", 
                           trait.types = ("response"), 
-                          plots.by.pf = "Smarthouse", 
-                          facet.x.pf = c("Method", "Treatment.1", "Tuning"), 
-                          collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
+                          profile.plot.args = 
+                            args4profile.plot(plots.by = "Smarthouse", 
+                                              facet.x = c("Method", "Treatment.1", "Tuning"), 
+                                              facet.y = ".", 
+                                              collapse.facets.x = FALSE, 
+                                              include.raw = "facet.x")))
   #Inclusion of raw with both smoothing-parameter and other factors in facet.y
   testthat::expect_silent(
     plotSmoothsComparison(data = t, response="ShootArea1000", 
                           times = "TimeAfterPlanting", 
                           trait.types = ("response"), 
-                          plots.by.pf = "Smarthouse", 
-                          facet.y.pf = c("Method", "Treatment.1", "Tuning"), 
-                          collapse.facets.y.pf = FALSE, include.raw.pf = "facet.y"))
+                          profile.plot.args = 
+                            args4profile.plot(plots.by = "Smarthouse", 
+                                              facet.x = ".", 
+                                              facet.y = c("Method", "Treatment.1", "Tuning"), 
+                                              collapse.facets.y = FALSE, include.raw = "facet.y")))
   #Inclusion of raw with other factors in facet.x and  facet.y
   testthat::expect_silent(
     plotSmoothsComparison(data = t, response="ShootArea1000", 
                           times = "TimeAfterPlanting", 
                           trait.types = ("response"), 
-                          plots.by.pf = "Smarthouse", 
-                          facet.x.pf = c("Method", "Tuning"), facet.y.pf = "Treatment.1",  
-                          collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
+                          profile.plot.args = 
+                            args4profile.plot(plots.by = "Smarthouse", 
+                                              facet.x = c("Method", "Tuning"), 
+                                              facet.y = "Treatment.1", 
+                                              collapse.facets.x = FALSE, 
+                                              include.raw = "facet.x")))
   #removes Median whiskers
   testthat::expect_silent(
     plotSmoothsComparison(data = t, response="ShootArea1000", 
                           times = "TimeAfterPlanting", 
                           trait.types = ("response"), 
-                          plots.by.pf = "Smarthouse", 
-                          facet.y.pf = c("Method", "Treatment.1", "Tuning"), 
-                          collapse.facets.y.pf = FALSE, include.raw.pf = "facet.y"))
-   #removes Median whiskers
+                          profile.plot.args = 
+                            args4profile.plot(plots.by = "Smarthouse", 
+                                              facet.x = ".", 
+                                              facet.y = c("Method", "Treatment.1", "Tuning"), 
+                                              collapse.facets.y = FALSE, 
+                                              include.raw = "facet.y")))
+  #removes Median whiskers
   testthat::expect_silent(plotSmoothsComparison(data = t, response="ShootArea1000", 
                                                 times = "TimeAfterPlanting", 
                                                 trait.types = ("response"), 
-                                                plots.by.pf = "Smarthouse", 
-                                                facet.x.pf = c("Method", "Treatment.1", "Tuning"),
-                                                addMediansWhiskers = FALSE))
-  #Must specify either plots.by.pf or plots.compare 
+                                                profile.plot.args = 
+                                                  args4profile.plot(plots.by = "Smarthouse", 
+                                                                    facet.x = c("Method", "Treatment.1", "Tuning"), 
+                                                                    facet.y = ".", 
+                                                                    include.raw = "no",
+                                                                    addMediansWhiskers = FALSE)))
+  #Must specify either plots.by or plots.compare 
   testthat::expect_warning(testthat::expect_error(
     t <- probeSmooths(dat1, response="ShootArea1000", 
-                      times = "TimeAfterPlanting", df=df),
+                      times = "TimeAfterPlanting", 
+                      smoothing.args = 
+                        args4smoothing(smoothing.methods = "direct", 
+                                       spline.types = "NCSS", 
+                                       df = df, lambdas = NULL)),
     regexp = paste0("There are no smoothing-parameter factors assigned to the plots and facet ", 
                     "arguments - enough of them need to be assigned so that they uniquely index ", 
                     "the combinations of the smoothing-parameter values in the smooths.frame")),
@@ -203,23 +274,29 @@ test_that("chickpea_growthPheno", {
     plotSmoothsComparison(data = t, response="ShootArea1000", 
                           times = "TimeAfterPlanting", 
                           trait.types = ("response"), 
-                          breaks.spacing.x = -1, 
-                          plots.by.pf = "Smarthouse", 
-                          facet.x.pf = c("Method", "Treatment.1", "Tuning"), 
-                          collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
+                          profile.plot.args = 
+                            args4profile.plot(breaks.spacing.x = -1, 
+                                              plots.by = "Smarthouse", 
+                                              facet.x = c("Method", "Treatment.1", "Tuning"), 
+                                              facet.y = ".", 
+                                              collapse.facets.x = FALSE, 
+                                              include.raw = "facet.x")))
   
-
+  
   #Plot medians.deviations only with only facet.y.med set
   testthat::expect_warning(t <- probeSmooths(data = dat1, response="ShootArea1000", 
                                              times = "TimeAfterPlanting", 
                                              trait.types = "response", 
-                                             df=df, 
+                                             smoothing.args = args4smoothing(smoothing.methods = "direct", 
+                                                                             spline.types = "NCSS", 
+                                                                             df = df, lambdas = NULL), 
                                              which.plots = "medians.dev", 
-                                             facet.x.pf = "Tuning", 
-                                             facet.y.pf = c("Smarthouse", "Treatment.1"), 
-                                             propn.types.med = 0.05,
-                                             plots.group.med = "Tuning", 
-                                             facet.y.med = c("Smarthouse", "Treatment.1")))
+                                             meddevn.plot.args = 
+                                               args4meddevn.plot(plots.by = NULL, 
+                                                                 plots.group = "Tuning", 
+                                                                 facet.x = ".", 
+                                                                 facet.y = c("Smarthouse", "Treatment.1"),
+                                                                 propn.types = 0.05)))
   testthat::expect_equal(nrow(t), 16960)
   testthat::expect_equal(ncol(t), 11)
   
@@ -227,10 +304,15 @@ test_that("chickpea_growthPheno", {
   testthat::expect_silent(t <- probeSmooths(data = dat1, response="ShootArea1000", 
                                             times = "TimeAfterPlanting", 
                                             trait.types=c("AGR"),
-                                            df=df, 
-                                            plots.by.pf = "Tuning", 
-                                            facet.x.pf = "Treatment.1", facet.y.pf = "Smarthouse", 
-                                            include.raw.pf = "alone"))
+                                            smoothing.args = args4smoothing(smoothing.methods = "direct", 
+                                                                            spline.types = "NCSS", 
+                                                                            df = df, lambdas = NULL), 
+                                            profile.plot.args = 
+                                              args4profile.plot(breaks.spacing.x = -1, 
+                                                                plots.by = "Tuning", 
+                                                                facet.x = "Treatment.1", 
+                                                                facet.y = "Smarthouse", 
+                                                                include.raw = "alone")))
   testthat::expect_equal(nrow(t), 16960)
   testthat::expect_equal(ncol(t), 14)
   
@@ -238,17 +320,30 @@ test_that("chickpea_growthPheno", {
   testthat::expect_silent(t <- probeSmooths(data = dat1, response="ShootArea1000", 
                                             times = "TimeAfterPlanting", 
                                             trait.types=c("response"), get.rates=FALSE, 
-                                            df=df, 
-                                            facet.x.pf = c("Treatment.1", "Tuning"), 
-                                            facet.y.pf = "Smarthouse"))
+                                            smoothing.args = 
+                                              args4smoothing(smoothing.methods = "direct", 
+                                                                            spline.types = "NCSS", 
+                                                                            df = df, lambdas = NULL), 
+                                            profile.plot.args = 
+                                              args4profile.plot(breaks.spacing.x = -1, 
+                                                                plots.by = NULL, 
+                                                                facet.x = c("Treatment.1", "Tuning"), 
+                                                                facet.y = "Smarthouse")))
   
   #include raw plots with compare and no facet.x.pf
   testthat::expect_silent(t <- probeSmooths(data = dat1, response="ShootArea1000", 
                                             times = "TimeAfterPlanting", 
                                             trait.types=c("response"), get.rates=FALSE, 
-                                            df=df, 
-                                            facet.x.pf = "Tuning", facet.y.pf = "Treatment.1", 
-                                            include.raw.pf = "facet.x"))
+                                            smoothing.args = 
+                                              args4smoothing(smoothing.methods = "direct", 
+                                                             spline.types = "NCSS", 
+                                                             df = df, lambdas = NULL), 
+                                            profile.plot.args = 
+                                              args4profile.plot(breaks.spacing.x = -1, 
+                                                                plots.by = NULL, 
+                                                                facet.x = "Tuning", 
+                                                                facet.y = "Treatment.1",
+                                                                include.raw = "facet.x")))
   testthat::expect_equal(nrow(t), 16960)
   testthat::expect_true(all(c("Type", "TunePar", "TuneVal", "Tuning", "Method", 
                               "Snapshot.ID.Tag", "TimeAfterPlanting",  
@@ -262,10 +357,15 @@ test_that("chickpea_growthPheno", {
                                             times = "TimeAfterPlanting", 
                                             x.title = "DAP", 
                                             trait.types=c("response"), get.rates=FALSE, 
+                                            smoothing.args = 
+                                              args4smoothing(smoothing.methods = "direct", 
+                                                             spline.types = "NCSS", 
+                                                             df = df, lambdas = NULL), 
                                             which.plots = c("profiles", "absolute"),
-                                            df=df, 
-                                            facet.x.pf = "Tuning", 
-                                            facet.y.pf = "Treatment.1"))
+                                            profile.plot.args = 
+                                              args4profile.plot(plots.by = NULL, 
+                                                                facet.x = "Tuning", 
+                                                                facet.y = "Treatment.1")))
   testthat::expect_equal(nrow(t), 16960)
   testthat::expect_true(all(c("Type", "TunePar", "TuneVal", "Tuning", "Method", 
                               "Snapshot.ID.Tag", "TimeAfterPlanting",  
@@ -277,24 +377,33 @@ test_that("chickpea_growthPheno", {
                                              times = "TimeAfterPlanting", 
                                              trait.types=c("response", "AGR"), 
                                              x.title = "DAP", 
-                                             df=df, 
-                                             plots.by.pf = "Tuning", 
-                                             facet.x.pf = "Treatment.1", facet.y.pf = "Smarthouse", 
-                                             which.plots = c("profiles", "absolute", "relative")))
+                                             smoothing.args = 
+                                               args4smoothing(smoothing.methods = "direct", 
+                                                              spline.types = "NCSS", 
+                                                              df = df, lambdas = NULL), 
+                                             which.plots = c("profiles", "absolute", "relative"), 
+                                             profile.plot.args = 
+                                               args4profile.plot(plots.by = NULL, 
+                                                                 facet.x = "Tuning", 
+                                                                 facet.y = "Treatment.1")))
   testthat::expect_equal(nrow(t), 16960)
   testthat::expect_lt(max(abs(t[t$TuneVal == "4", "ShootArea1000"] - t[t$TuneVal == "4", "sShootArea1000"]), 
                           na.rm = TRUE) - 5.563407, 1e-07)
   testthat::expect_lt(max(abs(t[t$TuneVal == "4", "ShootArea1000"] - t[t$TuneVal == "4", "sShootArea1000"])/
                             t[t$TuneVal == "4", "sShootArea1000"]) - 370.7951, 1e-04)
   
-  testthat::expect_warning(t <- probeSmooths(data = dat1, response="ShootArea1000", 
-                                             times = "TimeAfterPlanting", 
-                                             x.title = "DAP", 
-                                             trait.types=c("response", "AGR"), 
-                                             df=df, 
-                                             plots.by.pf = "Tuning", 
-                                             facet.y.pf = c("Smarthouse", "Treatment.1"),
-                                             which.plots = c("profiles", "absolute", "relative")))
+  testthat::expect_silent(t <- probeSmooths(data = dat1, response="ShootArea1000", 
+                                            times = "TimeAfterPlanting", 
+                                            x.title = "DAP", 
+                                            trait.types=c("response", "AGR"), 
+                                            smoothing.args = 
+                                              args4smoothing(smoothing.methods = "direct", 
+                                                             spline.types = "NCSS", 
+                                                             df = df, lambdas = NULL), 
+                                            profile.plot.args = 
+                                              args4profile.plot(plots.by = NULL, 
+                                                                facet.x = "Tuning", 
+                                                                facet.y = c("Smarthouse", "Treatment.1"))))
   testthat::expect_equal(nrow(t), 16960)
   
 })
@@ -314,81 +423,128 @@ test_that("exampleData_growthPheno", {
   
   testthat::expect_silent(tmp <- probeSmooths(data = longi.dat, 
                                               response = "PSA", times = "DAP", 
-                                              df = c(4,7), 
-                                              facet.x.pf = "Tuning", facet.y.pf = "Treatment.1",
-                                              ggplotFuncsProfile = vline))
+                                              smoothing.args = args4smoothing(smoothing.methods = "direct", 
+                                                                              spline.types = "NCSS", 
+                                                                              df = c(4,7), lambdas = NULL), 
+                                              profile.plot.args = 
+                                                args4profile.plot(plots.by = NULL, 
+                                                                  facet.x = "Tuning", 
+                                                                  facet.y = "Treatment.1", 
+                                                                  ggplotFuncs = vline)))
   testthat::expect_equal(nrow(tmp), 560)
   testthat::expect_equal(ncol(tmp), 15)
   
   testthat::expect_warning(testthat::expect_error(
     tmp <- probeSmooths(data = longi.dat, 
                         response = "PSA", times = "DAP", 
-                        df = c(4,7), 
-                        facet.x.pf = "Method", 
-                        get.rates = FALSE,
-                        ggplotFuncsProfile = vline),
-    regexp = paste0("\n The number of different combinations of the smoothing-parameter values in the smooths.frame and ", 
-                    "of the levels combination of the following factors nominated in the facet/plots arguments ", 
-                    "are not equal: Method")),
-    regexp = paste0("get.rates is FALSE; trait.types changed to response and propn.types.med reduced to its first value"))
+                        get.rates = FALSE, 
+                        smoothing.args = args4smoothing(smoothing.methods = "direct", 
+                                                        spline.types = "NCSS", 
+                                                        df = c(4,7), lambdas = NULL), 
+                        profile.plot.args = 
+                          args4profile.plot(plots.by = NULL, 
+                                            facet.x = "Method", 
+                                            facet.y = ".", 
+                                            ggplotFuncs = vline)),
+    regexp = paste0("\n The number of different combinations of \\(i\\) the smoothing-parameter values that ", 
+                    "are available and \\(ii\\) the levels combination of the following factors nominated ",
+                    "in the facet/plots arguments are not equal: Method")),
+    regexp = paste0("The calculation of smoothed growth rates have not been specified; ",
+                    "trait.types changed to response and propn.type reduced to its first element"))
   testthat::expect_warning(tmp <- probeSmooths(data = longi.dat, 
                                                response = "PSA", times = "DAP", 
-                                               df = c(4,7), 
-                                               facet.x.pf = "Tuning", 
                                                get.rates = FALSE,
-                                               ggplotFuncsProfile = vline))
+                                               smoothing.args = args4smoothing(smoothing.methods = "direct", 
+                                                                               spline.types = "NCSS", 
+                                                                               df = c(4,7), lambdas = NULL), 
+                                               profile.plot.args = 
+                                                 args4profile.plot(plots.by = NULL, 
+                                                                   facet.x = "Tuning", 
+                                                                   facet.y = ".", 
+                                                                   ggplotFuncs = vline)))
   testthat::expect_equal(nrow(tmp), 560)
   testthat::expect_equal(ncol(tmp), 9)
   
   testthat::expect_warning(tmp <- probeSmooths(data = longi.dat, 
                                                response = "PSA", times = "DAP", 
-                                               df = c(4:7), 
-                                               facet.x.pf = "Tuning", 
-                                               alpha.pf = 0.6, get.rates = FALSE,
-                                               ggplotFuncsProfile = vline),
-                           regexp = paste0("get.rates is FALSE; trait.types changed to response and ",
-                                           "propn.types.med reduced to its first value"))
-  testthat::expect_equal(nrow(tmp), 1120)
+                                               get.rates = FALSE,
+                                               smoothing.args = args4smoothing(smoothing.methods = "direct", 
+                                                                               spline.types = "NCSS", 
+                                                                               df = c(4,7), lambdas = NULL), 
+                                               profile.plot.args = 
+                                                 args4profile.plot(plots.by = NULL, 
+                                                                   facet.x = "Tuning", 
+                                                                   facet.y = ".", 
+                                                                   alpha = 0.6, 
+                                                                   ggplotFuncs = vline)), 
+                           regexp = paste0("The calculation of smoothed growth rates have not been specified; ",
+                                           "trait.types changed to response and propn.type reduced to its first element"))
+  testthat::expect_equal(nrow(tmp), 560)
   testthat::expect_equal(ncol(tmp), 9)
   
   #AGR trait plot only
   testthat::expect_silent(tmp <- probeSmooths(data = longi.dat, 
                                               response = "PSA", times = "DAP", 
-                                              df = c(4:7), 
-                                              facet.x.pf = "Tuning", 
-                                              alpha.pf = 0.5, trait.types = "AGR",
-                                              ggplotFuncsProfile = vline))
-  testthat::expect_equal(nrow(tmp), 1120)
+                                              trait.types = "AGR",
+                                              smoothing.args = args4smoothing(smoothing.methods = "direct", 
+                                                                              spline.types = "NCSS", 
+                                                                              df = c(4,7), lambdas = NULL), 
+                                              profile.plot.args = 
+                                                args4profile.plot(plots.by = NULL, 
+                                                                  facet.x = "Tuning", 
+                                                                  facet.y = ".", 
+                                                                  alpha = 0.5, 
+                                                                  ggplotFuncs = vline)))
+  testthat::expect_equal(nrow(tmp), 560)
   testthat::expect_equal(ncol(tmp), 12)
   
   #Compare medians and profiles for multiple traits  
   testthat::expect_warning(tmp <- probeSmooths(data = longi.dat, 
                                                response = "PSA", times = "DAP", 
-                                               df = c(4:7), 
-                                               facet.x.pf = "Tuning", 
+                                               smoothing.args = args4smoothing(smoothing.methods = "direct", 
+                                                                               spline.types = "NCSS", 
+                                                                               df = c(4,7), lambdas = NULL), 
                                                which.plots = c("profiles", "medians.dev"), 
-                                               plots.group.med = "Tuning", 
-                                               propn.types.med = c(0.02,0.1, 0.2),
-                                               ggplotFuncsProfile = vline))
-  testthat::expect_equal(nrow(tmp), 1120)
+                                               profile.plot.args = 
+                                                 args4profile.plot(plots.by = NULL, 
+                                                                   facet.x = "Tuning", 
+                                                                   facet.y = ".", 
+                                                                   ggplotFuncs = vline),
+                                               meddevn.plot.args = 
+                                                 args4meddevn.plot(plots.by = NULL, 
+                                                                   plots.group = "Tuning", 
+                                                                   facet.x = ".", 
+                                                                   facet.y = ".", 
+                                                                   propn.types = c(0.02,0.1, 0.2))))
+  testthat::expect_equal(nrow(tmp), 560)
   testthat::expect_equal(ncol(tmp), 14)
   
   #Compare medians for multiple traits  
   testthat::expect_warning(tmp <- probeSmooths(data = longi.dat, 
                                                response = "PSA", times = "DAP", 
-                                               df = c(4:7), 
+                                               smoothing.args = args4smoothing(smoothing.methods = "direct", 
+                                                                               spline.types = "NCSS", 
+                                                                               df = c(4,7), lambdas = NULL), 
                                                which.plots = "medians.dev", 
-                                               plots.group.med = "Tuning",
-                                               propn.types.med = c(0.02,0.1, 0.2),
-                                               ggplotFuncsProfile = vline))
-  testthat::expect_equal(nrow(tmp), 1120)
+                                               meddevn.plot.args = 
+                                                 args4meddevn.plot(plots.by = NULL, 
+                                                                   plots.group = "Tuning", 
+                                                                   facet.x = ".", 
+                                                                   facet.y = ".", 
+                                                                   propn.types = c(0.02,0.1, 0.2))))
+  testthat::expect_equal(nrow(tmp), 560)
   testthat::expect_equal(ncol(tmp), 14)
   
   testthat::expect_silent(tmp <- probeSmooths(data = longi.dat, 
                                               response = "PSA", times = "DAP", 
-                                              df = c(4,7), 
-                                              plots.by.pf = "Tuning", facet.y.pf = "Treatment.1",
-                                              ggplotFuncsProfile = vline))
+                                              smoothing.args = args4smoothing(smoothing.methods = "direct", 
+                                                                              spline.types = "NCSS", 
+                                                                              df = c(4,7), lambdas = NULL), 
+                                              profile.plot.args = 
+                                                args4profile.plot(plots.by = NULL, 
+                                                                  facet.x = "Tuning", 
+                                                                  facet.y = "Treatment.1", 
+                                                                  ggplotFuncs = vline)))
   
   #Test for a single line per plot - caused by plots.by.med
   testthat::expect_silent(med <- plotSmoothsMedianDevns(data = tmp, 
@@ -397,24 +553,33 @@ test_that("exampleData_growthPheno", {
                                                         times = "DAP", 
                                                         trait.types = "response", 
                                                         x.title = "DAP", 
-                                                        plots.by.med = "Tuning",  
-                                                        propn.types.med = 0.05,
-                                                        ggplotFuncsMedDevn = vline))
+                                                        meddevn.plot.args = 
+                                                          args4meddevn.plot(plots.by = "Tuning", 
+                                                                            plots.group = NULL, 
+                                                                            facet.x = ".", 
+                                                                            facet.y = ".", 
+                                                                            propn.types = 0.05,
+                                                                            ggplotFuncs = vline)))
   testthat::expect_equal(length(med$plots), 1)
   testthat::expect_equal(nrow(med$med.devn.dat), 28)
   testthat::expect_equal(ncol(med$med.devn.dat), 3)
 
-  #Test for a single line per plot - caused by plots.by.med; specification of colour
+  #Test for a single line per plot - caused by plots.by.med; specification of colour and shape
   testthat::expect_silent(med <- plotSmoothsMedianDevns(data = tmp, 
                                                         response = "PSA", 
                                                         response.smoothed = "sPSA", 
                                                         times = "DAP", 
                                                         trait.types = "response", 
                                                         x.title = "DAP", 
-                                                        plots.by.med = "Tuning", 
-                                                        colour.values.med = "blue", shape.values.med = 17,
-                                                        propn.types.med = 0.05,
-                                                        ggplotFuncsMedDevn = vline))
+                                                        meddevn.plot.args = 
+                                                          args4meddevn.plot(plots.by = "Tuning", 
+                                                                            plots.group = NULL, 
+                                                                            facet.x = ".", 
+                                                                            facet.y = ".", 
+                                                                            propn.types = 0.05,
+                                                                            colour.values = "blue", 
+                                                                            shape.values = 17, 
+                                                                            ggplotFuncs = vline)))
   testthat::expect_equal(length(med$plots), 1)
   testthat::expect_equal(nrow(med$med.devn.dat), 28)
   testthat::expect_equal(ncol(med$med.devn.dat), 3)
@@ -422,20 +587,33 @@ test_that("exampleData_growthPheno", {
   #Compare medians and absolute deviations for multiple traits  
   testthat::expect_warning(traits <- probeSmooths(data = longi.dat, 
                                                   response = "PSA", times = "DAP", 
-                                                  df = c(4:7), 
+                                                  smoothing.args = args4smoothing(smoothing.methods = "direct", 
+                                                                                  spline.types = "NCSS", 
+                                                                                  df = c(4,7), lambdas = NULL), 
                                                   which.plots = c("medians.dev", "absolute"),
-                                                  facet.x.pf = "Tuning", #for the absolute.deviations
-                                                  plots.group.med = "Tuning",  
-                                                  propn.types.med = NULL))
-  testthat::expect_equal(nrow(traits), 1120)
+                                                  profile.plot.args = 
+                                                    args4profile.plot(plots.by = NULL, 
+                                                                      facet.x = "Tuning", #for the absolute.deviations
+                                                                      facet.y = ".", 
+                                                                      ggplotFuncs = vline),
+                                                  meddevn.plot.args = 
+                                                    args4meddevn.plot(plots.by = NULL, 
+                                                                      plots.group = "Tuning", 
+                                                                      facet.x = ".", 
+                                                                      facet.y = ".", 
+                                                                      propn.types = NULL,
+                                                                      ggplotFuncs = vline)))
+  testthat::expect_equal(nrow(traits), 560)
   testthat::expect_equal(ncol(traits), 14)
   
   #Form and save the data.frame containing the smooths produced by probeSmooths for testing associated functions
   testthat::expect_silent(traits <- probeSmooths(data = longi.dat, 
                                                  response = "PSA", times = "DAP", 
-                                                 df = c(4:7), 
-                                                 which.plots = "none", 
-                                                 keep.columns = c("Treatment.1", "Genotype.ID"))) #so in smooths.frame
+                                                 keep.columns = c("Treatment.1", "Genotype.ID"), #so in smooths.frame
+                                                 smoothing.args = args4smoothing(smoothing.methods = "direct", 
+                                                                                 spline.types = "NCSS", 
+                                                                                 df = c(4,7), lambdas = NULL), 
+                                                 which.plots = "none")) 
   
   #Fit simple and four-parameter logistics and obtain the fitted values
   library(nlme)
@@ -444,20 +622,10 @@ test_that("exampleData_growthPheno", {
   #Fit the simple logistic model  
   logist.lis <- nlme::nlsList(SSlogis, logist.grp, na.action = na.pass)
   logist.dat <- within(extra.dat, sPSA <- fitted(logist.lis))
-  logist.dat <- byIndv4Times_GRsDiff(data = logist.dat, 
-                                     response = "sPSA", 
-                                     individuals="Snapshot.ID.Tag",
-                                     times="DAP", 
-                                     which.rates = c("AGR", "RGR"))
   logist.dat <- cbind(Tuning = factor("Logistic"), logist.dat)
   #Fit the four-parameter logistic model - generates warnings
   logis4.lis <- suppressWarnings(nlme::nlsList(SSfpl, logist.grp, na.action = na.pass))
   logis4.dat <- within(extra.dat, sPSA <- fitted(logis4.lis))
-  logis4.dat <- byIndv4Times_GRsDiff(data = logis4.dat, 
-                                     response = "sPSA", 
-                                     individuals="Snapshot.ID.Tag",
-                                     times="DAP", 
-                                     which.rates = c("AGR", "RGR"))
   logis4.dat <- cbind(Tuning = factor("Logis-4par"), logis4.dat)
   #Combine the logistic fits
   extra.dat <- rbind(logist.dat,logis4.dat)
@@ -472,10 +640,14 @@ test_that("exampleData_growthPheno", {
                                                         response = "PSA", times = "DAP", 
                                                         x.title = "DAP", 
                                                         trait.types = "response", 
-                                                        plots.group.med = "Tuning",  
-                                                        facet.y.med = c("Treatment.1", "Genotype.ID"),
-                                                        propn.types.med = 0.05,
-                                                        ggplotFuncsMedDevn = vline, printPlot = FALSE))
+                                                        meddevn.plot.args = 
+                                                          args4meddevn.plot(plots.by = NULL, 
+                                                                            plots.group = "Tuning",  
+                                                                            facet.x = ".",
+                                                                            facet.y = c("Treatment.1", "Genotype.ID"),
+                                                                            propn.types = 0.05,
+                                                                            ggplotFuncs = vline), 
+                                                        printPlot = FALSE))
   med.dat <- med$med.devn.dat
   med.dat <- subset(med.dat, Treatment.1 == "Control" & Genotype.ID == "120855" & SmoothParams == "df-4")
   testthat::expect_true(all(abs(med.dat$PSA.devn - med.vals) < 1e-5))
@@ -486,61 +658,69 @@ test_that("exampleData_growthPheno", {
                                                         times = "DAP", 
                                                         trait.types = "response", 
                                                         x.title = "DAP", 
-                                                        plots.group.med = "Tuning",  
-                                                        propn.types.med = 0.05,
-                                                        ggplotFuncsMedDevn = vline))
+                                                        meddevn.plot.args = 
+                                                          args4meddevn.plot(plots.by = NULL, 
+                                                                            plots.group = "Tuning",  
+                                                                            facet.x = ".",
+                                                                            facet.y = ".",
+                                                                            propn.types = 0.05,
+                                                                            ggplotFuncs = vline)))
   testthat::expect_equal(length(med), 2)
   testthat::expect_true(all(names(med) == c("plots", "med.devn.dat")))
-  testthat::expect_equal(nrow(med$med.devn.dat), 56)
+  testthat::expect_equal(nrow(med$med.devn.dat), 28)
   testthat::expect_equal(ncol(med$med.devn.dat), 3)
   testthat::expect_equal(length(med$plots), 1)
   
   
-  #Test external.smooths with probeSmooths
-  testthat::expect_warning(smth.extra <- probeSmooths(data = longi.dat, 
-                                                      response = "PSA", times = "DAP", 
-                                                      df = c(4:7), 
-                                                      facet.x.pf = "Tuning", 
-                                                      which.plots = c("medians.dev", "absolute"),
-                                                      plots.group.med = "Tuning",
-                                                      propn.types.med = NULL,
-                                                      external.smooths = extra.dat))
-  testthat::expect_equal(nrow(smth.extra), 1680)
+  #Form a smooths.frame with external.smooths for further testing
+  testthat::expect_warning(
+    smth.extra <- probeSmooths(data = longi.dat, 
+                               response = "PSA", times = "DAP", 
+                               smoothing.args = args4smoothing(smoothing.methods = "direct", 
+                                                               spline.types = "NCSS", 
+                                                               df = c(4,7), lambdas = NULL,
+                                                               external.smooths = extra.dat), 
+                               which.plots = c("medians.dev", "absolute"),
+                               profile.plot.args = 
+                                 args4profile.plot(plots.by = NULL, 
+                                                   facet.x = "Tuning", facet.y = ".", 
+                                                   include.raw = "facet.x"),      
+                               meddevn.plot.args = 
+                                 args4meddevn.plot(plots.by = NULL, 
+                                                   plots.group = "Tuning",  
+                                                   facet.x = ".", facet.y = ".",
+                                                   propn.types = NULL)))
+  testthat::expect_equal(nrow(smth.extra), 1120)
   testthat::expect_equal(ncol(smth.extra), 14)
-  
+ 
   #Use external.smooths incorporated using probeSmooths
   testthat::expect_warning(med <- plotSmoothsMedianDevns(data = smth.extra, 
                                                          response = "PSA", times = "DAP", 
                                                          x.title = "DAP", 
-                                                         plots.by.med = "Type", 
-                                                         plots.group.med = "Tuning",  
-                                                         propn.types.med = c(0.02,0.1, 0.2),
-                                                         ggplotFuncsMedDevn = vline))
+                                                         meddevn.plot.args = 
+                                                           args4meddevn.plot(plots.by = "Type", 
+                                                                             plots.group = "Tuning",  
+                                                                             facet.x = ".", facet.y = ".",
+                                                                             propn.types = c(0.02,0.1, 0.2),
+                                                                             ggplotFuncs = vline)))
   testthat::expect_equal(length(med), 2)
   testthat::expect_true(all(names(med) == c("plots", "med.devn.dat")))
-  testthat::expect_equal(nrow(med$med.devn.dat), 84)
+  testthat::expect_equal(nrow(med$med.devn.dat), 56)
   testthat::expect_equal(ncol(med$med.devn.dat), 6)
   testthat::expect_equal(levels(med$med.devn.dat$SmoothParams), 
-                         c("df-4","df-5","df-6","df-7","Logistic","Logis-4par"))
+                         c("df-4","df-7","Logistic","Logis-4par"))
   testthat::expect_equal(length(med$plots), 3)
   
-  #Form a smooths.frame with external.smooths for further testing
-  testthat::expect_silent(smth.extra <- probeSmooths(data = longi.dat, 
-                                                     response = "PSA", times = "DAP", 
-                                                     df = c(4:7), 
-                                                     facet.x.pf = "Tuning", 
-                                                     include.raw.pf = "facet.x",
-                                                     propn.types.med = NULL,
-                                                     external.smooths = extra.dat))
-  testthat::expect_equal(nrow(smth.extra), 1680)
-  testthat::expect_equal(ncol(smth.extra), 14)
-  #Use plots.by.pf different to that in  probeSmooths
+  #Use plots.by different to that in  probeSmooths
   plts <- plotSmoothsComparison(data = smth.extra, 
                                 response = "PSA", times = "DAP", 
-                                x.title = "DAP", include.raw.pf = "facet.x", 
-                                plots.by.pf = "Type", facet.x.pf = "Tuning",
-                                alpha.pf = 0.2, 
-                                ggplotFuncsProfile = vline)  
+                                x.title = "DAP", 
+                                profile.plot.args = 
+                                  args4profile.plot(plots.by = "Type", 
+                                                    facet.x = "Tuning", facet.y = ".", 
+                                                    include.raw = "facet.x", 
+                                                    alpha = 0.2, 
+                                                    ggplotFuncs = vline))      
   testthat::expect_equal(length(plts), 3)
   testthat::expect_true(all(c("PSA","PSA.AGR","PSA.RGR") %in% names(plts)))
   testthat::expect_true(all(c("profiles", "deviations") %in% names(plts$PSA)))
@@ -551,84 +731,106 @@ test_that("exampleData_growthPheno", {
   
   #Test addMediansWhiskers
   plotSmoothsComparison(data = smth.extra, response = "PSA", times = "DAP", 
-                        x.title = "DAP", include.raw.pf = "facet.x", 
-                        facet.x.pf = c("Type", "Tuning"),
-                        colour.column.pf = "Method", 
-                        colour.values.pf = c("olivedrab", "orange"),
-                        alpha.pf = 0.25, addMediansWhiskers = TRUE,
-                        ggplotFuncsProfile = vline)  
-  
+                        x.title = "DAP", 
+                        profile.plot.args = 
+                          args4profile.plot(plots.by = NULL, 
+                                            facet.x = c("Type", "Tuning"), facet.y = ".", 
+                                            include.raw = "facet.x", 
+                                            colour.column = "Method", 
+                                            colour.values = c("olivedrab", "orange"),
+                                            alpha = 0.25, addMediansWhiskers = TRUE,
+                                            ggplotFuncs = vline))
+
   plts <- plotSmoothsComparison(data = smth.extra, response = "PSA", times = "DAP", 
-                                x.title = "DAP", include.raw.pf = "facet.x", 
-                                plots.by.pf = "Type", facet.x.pf = "Tuning",
-                                colour.pf = "olivedrab",
-                                alpha.pf = 0.25, addMediansWhiskers = TRUE,
-                                ggplotFuncsProfile = vline)  
-  
-  
+                                x.title = "DAP", 
+                                profile.plot.args = 
+                                  args4profile.plot(plots.by = "Type", 
+                                                    facet.x = "Tuning", facet.y = ".", 
+                                                    include.raw = "facet.x", 
+                                                    colour = "olivedrab",
+                                                    alpha = 0.25, addMediansWhiskers = TRUE,
+                                                    ggplotFuncs = vline))
+
   #Add external smooths and include deviations plots
-  testthat::expect_warning(smth.extra <- probeSmooths(data = longi.dat, 
+  testthat::expect_warning(smth.extra <- probeSmooths(data = longi.dat[, 1:25], 
                                                       response = "PSA", times ="DAP", 
-                                                      df = c(4:7), 
-                                                      facet.x.pf = c("Type", "Tuning"),  
+                                                      smoothing.args = 
+                                                        args4smoothing(smoothing.methods = "direct", 
+                                                                       spline.types = "NCSS", 
+                                                                       df = c(4,7), lambdas = NULL,
+                                                                       external.smooths = extra.dat), 
                                                       which.plots = c("medians.dev", "absolute"),
-                                                      plots.group.med = c("Type", "Tuning"),  
-                                                      propn.types.med = NULL,
-                                                      external.smooths = extra.dat))
-  testthat::expect_equal(nrow(smth.extra), 1680)
+                                                      profile.plot.args = 
+                                                        args4profile.plot(plots.by = NULL, 
+                                                                          facet.x = c("Type", "Tuning"), facet.y = "."),
+                                                      meddevn.plot.args = 
+                                                        args4meddevn.plot(plots.by = NULL, 
+                                                                          plots.group = c("Type", "Tuning"),  
+                                                                          facet.x = ".", facet.y = ".",
+                                                                          propn.types = NULL)))
+  testthat::expect_equal(nrow(smth.extra), 1120)
   testthat::expect_equal(ncol(smth.extra), 14)
   
   
   testthat::expect_warning(med <- plotSmoothsMedianDevns(data = smth.extra, 
                                                          response = "PSA", times = "DAP", 
                                                          x.title = "DAP", 
-                                                         plots.group.med = c("Type", "Tuning"),  
-                                                         propn.types.med = c(0.02,0.1, 0.2),
-                                                         ggplotFuncsMedDevn = vline))
+                                                         meddevn.plot.args = 
+                                                           args4meddevn.plot(plots.by = NULL, 
+                                                                             plots.group = c("Type", "Tuning"),  
+                                                                             facet.x = ".", facet.y = ".",
+                                                                             propn.types = c(0.02,0.1, 0.2),
+                                                                             ggplotFuncs = vline)))
   testthat::expect_equal(length(med), 2)
   testthat::expect_true(all(names(med) == c("plots", "med.devn.dat")))
-  testthat::expect_equal(nrow(med$med.devn.dat), 84)
+  testthat::expect_equal(nrow(med$med.devn.dat), 56)
   testthat::expect_equal(ncol(med$med.devn.dat), 5)
   testthat::expect_equal(levels(med$med.devn.dat$SmoothParams), 
-                         c("NCSS-df-4","NCSS-df-5","NCSS-df-6","NCSS-df-7",
+                         c("NCSS-df-4","NCSS-df-7",
                            "NonLinear-Logistic","NonLinear-Logis-4par"))
   testthat::expect_equal(length(med$plots), 3)
   
   testthat::expect_warning(med <- plotSmoothsMedianDevns(data = smth.extra, 
                                                          response = "PSA", times = "DAP", 
                                                          x.title = "DAP", 
-                                                         facet.x.med = "Type",
-                                                         plots.group.med = "Tuning",  
-                                                         propn.types.med = c(0.02,0.1, 0.2),
-                                                         ggplotFuncsMedDevn = vline))
+                                                         meddevn.plot.args = 
+                                                           args4meddevn.plot(plots.by = NULL, 
+                                                                             plots.group = "Tuning",  
+                                                                             facet.x = "Type", facet.y = ".",
+                                                                             propn.types = c(0.02,0.1, 0.2),
+                                                                             ggplotFuncs = vline)))
   testthat::expect_equal(length(med), 2)
   testthat::expect_true(all(names(med) == c("plots", "med.devn.dat")))
   testthat::expect_equal(levels(med$med.devn.dat$SmoothParams), 
-                         c("df-4","df-5","df-6","df-7","Logistic","Logis-4par"))
+                         c("df-4","df-7","Logistic","Logis-4par"))
   
   testthat::expect_warning(med <- plotSmoothsMedianDevns(data = smth.extra, 
                                                          response = "PSA", times = "DAP", 
                                                          x.title = "DAP", 
-                                                         plots.group.med = "Tuning",  
-                                                         facet.y.med = "Type",
-                                                         propn.types.med = c(0.02,0.1, 0.2),
-                                                         ggplotFuncsMedDevn = vline))
+                                                         meddevn.plot.args = 
+                                                           args4meddevn.plot(plots.by = NULL, 
+                                                                             plots.group = "Tuning",  
+                                                                             facet.x = ".", facet.y = "Type",
+                                                                             propn.types = c(0.02,0.1, 0.2),
+                                                                             ggplotFuncs = vline)))
   testthat::expect_equal(length(med), 2)
   testthat::expect_true(all(names(med) == c("plots", "med.devn.dat")))
   testthat::expect_equal(levels(med$med.devn.dat$SmoothParams), 
-                         c("df-4","df-5","df-6","df-7","Logistic","Logis-4par"))
+                         c("df-4","df-7","Logistic","Logis-4par"))
   
   testthat::expect_warning(med <- plotSmoothsMedianDevns(data = smth.extra, 
                                                          response = "PSA", times = "DAP", 
                                                          x.title = "DAP", 
-                                                         plots.group.med = "Tuning",  
-                                                         facet.x.med = "Type",
-                                                         propn.types.med = c(0.02,0.1, 0.2),
-                                                         ggplotFuncsMedDevn = vline))
+                                                         meddevn.plot.args = 
+                                                           args4meddevn.plot(plots.by = NULL, 
+                                                                             plots.group = "Tuning",  
+                                                                             facet.x = "Type", facet.y = ".",
+                                                                             propn.types = c(0.02,0.1, 0.2),
+                                                                             ggplotFuncs = vline)))
   testthat::expect_equal(length(med), 2)
   testthat::expect_true(all(names(med) == c("plots", "med.devn.dat")))
   testthat::expect_equal(levels(med$med.devn.dat$SmoothParams), 
-                         c("df-4","df-5","df-6","df-7","Logistic","Logis-4par"))
+                         c("df-4","df-7","Logistic","Logis-4par"))
 })
 
 
@@ -649,21 +851,30 @@ test_that("tomato_growthPheno", {
   DAP.starts <- DAP.endpts[-nDAP.endpts]
   DAP.stops   <- DAP.endpts[-1]
   
+  labels <- labeller(Zn = labelZn, AMF = labelMyc)
+  
   #'## Gives error that the Length of propn.types.med is not the same as the number of traits
   testthat::expect_warning(
     tom <- probeSmooths(data = tomato.dat, 
                         response = "PSA", response.smoothed = "sPSA", 
                         times = "DAP", 
-                        smoothing.methods = c("dir", "log"), 
-                        df = c(4,7), get.rates = FALSE,
+                        get.rates = FALSE,
+                        smoothing.args = 
+                          args4smoothing(smoothing.methods = c("dir", "log"), 
+                                         spline.types = "NCSS", 
+                                         df = c(4,7), lambdas = NULL), 
                         which.plots = c("profiles", "medians.dev"),
-                        facet.y.pf = c("Zn","AMF"),
-                        plots.by.pf = "Tuning", facet.x.pf = "Method",
-                        plots.by.med = "Tuning", plots.group.med = "Method", 
-                        facet.y.med = c("Zn","AMF"),
-                        labeller = labeller(Zn = labelZn, 
-                                            AMF = labelMyc)),
-    regexp = "get.rates is FALSE; trait.types changed to response and propn.types.med reduced to its first value")
+                        profile.plot.args = 
+                          args4profile.plot(plots.by = "Tuning", 
+                                            facet.x = "Method", facet.y = c("Zn","AMF"), 
+                                            facet.labeller = labels),
+                        meddevn.plot.args = 
+                          args4meddevn.plot(plots.by = "Tuning", 
+                                            plots.group = "Method", 
+                                            facet.x = ".", facet.y = c("Zn","AMF"),
+                                            facet.labeller = labels)),
+    regexp = paste0("The calculation of smoothed growth rates have not been specified; ",
+                    "trait.types changed to response and propn.type reduced to its first element"))
   testthat::expect_equal(nrow(tom), 4480)
   testthat::expect_equal(ncol(tom), 11)
   
@@ -674,25 +885,33 @@ test_that("tomato_growthPheno", {
                                                         trait.types = "response", 
                                                         x.title = "DAP", 
                                                         y.titles = "PSA deviation (kpixels)",
-                                                        facet.x.med = "Zn", 
-                                                        facet.y.med = "AMF",
-                                                        plots.group.med = c("Method","Tuning"), 
-                                                        propn.types.med = 0.1,
-                                                        labeller = labeller(Zn = labelZn, 
-                                                                            AMF = labelMyc)))
-  
+                                                        meddevn.plot.args = 
+                                                          args4meddevn.plot(plots.by = NULL, 
+                                                                            plots.group = c("Method","Tuning"), 
+                                                                            facet.x = "Zn", facet.y = "AMF",
+                                                                            propn.types = 0.1,
+                                                                            breaks.spacing.x = 2, angle.x = 90, 
+                                                                            facet.labeller = labels)))
   testthat::expect_equal(length(med$plots), 1)
   testthat::expect_equal(nrow(med$med.devn.dat), 1120)
   testthat::expect_equal(ncol(med$med.devn.dat), 5)
   
+  
   #Multiple df, single methods
   testthat::expect_warning(tom <- probeSmooths(data = tomato.dat, response = "PSA", 
                                                response.smoothed = "sPSA", 
+                                               times = "DAP",  
+                                               smoothing.args = 
+                                                 args4smoothing(smoothing.methods = "logarithmic", 
+                                                                spline.types = "NCSS", 
+                                                                df = 4:5, lambdas = NULL), 
                                                which.plots = "medians.dev", 
-                                               times = "DAP",  df=5:6,
-                                               smoothing.methods = c("logarithmic"),
-                                               propn.types.med = c(0.02, 0.2, 0.5),
-                                               plots.group.med = "Tuning", plots.by.med = "Method"))
+                                               meddevn.plot.args = 
+                                                 args4meddevn.plot(plots.by = "Method", 
+                                                                   plots.group = "Tuning", 
+                                                                   facet.x = ".", facet.y = ".",
+                                                                   propn.types = c(0.02, 0.2, 0.5),
+                                                                   facet.labeller = labels)))
   testthat::expect_equal(nrow(tom), 2240)
   testthat::expect_equal(ncol(tom), 14)
   
@@ -700,17 +919,22 @@ test_that("tomato_growthPheno", {
   testthat::expect_warning(
     tomdiff <- probeSmooths(data = tomato.dat, response = "PSA", 
                             response.smoothed = "sPSA", 
-                            times = "DAP", df=5,
-                            smoothing.methods = c("direct","logarithmic"),
+                            times = "DAP", 
+                            smoothing.args = 
+                              args4smoothing(smoothing.methods = c("direct","logarithmic"),
+                                             spline.types = "N",
+                                             df=5, lambdas = NULL),
                             which.plots = "none"))
   testthat::expect_equal(nrow(tomdiff), 2240)
   testthat::expect_equal(ncol(tomdiff), 14)
   testthat::expect_warning(med <- plotSmoothsMedianDevns(data = tomdiff, response = "PSA", 
                                                          response.smoothed = "sPSA", 
                                                          times = "DAP", x.title = "DAP", 
-                                                         plots.by.med = "Tuning", 
-                                                         plots.group.med = "Method", 
-                                                         propn.types.med = c(0.02, 0.2, 0.5)))
+                                                         meddevn.plot.args = 
+                                                           args4meddevn.plot(plots.by = "Tuning", 
+                                                                             plots.group = "Method", 
+                                                                             facet.x = ".", facet.y = ".", 
+                                                                             propn.types = c(0.02, 0.2, 0.5))))
   
   testthat::expect_equal(length(med), 2)
   testthat::expect_true(all(names(med) == c("plots", "med.devn.dat")))
@@ -723,40 +947,56 @@ test_that("tomato_growthPheno", {
   #'Single `df`, single method - plots.by.med = Tuning
   testthat::expect_warning(tom <- probeSmooths(data = tomato.dat, response = "PSA", 
                                                response.smoothed = "sPSA", 
-                                               times = "DAP", df=5,
-                                               smoothing.methods = c("direct"),
+                                               times = "DAP", 
+                                               smoothing.args = 
+                                                 args4smoothing(smoothing.methods = "direct",
+                                                                spline.types = "N",
+                                                                df=5, lambdas = NULL),
                                                which.plots = "medians.dev", 
-                                               propn.types.med = c(0.02, 0.2, 0.5),
-                                               plots.by.med = "Tuning",
-                                               colour.values.med = "blue"))
+                                               meddevn.plot.args = 
+                                                 args4meddevn.plot(plots.by = "Tuning", 
+                                                                   plots.group = NULL, 
+                                                                   facet.x = ".", facet.y = ".", 
+                                                                   colour.values = "blue", 
+                                                                   propn.types = c(0.02, 0.2, 0.5))))
   testthat::expect_equal(nrow(tom), 1120)
   testthat::expect_equal(ncol(tom), 14)
   
   #'Single `df`, single method - plots.group.med = Tuning
   testthat::expect_warning(tom <- probeSmooths(data = tomato.dat, response = "PSA", 
                                                response.smoothed = "sPSA", 
-                                               times = "DAP", df=5,
-                                               smoothing.methods = c("direct"),
+                                               times = "DAP", 
+                                               smoothing.args = 
+                                                 args4smoothing(smoothing.methods = "direct",
+                                                                spline.types = "N",
+                                                                df=5, lambdas = NULL),
                                                which.plots = "medians.dev", 
-                                               propn.types.med = c(0.02, 0.2, 0.5),
-                                               plots.group.med = "Tuning"))
+                                               meddevn.plot.args = 
+                                                 args4meddevn.plot(plots.by = "Tuning", 
+                                                                   plots.group = NULL, 
+                                                                   facet.x = ".", facet.y = ".", 
+                                                                   propn.types = c(0.02, 0.2, 0.5))))
   testthat::expect_equal(nrow(tom), 1120)
   testthat::expect_equal(ncol(tom), 14)
   
   #test custom schemes
-  spar.schemes <- data.frame(Type = c("N", "NCS", "P"), 
-                             TunePar = c("df", "df", "lam"),
-                             TuneVal = c(4, 6, 1),
-                             Method = c("dir", "log", "log"))
+  spar <- args4smoothing(spline.types      = c(  "N", "NCS",   "P"), 
+                         df                = c(   4,     6,    NA), 
+                         lambdas           = c(  NA,    NA,     1), 
+                         smoothing.methods = c("dir", "log", "log"),
+                         combinations      = "parallel")
   cols <- scales::brewer_pal("div", "Paired")(6)[c(2,4,6,8,1,3,5,7)]
   testthat::expect_warning(tom <- probeSmooths(data = tomato.dat, response = "PSA", 
                                                response.smoothed = "sPSA", 
                                                times = "DAP", 
-                                               smoothing.schemes = spar.schemes,
+                                               smoothing.args = spar,
                                                which.plots = "medians.dev", 
-                                               colour.values.med = cols[1:3], 
-                                               propn.types.med = c(0.02, 0.2, 0.5),
-                                               plots.group.med = c("Type", "Tuning", "Method")))
+                                               meddevn.plot.args = 
+                                                 args4meddevn.plot(plots.by = NULL, 
+                                                                   plots.group = c("Type", "Tuning", "Method"), 
+                                                                   facet.x = ".", facet.y = ".", 
+                                                                   colour.values = cols[1:3], 
+                                                                   propn.types = c(0.02, 0.2, 0.5))))
   testthat::expect_equal(nrow(tom), 3360)
   testthat::expect_equal(ncol(tom), 14)
   
@@ -765,11 +1005,19 @@ test_that("tomato_growthPheno", {
                                                response.smoothed = "sPSA", 
                                                times = "DAP",  
                                                which.plots = c("medians.dev", "profiles"), 
-                                               smoothing.methods = "log", spline.types = c("NCSS", "PS"), 
-                                               df=5:6, lambdas = c(0.1,1), npspline.segments = 30,
-                                               facet.x.pf = c("Type", "Tuning"),
-                                               propn.types.med = c(0.02, 0.2, 0.5),
-                                               plots.group.med = "Tuning", facet.x.med = "Type"))
+                                               smoothing.args = args4smoothing(smoothing.methods = "log", 
+                                                                                         spline.types = c("NCSS", "PS"), 
+                                                                                         df=5:6, lambdas = c(0.1,1), 
+                                                                                         npspline.segments = 30),
+                                               profile.plot.args = 
+                                                 args4profile.plot(plots.by = NULL, 
+                                                                   facet.x = c("Type", "Tuning"), facet.y = ".", 
+                                                                   include.raw = "no"), 
+                                               meddevn.plot.args = 
+                                                 args4meddevn.plot(plots.by = NULL, 
+                                                                   plots.group = "Tuning", 
+                                                                   facet.x = "Type", facet.y = ".", 
+                                                                   propn.types = c(0.02, 0.2, 0.5))))
   testthat::expect_equal(nrow(tom), 4480)
   testthat::expect_equal(ncol(tom), 14)
   
@@ -779,7 +1027,7 @@ test_that("tomato_growthPheno", {
   testthat::expect_warning(tom <- probeSmooths(data = tomato.dat, response = "PSA", 
                                                response.smoothed = "sPSA", 
                                                times = "DAP", 
-                                               smoothing.schemes = spar.schemes,
+                                               smoothing.args = spar,
                                                which.plots = "none"),
                            regexp = "NaNs produced")
   
@@ -789,71 +1037,96 @@ test_that("tomato_growthPheno", {
                                                   response.smoothed = "sPSA", 
                                                   times = "DAP", 
                                                   which.plots = "profiles", 
-                                                  include.raw.pf = "alone",
-                                                  plots.by.pf = c("Type", "Tuning", "Method"),
-                                                  colour.column.pf = "Method", 
-                                                  colour.values.pf = c("orange", "olivedrab"), 
-                                                  addMediansWhiskers = TRUE))
+                                                  profile.plot.args = 
+                                                    args4profile.plot(
+                                                      plots.by = c("Type", "Tuning", "Method"), 
+                                                      facet.x = ".", facet.y = ".", 
+                                                      include.raw = "alone",
+                                                      colour.column = "Method", 
+                                                      colour.values = c("orange", "olivedrab"), 
+                                                      addMediansWhiskers = TRUE)))
   testthat::expect_equal(length(plts$PSA$profiles), 4)
   testthat::expect_equal(length(plts$PSA$deviations), 0)
   
 
-  #test various combinations of plots.by.pf, plots.compare and include.raw.pf to facet.x without facet.x.pf set
+  #test various combinations of plots.by, facet.y and facet.x, with include.raw set to facet.x
   testthat::expect_error(
     plotSmoothsComparison(data = tom, response = "PSA", 
                           response.smoothed = "sPSA", 
                           times = "DAP", 
                           which.plots = "profiles", 
-                          include.raw.pf = "facet.x",
-                          plots.by.pf = c("Type", "Tuning", "Method"),
-                          colour.column.pf = "Method", 
-                          colour.values.pf = c("orange", "olivedrab"), 
-                          addMediansWhiskers = TRUE), 
-    regexp = "The argument incl.raw.pf is set to facet.x, but facet.x.pf has not been set to include a variable")
-  testthat::expect_equal(length(plts$PSA$profiles), 4)
-  testthat::expect_equal(length(plts$PSA$deviations), 0)
+                          profile.plot.args = 
+                            args4profile.plot(
+                              plots.by = c("Type", "Tuning", "Method"), 
+                              facet.x = ".", facet.y = ".", 
+                              include.raw = "facet.x",
+                              colour.column = "Method", 
+                              colour.values = c("orange", "olivedrab"), 
+                              addMediansWhiskers = TRUE)), 
+    regexp = "The argument incl.raw is set to facet.x, but facet.x has not been set to include a variable")
   
   testthat::expect_silent(plotSmoothsComparison(data = tom, response = "PSA", 
                                                 response.smoothed = "sPSA", 
                                                 times = "DAP", 
                                                 which.plots = "profiles", 
-                                                include.raw.pf = "no",
-                                                plots.by.pf = c("Type", "Tuning", "Method")))
+                                                profile.plot.args = 
+                                                  args4profile.plot(
+                                                    plots.by = c("Type", "Tuning", "Method"), 
+                                                    facet.x = ".", facet.y = ".", 
+                                                    include.raw = "no")))
+
+  testthat::expect_silent(plotSmoothsComparison(data = tom, response = "PSA", 
+                                                response.smoothed = "sPSA", 
+                                                times = "DAP", 
+                                                which.plots = "profiles", 
+                                                profile.plot.args = 
+                                                  args4profile.plot(
+                                                    plots.by = c("Type", "Tuning"), 
+                                                    facet.x = ".", facet.y = "Method", 
+                                                    include.raw = "facet.y", 
+                                                    alpha = 0.4, 
+                                                    colour.column = "Method", 
+                                                    colour.values = c("orange", "olivedrab"), 
+                                                    addMediansWhiskers = TRUE)))
   
   testthat::expect_silent(plotSmoothsComparison(data = tom, response = "PSA", 
                                                 response.smoothed = "sPSA", 
                                                 times = "DAP", 
                                                 which.plots = "profiles", 
-                                                include.raw.pf = "facet.x",
-                                                facet.x.pf = c("Type","Tuning","Method"),
-                                                alpha.pf = 0.4, colour.column.pf = "Method", 
-                                                colour.values.pf = c("orange", "olivedrab"), 
-                                                addMediansWhiskers = TRUE))
-  
+                                                profile.plot.args = 
+                                                  args4profile.plot(
+                                                    plots.by = NULL, 
+                                                    facet.x = "Tuning", facet.y = ".", 
+                                                    include.raw = "facet.x", 
+                                                    colour = "orange")))
+
   testthat::expect_silent(plotSmoothsComparison(data = tom, response = "PSA", 
                                                 response.smoothed = "sPSA", 
                                                 times = "DAP", 
                                                 which.plots = "profiles", 
-                                                include.raw.pf = "facet.x",
-                                                colour.pf = "orange", 
-                                                facet.x.pf = "Tuning"))
-  
-  testthat::expect_silent(plotSmoothsComparison(data = tom, response = "PSA", 
-                                                response.smoothed = "sPSA", 
-                                                times = "DAP", 
-                                                which.plots = "profiles", 
-                                                include.raw.pf = "no",
-                                                facet.x.pf = c("Type","Tuning","Method")))
-  
+                                                profile.plot.args = 
+                                                  args4profile.plot(
+                                                    plots.by = NULL, 
+                                                    facet.x = c("Type","Tuning","Method"), 
+                                                    facet.y = ".", 
+                                                    include.raw = "no")))
+
   #'Single `df`, multiple methods and trait.types and GRs using deriv
   suppressWarnings(
-    tomdv <- probeSmooths(data = tomato.dat, response = "PSA", 
-                          response.smoothed = "sPSA", 
+    tomdv <- probeSmooths(data = tomato.dat, 
+                          response = "PSA", response.smoothed = "sPSA", 
                           times = "DAP", 
-                          df=5,smoothing.methods = c("direct","logarithmic"), 
+                          smoothing.args = 
+                            args4smoothing(smoothing.methods = c("direct","logarithmic"),
+                                           spline.types = "NCSS", df=5, lambdas = NULL), 
                           rates.method = "deriv",
                           which.plots = "profiles",
-                          facet.x.pf = "Method", include.raw.pf = "facet.x"))
+                          profile.plot.args = 
+                            args4profile.plot(
+                              plots.by = NULL, 
+                              facet.x = "Method", 
+                              facet.y = ".", 
+                              include.raw = "facet.x")))
   testthat::expect_equal(nrow(tomdv), 2240)
   testthat::expect_equal(ncol(tomdv), 14)
   testthat::expect_true(all(abs(tomdiff$sPSA-tomdv$sPSA) < 1e-08))
@@ -883,15 +1156,22 @@ test_that("tomato_growthPheno", {
   tom.H2O <- probeSmooths(data = tomato.dat, response = "WU", 
                           response.smoothed = "sWU", 
                           times = "DAP",  get.rates = FALSE, 
-                          smoothing.methods = "dir", spline.types = c("NCSS", "PS"), 
-                          df=df, lambdas = list(PS = lambdas), 
+                          smoothing.args = 
+                            args4smoothing(smoothing.methods = "dir", 
+                                           spline.types = c("NCSS", "PS"), 
+                                           df=df, 
+                                           lambdas = list(PS = lambdas)), 
                           which.plots = c("medians.dev", "profiles"), 
-                          include.raw.pf = "facet.x",
-                          plots.by.pf = "Type", 
-                          facet.x.pf = c("Tuning"),
-                          propn.types.med = NULL,
-                          plots.group.med = "Tuning", facet.x.med = "Type",
-                          ggplotFuncsProfile = theme.profile)
+                          profile.plot.args = 
+                            args4profile.plot(plots.by = "Type", 
+                                              facet.x = c("Tuning"), facet.y = ".", 
+                                              include.raw = "facet.x", 
+                                              ggplotFuncs = theme.profile),
+                          meddevn.plot.args = 
+                            args4meddevn.plot(plots.by = NULL, 
+                                              plots.group = "Tuning",
+                                              facet.x = "Type", facet.y = ".", 
+                                              propn.types = NULL))
   testthat::expect_equal(nrow(tom.H2O), 7840)
   testthat::expect_equal(ncol(tom.H2O), 9)
   
@@ -912,8 +1192,11 @@ test_that("RicePrepped_growthPheno", {
   testthat::expect_warning(
     smth <- probeSmooths(data = RicePrepped.dat, response = "PSA", response.smoothed = "sPSA", 
                          times = "DAST", 
-                         spline.types = c("NCSS", "PS"), smoothing.methods = "log",
-                         df = c(4,7), lambdas = c(0.1,1,10), 
+                         smoothing.args = 
+                           args4smoothing(spline.types = c("NCSS", "PS"), 
+                                          smoothing.methods = "log",
+                                          df = c(4,7), 
+                                          lambdas = c(0.1,1,10)),
                          keep.columns = c("Smarthouse","Salinity"), #so these are included in the smooths.frame
                          which.plots = "none"),
     regexp = "Need at least 4 distinct x values to fit a spline - all fitted values set to NA")
@@ -930,9 +1213,10 @@ test_that("RicePrepped_growthPheno", {
   testthat::expect_silent(
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "response", 
-                                plots.group.med = "Tuning", 
-                                facet.y.med = c("Smarthouse","Salinity"),
-                                propn.types.med = 0.025))
+                                meddevn.plot.args = 
+                                  args4meddevn.plot(plots.by = NULL, plots.group = "Tuning", 
+                                                    facet.x = ".", facet.y = c("Smarthouse","Salinity"),
+                                                    propn.types = 0.025)))
   testthat::expect_equal(length(t$plots), 1)
   testthat::expect_equal(nrow(t$med.devn.dat), 280)
   testthat::expect_equal(ncol(t$med.devn.dat), 5)
@@ -942,22 +1226,24 @@ test_that("RicePrepped_growthPheno", {
   testthat::expect_silent(
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "response", 
-                                plots.by.med = "Type", plots.group.med = "Tuning", 
-                                facet.y.med = c("Smarthouse","Salinity"),
-                                propn.types.med = 0.025))
+                                meddevn.plot.args = 
+                                  args4meddevn.plot(plots.by = "Type", plots.group = "Tuning", 
+                                                    facet.x = ".", facet.y = c("Smarthouse","Salinity"),
+                                                    propn.types = 0.025)))
   testthat::expect_equal(length(t$plots), 1)
   testthat::expect_equal(nrow(t$med.devn.dat), 280)
   testthat::expect_equal(ncol(t$med.devn.dat), 6)
   testthat::expect_true(all(c("fac.by","Smarthouse", "Salinity", "SmoothParams", "PSA.devn", "DAST") 
                             %in% names(t$med.devn.dat)))
-  #Use facet.x.med for Type, additional to plots.group 
+  #Use facet.x for Type, additional to plots.group 
   testthat::expect_silent(
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "response", 
-                                plots.group.med = "Tuning", 
-                                facet.x.med = "Type", 
-                                facet.y.med = c("Smarthouse","Salinity"),
-                                propn.types.med = 0.025))
+                                meddevn.plot.args = 
+                                  args4meddevn.plot(plots.by = NULL, plots.group = "Tuning", 
+                                                    facet.x = "Type", 
+                                                    facet.y = c("Smarthouse","Salinity"),
+                                                    propn.types = 0.025)))
   testthat::expect_equal(length(t$plots), 1)
   testthat::expect_equal(nrow(t$med.devn.dat), 280)
   testthat::expect_equal(ncol(t$med.devn.dat), 6)
@@ -968,24 +1254,27 @@ test_that("RicePrepped_growthPheno", {
   testthat::expect_silent(
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "response", 
-                                plots.group.med = "Tuning", 
-                                facet.x.med = c("Smarthouse"), 
-                                facet.y.med = c("Salinity","Type"),
-                                propn.types.med = 0.025))
+                                meddevn.plot.args = 
+                                  args4meddevn.plot(plots.by = NULL, plots.group = "Tuning", 
+                                                    facet.x = c("Smarthouse"), 
+                                                    facet.y = c("Salinity","Type"),
+                                                    propn.types = 0.025)))
   testthat::expect_silent(
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "response", 
-                                plots.group.med = "Tuning", 
-                                facet.x.med = c("Salinity","Type"), 
-                                facet.y.med = "Smarthouse",
-                                propn.note.med = FALSE))
+                                meddevn.plot.args = 
+                                  args4meddevn.plot(plots.by = NULL, plots.group = "Tuning", 
+                                                    facet.x = c("Salinity","Type"),
+                                                    facet.y = c("Smarthouse"), 
+                                                    propn.types = FALSE)))
   testthat::expect_silent(
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "response", 
-                                plots.group.med = "Tuning", 
-                                facet.x.med = c("Salinity","Type"), 
-                                facet.y.med = "Smarthouse",
-                                propn.types.med = 0.025))
+                                meddevn.plot.args = 
+                                  args4meddevn.plot(plots.by = NULL, plots.group = "Tuning", 
+                                                    facet.x = c("Salinity","Type"),
+                                                    facet.y = c("Smarthouse"), 
+                                                    propn.types = 0.025)))
   testthat::expect_equal(length(t$plots), 1)
   testthat::expect_equal(nrow(t$med.devn.dat), 280)
   testthat::expect_equal(ncol(t$med.devn.dat), 6)
@@ -993,14 +1282,16 @@ test_that("RicePrepped_growthPheno", {
                             %in% names(t$med.devn.dat)))
   
     
-  #Use plot,by.med
+  #Use plot,by with med
   testthat::expect_silent(
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "response", 
-                                plots.by.med = c("Method","Type"), 
-                                plots.group.med = c("Tuning"),
-                                facet.y.med = c("Smarthouse","Salinity"),
-                                propn.types.med = 0.025))
+                                meddevn.plot.args = 
+                                  args4meddevn.plot(plots.by = c("Method","Type"), 
+                                                    plots.group = "Tuning", 
+                                                    facet.x = ".", 
+                                                    facet.y = c("Smarthouse","Salinity"),
+                                                    propn.types = 0.025)))
   testthat::expect_equal(length(t$plots), 1)
   testthat::expect_equal(nrow(t$med.devn.dat), 280)
   testthat::expect_equal(ncol(t$med.devn.dat), 6)
@@ -1012,53 +1303,73 @@ test_that("RicePrepped_growthPheno", {
   testthat::expect_silent(
     plotSmoothsComparison(data = smth, response="PSA", response.smoothed = "sPSA",
                           times = "DAST", trait.types = "response", 
-                          breaks.spacing.x = -2, 
-                          plots.by.pf = "Smarthouse", 
-                          facet.x.pf = c("Method", "Tuning"), facet.y.pf = "Salinity", 
-                          collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
+                          profile.plot.args = 
+                            args4profile.plot(plots.by = "Smarthouse", 
+                                              facet.x = c("Method", "Tuning"), 
+                                              facet.y = "Salinity", 
+                                              collapse.facets.x = FALSE, 
+                                              include.raw = "facet.x", 
+                                              breaks.spacing.x = -2)))
   
   testthat::expect_silent(
     plotSmoothsComparison(data = smth, response="PSA", response.smoothed = "sPSA",
                           times = "DAST", trait.types = "response", 
-                          breaks.spacing.x = -3, 
-                          plots.by.pf = "Smarthouse", 
-                          facet.x.pf = c("Method", "Tuning"), facet.y.pf = "Salinity", 
-                          collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
-  
+                          profile.plot.args = 
+                            args4profile.plot(plots.by = "Smarthouse", 
+                                              facet.x = c("Method", "Tuning"), 
+                                              facet.y = "Salinity", 
+                                              collapse.facets.x = FALSE, 
+                                              include.raw = "facet.x", 
+                                              breaks.spacing.x = -3)))
+
+  #Remove an extra DAST to have a gap of 2 with no DAST
   testthat::expect_silent(
     plotSmoothsComparison(data = smth[smth$DAST != 1, ], response="PSA", response.smoothed = "sPSA",
                           times = "DAST", trait.types = "response", 
-                          breaks.spacing.x = -3, 
-                          plots.by.pf = "Smarthouse", 
-                          facet.x.pf = c("Method", "Tuning"), facet.y.pf = "Salinity", 
-                          collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
-  
+                          profile.plot.args = 
+                            args4profile.plot(plots.by = "Smarthouse", 
+                                              facet.x = c("Method", "Tuning"), 
+                                              facet.y = "Salinity", 
+                                              collapse.facets.x = FALSE, 
+                                              include.raw = "facet.x", 
+                                              breaks.spacing.x = -3)))
+
   testthat::expect_silent(
     plotSmoothsComparison(data = smth[smth$DAST != 1, ], response="PSA", response.smoothed = "sPSA",
                           times = "DAST", trait.types = "response", 
-                          breaks.spacing.x = 2, 
-                          plots.by.pf = "Smarthouse", 
-                          facet.x.pf = c("Method", "Tuning"), facet.y.pf = "Salinity", 
-                          collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
-  
-  testthat::expect_warning(
+                          profile.plot.args = 
+                            args4profile.plot(plots.by = "Smarthouse", 
+                                              facet.x = c("Method", "Tuning"), 
+                                              facet.y = "Salinity", 
+                                              collapse.facets.x = FALSE, 
+                                              include.raw = "facet.x", 
+                                              breaks.spacing.x = -2)))
+
     testthat::expect_silent(
       plotSmoothsComparison(data = smth[smth$DAST != 1, ], response="PSA", response.smoothed = "sPSA",
                             times = "DAST", trait.types = "response", 
-                            breaks.spacing.x = 3, 
-                            plots.by.pf = "Smarthouse", 
-                            facet.x.pf = c("Method", "Tuning"), facet.y.pf = "Salinity", 
-                            collapse.facets.x.pf = FALSE, include.raw.pf = "facet.x"))
-    
-    smth <- probeSmooths(data = RicePrepped.dat, response = "PSA", response.smoothed = "sPSA", 
-                         times = "DAST", 
-                         spline.types = c("NCSS", "PS"), smoothing.methods = "logarithmic",
-                         df = c(4,7), lambdas = c(0.1,1,10), 
-                         which.plots = "medians.dev", 
-                         plots.by.med = "Type", 
-                         plots.group.med = "Tuning", 
-                         facet.y.med = c("Smarthouse","Salinity")),
-    regexp = "Need at least 4 distinct x values to fit a spline - all fitted values set to NA")
+                            profile.plot.args = 
+                              args4profile.plot(plots.by = "Smarthouse", 
+                                                facet.x = c("Method", "Tuning"), 
+                                                facet.y = "Salinity", 
+                                                collapse.facets.x = FALSE, 
+                                                include.raw = "facet.x", 
+                                                breaks.spacing.x = -3)))
+
+testthat::expect_warning(
+  smth <- probeSmooths(data = RicePrepped.dat, response = "PSA", response.smoothed = "sPSA", 
+                       times = "DAST", 
+                       smoothing.args = 
+                         args4smoothing(spline.types = c("NCSS", "PS"), 
+                                        smoothing.methods = "logarithmic",
+                                        df = c(4,7), 
+                                        lambdas = c(0.1,1,10)), 
+                       which.plots = "medians.dev", 
+                       meddevn.plot.args = 
+                         args4meddevn.plot(plots.by = "Type", 
+                                           plots.group = "Tuning", 
+                                           facet.x = ".", facet.y = c("Smarthouse","Salinity"))),
+  regexp = "Need at least 4 distinct x values to fit a spline - all fitted values set to NA")
   testthat::expect_equal(nrow(smth), 73920)
   testthat::expect_equal(ncol(smth), 16)
   
@@ -1073,10 +1384,13 @@ test_that("RicePrepped_growthPheno", {
                                   response = "PSA", response.smoothed = "sPSA",
                                   times = "DAST", 
                                   get.rates = TRUE, 
-                                  smoothing.segments = DAST.segs,
-                                  spline.types = c("NCSS","PS"), 
-                                  df = df, lambdas = list(PS = lambdas), 
-                                  npspline.segments = c(4,6), smoothing.methods = "log",
+                                  smoothing.args = 
+                                    args4smoothing(smoothing.methods = "log", 
+                                                   spline.types = c("NCSS","PS"), 
+                                                   df = df, 
+                                                   lambdas = list(PS = lambdas), 
+                                                   smoothing.segments = DAST.segs, 
+                                                   npspline.segments = c(4,6)),
                                   which.plots = "none",
                                   keep.columns = c("Smarthouse", "Salinity")),
     regexp = "Need at least 4 distinct x values to fit a spline - all fitted values set to NA")
@@ -1098,10 +1412,13 @@ test_that("RicePrepped_growthPheno", {
                                      times = "DAST", 
                                      response = "PSA", response.smoothed = "sPSA",
                                      get.rates = TRUE, rates.method = "deriv", 
-                                     smoothing.segments = DAST.segs,
-                                     spline.types = c("NCSS","PS"), 
-                                     df = df, lambdas = list(PS = lambdas), 
-                                     npspline.segments = c(4,6), smoothing.methods = "log",
+                                     smoothing.args = 
+                                       args4smoothing(smoothing.methods = "log", 
+                                                      spline.types = c("NCSS","PS"), 
+                                                      df = df, 
+                                                      lambdas = list(PS = lambdas), 
+                                                      smoothing.segments = DAST.segs, 
+                                                      npspline.segments = c(4,6)),
                                      which.plots = "none",
                                      keep.columns = c("Smarthouse", "Salinity")),
     regexp = "Need at least 4 distinct x values to fit a spline - all fitted values set to NA")
@@ -1120,15 +1437,16 @@ test_that("RicePrepped_growthPheno", {
   testthat::expect_true(!all(is.na(longisegder.smth$sPSA.AGR[longisegder.smth$DAST == 6]))) 
   
   #Plot the median deviations
-  testthat::expect_warning(
+  testthat::expect_silent(
     t <- plotSmoothsMedianDevns(data = longisegder.smth, response = "PSA", 
                                 response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "AGR", 
-                                plots.group.med = "Tuning", 
-                                facet.y.med = c("Smarthouse","Salinity"),
-                                propn.types.med = 0.025))
+                                meddevn.plot.args = 
+                                  args4meddevn.plot(plots.by = NULL, plots.group = "Tuning", 
+                                                    facet.x = ".", facet.y = c("Smarthouse","Salinity"),
+                                                    propn.types = 0.025)))
   testthat::expect_equal(length(t$plots), 1)
-  testthat::expect_equal(nrow(t$med.devn.dat), 168)
+  testthat::expect_equal(nrow(t$med.devn.dat), 144)
   testthat::expect_equal(ncol(t$med.devn.dat), 5)
   #every first DAST must be NA for deviations because PSA.AGR has to be calculated by differences
   testthat::expect_true(all(is.na(t$med.devn.dat$PSA.AGR[t$med.devn.dat$DASTs == -1]))) 
@@ -1151,10 +1469,13 @@ test_that("RicePrepped_growthPheno", {
                                   response = "PSA", response.smoothed = "sPSA",
                                   times = "DAST", 
                                   get.rates = TRUE, 
-                                  smoothing.segments = DAST.segs,
-                                  spline.types = c("NCSS","PS"), 
-                                  df = df, lambdas = list(PS = lambdas), 
-                                  npspline.segments = c(4,6), smoothing.methods = "log",
+                                  smoothing.args = 
+                                    args4smoothing(smoothing.methods = "log", 
+                                                   spline.types = c("NCSS","PS"), 
+                                                   df = df, 
+                                                   lambdas = list(PS = lambdas), 
+                                                   smoothing.segments = DAST.segs, 
+                                                   npspline.segments = c(4,6)),
                                   which.plots = "none",
                                   keep.columns = c("Smarthouse", "Salinity")),
     regexp = "Need at least 4 distinct x values to fit a spline - all fitted values set to NA")
@@ -1176,10 +1497,13 @@ test_that("RicePrepped_growthPheno", {
                                      times = "DAST", 
                                      response = "PSA", response.smoothed = "sPSA",
                                      get.rates = TRUE, rates.method = "deriv", 
-                                     smoothing.segments = DAST.segs,
-                                     spline.types = c("NCSS","PS"), 
-                                     df = df, lambdas = list(PS = lambdas), 
-                                     npspline.segments = c(4,6), smoothing.methods = "log",
+                                     smoothing.args = 
+                                       args4smoothing(smoothing.methods = "log", 
+                                                      spline.types = c("NCSS","PS"), 
+                                                      df = df, 
+                                                      lambdas = list(PS = lambdas), 
+                                                      smoothing.segments = DAST.segs, 
+                                                      npspline.segments = c(4,6)),
                                      which.plots = "none",
                                      keep.columns = c("Smarthouse", "Salinity")),
     regexp = "Need at least 4 distinct x values to fit a spline - all fitted values set to NA")

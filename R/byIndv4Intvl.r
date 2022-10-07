@@ -29,14 +29,19 @@
   #Check that responses, individuals and times are in data
   checkNamesInData(c(responses, individuals, times), data = data)
   
-  interval.resp <- cbind(getTimesSubset(data = data, responses = responses, 
-                                        times = times, which.times = start.time, 
-                                        include.times = TRUE, 
-                                        suffix = "start"),
-                         getTimesSubset(data = data, responses = responses, 
-                                        times = times, which.times = end.time, 
-                                        include.times = TRUE, 
-                                        suffix = "end"))
+  interval.resp <- mapply(function(time, suffix, data, responses, times) 
+                          {
+                            dat <- getTimesSubset(data = data, responses = responses, 
+                                           times = times, which.times = time, 
+                                           include.times = TRUE, 
+                                           suffix = suffix)
+                            names(dat)[grepl(individuals, names(dat))] <- individuals
+                            return(dat)
+                          }, time = c(start.time,end.time), suffix = c("start", "end"), 
+                          MoreArgs = list(data = data, responses = c(individuals, responses), 
+                                             times = times), SIMPLIFY = FALSE)
+  interval.resp <- merge(interval.resp[[1]], interval.resp[[2]], all = TRUE, sort = FALSE)
+                          
   times.start <- paste(times,"start",sep=".")
   times.end <- paste(times,"end",sep=".")
   
@@ -103,10 +108,12 @@
                          start.time = start.time, end.time = end.time, 
                          times=times, which.rates = opt)
   growth.rates <- as.data.frame(growth.rates)
+  growth.rates <- cbind(interval.resp[individuals], growth.rates)
+  rownames(growth.rates) <- NULL
   #use getTimesSubset to add the individuals to the growth.rates data.frame  
-  growth.rates <- cbind(growth.rates, 
-                        getTimesSubset(data = data, responses = individuals, times = times, 
-                                       which.times = start.time, suffix = NULL))
+  # growth.rates <- merge(growth.rates, 
+  #                       getTimesSubset(data = data, responses = individuals, times = times, 
+  #                                      which.times = start.time, suffix = NULL))
   return(growth.rates)
 }
 
@@ -117,7 +124,7 @@
                                   suffices.rates=c("AGR","RGR"), sep.rates = ".", 
                                   start.time, end.time, 
                                   suffix.interval, sep.suffix.interval = ".", 
-                                  sep.levels=".", na.rm=TRUE)
+                                  sep.levels=".", na.rm=FALSE)
 {  
   #Check that responses, individuals and times are in data
   checkNamesInData(c(responses, individuals, times), data = data)
@@ -154,14 +161,13 @@
   #Get data for the times 
   times.vals <- unique(convertTimes2numeric(data[[times]]))
   times.vals <- times.vals[times.vals >= start.time & times.vals <= end.time]
+  combos <- expand.grid(sort(unique(data[[individuals]])), times.vals)
+  names(combos) <- c(individuals, times)
   interval.resp <- getTimesSubset(data = data, responses = response.grates, 
                                   times = times, which.times = times.vals, 
-                                  include.times = TRUE)
-  interval.resp <- cbind(getTimesSubset(data = data, responses = individuals, 
-                                        times = times, which.times = times.vals, 
-                                        include.times = FALSE),
-                         interval.resp)
+                                  include.times = TRUE, include.individuals = TRUE)
   interval.resp[times] <- convertTimes2numeric(interval.resp[[times]])
+  interval.resp <- merge(combos, interval.resp, all = TRUE, sort = FALSE)
   #calculate the weights
   interval.resp <- split(interval.resp, as.list(interval.resp[individuals]), sep=sep.levels)
   interval.resp <- lapply(interval.resp, 

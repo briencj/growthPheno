@@ -7,24 +7,137 @@ test_that("exampleData_traitSmooth", {
   library(growthPheno)
   
   data(exampleData)
-  vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1),
-                ggplot2::scale_x_continuous(breaks=seq(28, 42, by=2)))
-  yfacets <- c("Smarthouse", "Treatment.1")
-  testthat::expect_message(
+  testthat::expect_true(all(abs(longi.dat$sPSA[1:3] - c(51.18456,  87.67343, 107.68232)) < 1e-03))
+  testthat::expect_true(all(abs(longi.dat$sPSA.AGR[2:4] - c(18.24443, 20.00889, 22.13115)) < 1e-03))
+
+  vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1))
+  trt.facets <- c("Smarthouse", "Treatment.1")
+  #Get a chosen smooth - can set an option without worrying about the other option in traitSmooth
+  testthat::expect_warning(
     smth.dat <- traitSmooth(data = longi.dat, 
                             response = "PSA", response.smoothed = "sPSA",
                             individuals = "Snapshot.ID.Tag", times = "DAP", 
-                            keep.columns = yfacets, 
-                            facet.y.pf = yfacets, 
-                            facet.y.chosen = yfacets, 
-                            addMediansWhiskers = TRUE, #used  whenever plotLongitudinal is used
-                            ggplotFuncsProfile = vline))
+                            keep.columns = trt.facets, 
+                            profile.plot.args = 
+                              args4profile.plot(facet.y = trt.facets, 
+                                                include.raw = "no",
+                                                breaks.spacing.x = -2, 
+                                                addMediansWhiskers = TRUE, #used  whenever plotLongitudinal is used
+                                                ggplotFuncs = vline),
+                            chosen.plot.args = 
+                              args4chosen.plot(facet.y = trt.facets), 
+                            mergedata = longi.dat), 
+    regexp = "containing missing values")
   testthat::expect_equal(nrow(smth.dat), 280)
   testthat::expect_equal(ncol(smth.dat), 37)
   testthat::expect_true(all(names(longi.dat) %in% names(smth.dat)))
   testthat::expect_true(all(longi.dat$Snapshot.ID.Tag == smth.dat$Snapshot.ID.Tag))
   testthat::expect_true(all(c("Smarthouse","Treatment.1","PSA","PSA.AGR","PSA.RGR",
                               "sPSA","sPSA.AGR","sPSA.RGR") %in% names(smth.dat)))
+  
+  #Get the full set of smooths
+  smth.dat <- traitSmooth(data = longi.dat, 
+                          response = "PSA", response.smoothed = "sPSA",
+                          individuals = "Snapshot.ID.Tag",times = "DAP", 
+                          keep.columns = trt.facets, 
+                          chosen.smooth.args = NULL, 
+                          which.plots = "profile", 
+                          profile.plot.args = 
+                            args4profile.plot(facet.y = trt.facets, 
+                                              include.raw = "no",
+                                              collapse.facets.x = FALSE,
+                                              breaks.spacing.x = -2, 
+                                              ggplotFuncs = vline))
+  testthat::expect_equal(nrow(smth.dat), 1960)
+  testthat::expect_equal(ncol(smth.dat), 16)
+  
+  #Supply smth.dat and do just the profile plots
+  tmp.dat <- traitSmooth(data = smth.dat, 
+                         response = "PSA", response.smoothed = "sPSA",
+                         individuals = "Snapshot.ID.Tag",times = "DAP", 
+                         chosen.smooth.args = NULL, 
+                         which.plots = "profile", 
+                         profile.plot.args = 
+                           args4profile.plot(facet.y = trt.facets, 
+                                             include.raw = "facet.x",
+                                             collapse.facets.x = FALSE,
+                                             breaks.spacing.x = -2, 
+                                             ggplotFuncs = vline))
+  testthat::expect_equal(nrow(smth.dat), 1960)
+  testthat::expect_equal(ncol(smth.dat), 16)
+  
+  #Supply smth.dat and do just the chosen plots
+  tmp.dat <- traitSmooth(data = smth.dat, 
+                         response = "PSA", response.smoothed = "sPSA",
+                         individuals = "Snapshot.ID.Tag",times = "DAP", 
+                         which.plots = "none", 
+                         chosen.smooth.args = 
+                           args4chosen.smooth(lambda = 3.162), 
+                         chosen.plot.args = 
+                           args4chosen.plot(facet.y = trt.facets, 
+                                            ggplotFuncs = vline), 
+                         mergedata = longi.dat)
+  testthat::expect_equal(nrow(tmp.dat), 280)
+  testthat::expect_equal(ncol(tmp.dat), 37)
+  testthat::expect_true(all(names(longi.dat) %in% names(tmp.dat)))
+  testthat::expect_true(all(longi.dat$Snapshot.ID.Tag == tmp.dat$Snapshot.ID.Tag))
+  testthat::expect_true(all(c("Smarthouse","Treatment.1","sPSA","sPSA.AGR","sPSA.RGR") 
+                            %in% names(tmp.dat)))
+  testthat::expect_true(all(abs(tmp.dat$sPSA[1:3] - c(58.6448,  87.0271, 105.4621)) < 1e-03))
+  testthat::expect_true(all(abs(tmp.dat$sPSA.AGR[2:4] - c(14.19115, 18.43499, 21.57451)) < 1e-03))
+
+  #Extract a single.smooth
+  tmp.dat <- traitSmooth(data = smth.dat, 
+                         response = "PSA", response.smoothed = "sPSA",
+                         individuals = "Snapshot.ID.Tag",times = "DAP", 
+                         smoothing.args =  
+                           args4smoothing(spline.types = "PS", 
+                                          df = NULL, lambdas = 3.162), 
+                         which.plots = "none", 
+                         chosen.plot.args = NULL)
+  testthat::expect_equal(nrow(tmp.dat), 280)
+  testthat::expect_equal(ncol(tmp.dat), 11)
+  
+  #Produce a single smooth
+  smth.dat <- traitSmooth(data = longi.dat, 
+                          response = "PSA", response.smoothed = "sPSA",
+                          individuals = "Snapshot.ID.Tag",times = "DAP", 
+                          keep.columns = trt.facets, 
+                          smoothing.args =  
+                            args4smoothing(spline.types = "PS", 
+                                           df = NULL, lambdas = 3.162), 
+                          chosen.smooth.args = NULL, 
+                          which.plots = "profile",
+                          profile.plot.args = 
+                            args4profile.plot(plots.by = "Type", 
+                                              facet.x = trt.facets, facet.y = "Tuning", 
+                                              include.raw = "facet.y", 
+                                              collapse.facets.x = FALSE,
+                                              facet.scales = "free_y", 
+                                              breaks.spacing.x = -2, angle.x = 90, 
+                                              ggplotFuncs = vline))
+  testthat::expect_equal(nrow(smth.dat), 280)
+  testthat::expect_equal(ncol(smth.dat), 37)
+  
+  #Test scales.pf
+  #Supply smth.dat and do just the profile plots
+  smth.dat <- traitSmooth(data = longi.dat, 
+                          response = "PSA", response.smoothed = "sPSA",
+                          individuals = "Snapshot.ID.Tag",times = "DAP", 
+                          keep.columns = trt.facets, 
+                          chosen.smooth = NULL, 
+                          which.plots = "profile",
+                          profile.plot.args = 
+                            args4profile.plot(plots.by = "Type", 
+                                              facet.x = trt.facets, facet.y = "Tuning", 
+                                              include.raw = "facet.y", 
+                                              collapse.facets.x = FALSE,
+                                              facet.scales = "free_y", 
+                                              breaks.spacing.x = -2, angle.x = 90, 
+                                              ggplotFuncs = vline))
+  testthat::expect_equal(nrow(smth.dat), 1960)
+  testthat::expect_equal(ncol(smth.dat), 16)
+  
 })
 
 cat("#### Test traitExtractFeatures with tomato example\n")
@@ -238,7 +351,7 @@ test_that("tomato_traitExtractFeatures", {
   #Overall values only for smoothed traits using ratesaverage
   indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
                                    starts.intvl = DAP.starts, stops.intvl = DAP.stops, 
-                                   responses.rates = "sPSA",
+                                   responses4intvl.rates = "sPSA",
                                    growth.rates = "AGR", rates.method = "ratesaverage",
                                    responses4overall.rates = "sPSA",
                                    water.use4overall.water = "sWU", 
@@ -246,7 +359,7 @@ test_that("tomato_traitExtractFeatures", {
                                    intvl.overall = c(18,51),
                                    mergedata = indv.ini)
   testthat::expect_equal(nrow(indv.dat), 32)
-  testthat::expect_equal(ncol(indv.dat), 11)
+  testthat::expect_equal(ncol(indv.dat), 17)
   
   #Check the overall values
   indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 

@@ -13,7 +13,8 @@ plotProfiles(data, response = "PSA",
              x = NULL, title = NULL, 
              x.title = "DAP", y.title = "PSA (kpixels)", 
              facet.x = ".", facet.y = ".", 
-             labeller = NULL, colour = "black", 
+             labeller = NULL, scales = "fixed", 
+             colour = "black", 
              colour.column = NULL, colour.values = NULL, 
              alpha = 0.1, addMediansWhiskers = FALSE, 
              ggplotFuncs = NULL, 
@@ -51,6 +52,9 @@ plotProfiles(data, response = "PSA",
  \item{labeller}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
                  facets of a plot produced using the \code{\link{ggplot}} function. 
                  For more information see \code{\link{ggplot}}.}
+ \item{scales}{A \code{\link{character}} specifying whether the scales are shared 
+              across all facets of a plot (the default, "fixed"), or do they vary across 
+              rows ("free_x"), columns ("free_y"), or both rows and columns ("free")?}
  \item{colour}{A \code{\link{character}} specifying a single colour to use in 
                drawing the lines for the profiles. If colouring according to the 
                values of a variable is required then use \code{colour.column}.}

@@ -61,15 +61,23 @@ data(exampleData)
 vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1))
 smths <- probeSmooths(data = longi.dat, 
                       response = "PSA", response.smoothed = "sPSA", 
-                      times = "DAP", df = c(4,7), 
-                      facet.x.pf = "Tuning", facet.y.pf = "Treatment.1", 
-                      ggplotFuncsProfile=vline)
+                      times = "DAP", 
+                      smoothing.args = 
+                         args4smoothing(smoothing.methods = "direct", 
+                                        spline.types = "NCSS", 
+                                        df = c(4,7), lambdas = NULL), 
+                      profile.plot.args = 
+                        args4profile.plot(plots.by = NULL, 
+                                          facet.x = "Tuning", 
+                                          facet.y = "Treatment.1", 
+                                          include.raw = "no", 
+                                          ggplotFuncs = vline))
 is.smooths.frame(smths)
 validSmoothsFrame(smths)
 }
 
 \author{Chris Brien}
 \seealso{\code{\link{probeSmooths}}, \code{\link{is.smooths.frame}}, 
-          \code{\link{as.smooths.frame}}, \code{\link{validSmoothsFrame}}}
+          \code{\link{as.smooths.frame}}, \code{\link{validSmoothsFrame}}, \code{\link{args4smoothing}}}
 \keyword{asreml}
 \keyword{htest}

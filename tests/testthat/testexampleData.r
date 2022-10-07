@@ -88,25 +88,37 @@ test_that("exampleData_growthPheno", {
   vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1))
   testthat::expect_silent(tmp <- probeSmooths(data = longi.dat, 
                                               response = "PSA", times = "DAP", 
-                                              df = c(4,7), 
-                                              facet.x.pf = "Tuning", facet.y.pf = "Treatment.1",
-                                              ggplotFuncsProfile = vline))
+                                              smoothing.args = 
+                                                args4smoothing(smoothing.methods = "direct", 
+                                                               spline.types = "N", 
+                                                               df = c(4,7), lambdas = NULL),
+                                              profile.plot.args = 
+                                                args4profile.plot(facet.x = "Tuning", 
+                                                                  facet.y = "Treatment.1",
+                                                                  ggplotFuncs = vline)))
   testthat::expect_equal(nrow(tmp), 560)
   testthat::expect_equal(ncol(tmp), 15)
   testthat::expect_silent(  
     traits <- probeSmooths(data = longi.dat, response = "PSA", 
                            individuals = "Snapshot.ID.Tag", 
-                           df = c(4:7), times = "DAP", keep.columns = "Treatment.1", 
-                           which.plots = "none",
-                           propn.types = NULL))
+                           times = "DAP", keep.columns = "Treatment.1", 
+                           smoothing.args = 
+                             args4smoothing(smoothing.methods = "direct", 
+                                            spline.types = "N", 
+                                            df = c(4,7), lambdas = NULL),
+                           which.plots = "none"))
   testthat::expect_silent(  
     med <- plotSmoothsMedianDevns(data = traits, 
                                   response = "PSA", response.smoothed = "sPSA", 
                                   times = "DAP", 
                                   x.title = "DAP", 
-                                  trait.types = "response", propn.types = 0.05,
-                                  plots.group.med = "Tuning", facet.y.med = "Treatment.1",
-                                  ggplotFuncsMedDevn = vline))
+                                  trait.types = "response", 
+                                  meddevn.plot.args = 
+                                    args4meddevn.plot(plots.by = NULL, 
+                                                      plots.group = "Tuning", 
+                                                      facet.x = ".", facet.y = "Treatment.1",
+                                                      propn.types = 0.05,
+                                                      ggplotFuncs = vline)))
   
   #fitSpline
   testthat::expect_silent(  

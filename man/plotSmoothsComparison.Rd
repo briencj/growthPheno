@@ -52,19 +52,14 @@
 plotSmoothsComparison(data, response, response.smoothed = NULL, 
                       individuals = "Snapshot.ID.Tag", times = "DAP", 
                       trait.types = c("response", "AGR", "RGR"), 
-                      x.title = NULL, y.titles = NULL, labeller = NULL, 
-                      which.plots =  "profiles", printPlot = TRUE, 
-                      breaks.spacing.x = -4, 
-                      plots.by.pf = NULL, 
-                      facet.x.pf = ".", facet.y.pf = ".", 
-                      collapse.facets.x.pf = TRUE, 
-                      collapse.facets.y.pf = FALSE, 
-                      include.raw.pf = "no", 
-                      colour.pf = "black", colour.column.pf = NULL, 
-                      colour.values.pf = NULL, alpha.pf  = 0.3, 
-                      addMediansWhiskers.pf = TRUE,
-                      ggplotFuncsProfile = NULL, ggplotFuncsDevnBoxes = NULL, 
-                      ...)
+                      which.plots =  "profiles", 
+                      x.title = NULL, y.titles = NULL, 
+                      profile.plot.args = 
+                        args4profile.plot(plots.by = NULL, 
+                                          facet.x = ".", facet.y = ".", 
+                                          include.raw = "no"),
+                      ggplotFuncsDevnBoxes = NULL, 
+                      printPlot = TRUE, ...)
 }
 \arguments{
  \item{data}{A \code{\link{smooths.frame}}, such as is produced by 
@@ -106,15 +101,6 @@ plotSmoothsComparison(data, response, response.smoothed = NULL,
              Irrespective of the setting of \code{get.rates}, the nominated traits 
              are plotted. If \code{all}, each of \code{response}, \code{AGR} and 
              \code{RGR} is plotted.}
-  \item{x.title}{Title for the x-axis, used for all plots. If \code{NULL} then set to 
-             \code{times}.}
- \item{y.titles}{A \code{\link{character}} giving the titles for the y-axis, 
-             one for each trait specified by \code{trait.types} and used for all plots. 
-             If \code{NULL}, then set to the traits derived for \code{response} 
-             from \code{trait.types}.}
- \item{labeller}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
-                 facets of a plot produced using the \code{\link{ggplot}} function. 
-                 For more information see \code{\link{ggplot}}.}
 \item{which.plots}{A \code{\link{logical}} indicating which plots are to be produced. 
              The options are either \code{none} or some combination of \code{profiles}, 
              \code{absolute.boxplots}, \code{relative.boxplots} and 
@@ -129,79 +115,33 @@ plotSmoothsComparison(data, response, response.smoothed = NULL,
              values of \code{times} for each combination of the levels of the 
              smoothing-parameter \code{\link{factor}}s and any nominated 
              non-smoothing-parameter \code{\link{factor}}s.}
- \item{printPlot}{A \code{\link{logical}} indicating whether or not to print any 
-             plots.}
- \item{breaks.spacing.x}{A \code{\link{numeric}} whose absolute values specifies the 
-             distance between breaks for the x-axis in a sequence beginning with the 
-             minimum x value and continuing up to the maximum x value. If it is negative, 
-             the breaks that do not have x values in \code{data} will be omitted. 
-             Minor breaks will be at half this value or, if these do not correspond to 
-             x-values in \code{data} when \code{breaks.spacing.x} is negative, have 
-             a spacing of one. Thus, when \code{breaks.spacing.x} is negative,  
-             grid lines will only be included for x-values that occur in \code{data}. 
-             These settings can be overwritten by supplying a \code{scale_x_continuous} 
-             function from \code{ggplot2} in \code{ggplotFuncsProfile}.}
- \item{plots.by.pf}{A \code{\link{character}} that gives the names of the set of 
-             \code{\link{factor}}s by which the data is to be grouped and a separate 
-             plot produced for each group. If \code{NULL}, no groups are formed. If a 
-             set of \code{\link{factor}}s, such as  \code{Type}, \code{Tuning} and 
-             \code{Method}, that uniquely index the combinations of the 
-              smoothing-parameter values is specified, then groups are formed for each 
-             combination of the levels of the these \code{\link{factor}}s, and a separate plot is 
-             produced for each combination.}
- \item{facet.x.pf}{A \code{\link{character}} giving the names of the \code{\link{factor}}s 
-             to be used to form subsets to be plotted in separate columns of the 
-             profiles plots and deviations boxplots. The default of \code{"."} results 
-             in no split into columns.}
- \item{facet.y.pf}{A \code{\link{character}} giving the \code{\link{factor}}s 
-             to be used to form subsets to be plotted in separate rows of the 
-             profiles plots and deviations boxplots. The default of \code{"."} results 
-             in no split into rows.}
- \item{collapse.facets.x.pf}{A \code{\link{logical}} to indicate whether all variables 
-             specified by \code{facets.x.pf} are to be collapsed to a single variable. 
-             Note that the smoothing-parameters factors, if present, are always collapsed.}
- \item{collapse.facets.y.pf}{A \code{\link{logical}} to indicate whether all variables 
-             specified by \code{facets.y.pf} are to be collapsed to a single variable. 
-             Note that the smoothing-parameters factors, if present, are always collapsed.}
- \item{include.raw.pf}{A \code{\link{character}} indicating whether plots of the 
-             raw (unsmoothed) trait, corresponding to the plots of the smoothed traits, 
-             are to be included in profile plots. The options are \code{no}, \code{alone}, 
-             \code{facet.x}, or \code{facet.y}. That is, the plots of the raw traits are 
-             plotted separately or as part of either \code{facet.x.pf} or 
-             \code{facet.y.pf}.}
- \item{colour.pf}{A \code{\link{character}} specifying a single colour to use in 
-              drawing the lines for the profiles. If colouring according to the 
-              values of a variable is required then use \code{colour.column.pf}.}
- \item{colour.column.pf}{A \code{\link{character}} giving the name of a column 
-              in \code{data} over whose values the colours of the lines are to be 
-              varied. The colours can be specified using \code{colour.values.pf}.}
- \item{colour.values.pf}{A \code{\link{character}} vector specifying the values of 
-              the colours to use in drawing the lines for the profiles.  
-              If this is a named vector, then the values will be matched based 
-              on the names. If unnamed, values will be matched in order 
-              (usually alphabetical) within the limits of the scale.}
- \item{alpha.pf }{A \code{\link{numeric}} specifying the degrees of 
-            transparency to be used in plotting the responses. 
-            It is a ratio in which the denominator specifies the number of 
-            points (or lines) that must be overplotted to give a solid cover.}
- \item{addMediansWhiskers.pf}{A \code{\link{logical}} indicating whether plots over 
-             time of the medians and outer whiskers are to be added to the plot. 
-             The outer whiskers are related to the whiskers on a box-and-whisker 
-             and are defined as the median plus (and minus) 1.5 times the 
-             interquartile range (IQR). Points lying outside the whiskers are 
-             considered to be potential outliers.}
- \item{ggplotFuncsProfile}{A \code{\link{list}}, each element of which contains the 
-                results of evaluating a \code{\link{ggplot}} function. 
-                It is created by calling the \code{\link{list}} function with 
-                a \code{\link{ggplot}} function call for each element.
-                These functions are applied in creating the \code{ggplot} 
-                object for a profiles plot.}
+ \item{x.title}{Title for the x-axis, used for all plots. If \code{NULL} then set to 
+             \code{times}.}
+ \item{y.titles}{A \code{\link{character}} giving the titles for the y-axis, 
+             one for each trait specified by \code{trait.types} and used for all plots. 
+             If \code{NULL}, then set to the traits derived for \code{response} 
+             from \code{trait.types}.}
+ \item{profile.plot.args}{A named \code{\link{list}} that is most easily 
+             generated using \code{\link{args4profile.plot}}, it documenting the 
+             options available for varying profile plots and boxplots. \emph{Note 
+             that if \code{\link{args4profile.plot}} is to be called to change 
+             from the default settings given in the default 
+             \code{plotSmoothsComparison} call 
+             and some of those settings are to be retained, then the arguments 
+             whose settings are to be retained must also be included in the call 
+             to \code{\link{args4profile.plot}}; be aware that if you call 
+             \code{\link{args4profile.plot}}, then the defaults for this call are 
+             those for \code{\link{args4profile.plot}}, \bold{NOT} the call to 
+             \code{\link{args4profile.plot}} shown as the default for 
+             \code{plotSmoothsComparison}.}}
  \item{ggplotFuncsDevnBoxes}{A \code{\link{list}}, each element of which contains 
                 the results of evaluating a \code{\link{ggplot}} function. 
                 It is created by calling the \code{\link{list}} function with 
                 a \code{\link{ggplot}} function call for each element.
                 These functions are applied in creating the \code{ggplot} 
                 object for deviations boxplot.}
+ \item{printPlot}{A \code{\link{logical}} indicating whether or not to print any 
+             plots.}
  \item{...}{allows passing of arguments to \code{\link{plotProfiles}}.}
 }
 \value{A multilevel \code{\link{list}} that contains the \code{\link{ggplot}} 
@@ -221,20 +161,28 @@ plotSmoothsComparison(data, response, response.smoothed = NULL,
         option, the \code{deviations} \code{\link{list}} will be empty. 
 }
 \author{Chris Brien}
-\seealso{\code{\link{probeSmooths}}, \code{\link{plotDeviationsBoxes}}, \code{\link{plotSmoothsMedianDevns}}, \code{\link{ggplot}}.}
+\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{args4profile.plot}}, \code{\link{plotDeviationsBoxes}}, \code{\link{plotSmoothsMedianDevns}}, \code{\link{ggplot}}.}
 \examples{
 data(exampleData)
 vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1))
 traits <- probeSmooths(data = longi.dat, 
                        response = "PSA", response.smoothed = "sPSA", 
-                       times = "DAP", df = c(4:7), 
-                       which.plots = "none", 
-                       propn.types.med = NULL)
+                       times = "DAP", 
+                       #only df is changed from the probeSmooth default
+                       smoothing.args = 
+                         args4smoothing(smoothing.methods = "direct", 
+                                        spline.types = "NCSS", 
+                                        df = c(4,7), lambdas = NULL), 
+                       which.plots = "none")
 plotSmoothsComparison(data = traits, 
                       response = "PSA", response.smoothed = "sPSA", 
                       times = "DAP", x.title = "DAP",
-                      facet.x.pf = "Tuning", 
-                      ggplotFuncsProfile = vline)
+                      #only facet.x is changed from the probeSmooth default
+                      profile.plot.args = 
+                        args4profile.plot(plots.by = NULL, 
+                                          facet.x = "Tuning", facet.y = ".", 
+                                          include.raw = "no", 
+                                          ggplotFuncs = vline))
 }
 \keyword{hplot}
 \keyword{manip}

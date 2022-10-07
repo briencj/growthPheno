@@ -31,15 +31,13 @@
 plotSmoothsMedianDevns(data, response, response.smoothed = NULL, 
                        individuals = "Snapshot.ID.Tag",  times = "DAP", 
                        trait.types = c("response", "AGR", "RGR"), 
-                       x.title = NULL, y.titles = NULL, labeller = NULL, 
-                       breaks.spacing.x = -4, 
-                       plots.by.med = NULL, plots.group.med = NULL, 
-                       facet.x.med = ".", facet.y.med = ".", 
-                       colour.values.med = NULL, shape.values.med = NULL, 
-                       alpha.med = 0.5, 
-                       propn.note.med = TRUE, 
-                       propn.types.med = c(0.1, 0.5, 0.75), 
-                       ggplotFuncsMedDevn = NULL, printPlot = TRUE, ...)
+                       x.title = NULL, y.titles = NULL, 
+                       meddevn.plot.args = 
+                         args4meddevn.plot(plots.by = NULL, plots.group = NULL,
+                                           facet.x = ".", facet.y = ".", 
+                                           propn.note = TRUE, 
+                                           propn.types = c(0.1, 0.5, 0.75)), 
+                       printPlot = TRUE, ...)
 }
 \arguments{
  \item{data}{A \code{\link{smooths.frame}}, such as is produced by 
@@ -89,72 +87,21 @@ plotSmoothsMedianDevns(data, response, response.smoothed = NULL,
              one for each trait specified by \code{trait.types}. 
              If \code{NULL}, then set to the traits derived for \code{response} 
              from \code{trait.types}.}
-\item{labeller}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
-             facets of a plot produced using the \code{\link{ggplot}} function. 
-             For more information see \code{\link{ggplot}}.}
- \item{breaks.spacing.x}{A \code{\link{numeric}} whose absolute values specifies the 
-             distance between breaks for the x-axis in a sequence beginning with the 
-             minimum x value and continuing up to the maximum x value. If it is negative, 
-             the breaks that do not have x values in \code{data} will be omitted. 
-             Minor breaks will be at half this value or, if these do not correspond to 
-             x-values in \code{data} when \code{breaks.spacing.x} is negative, have 
-             a spacing of one. Thus, when \code{breaks.spacing.x} is negative,  
-             grid lines will only be included for x-values that occur in \code{data}.  
-             These settings can be overwritten by supplying a \code{scale_x_continuous} 
-             function from \code{ggplot2} in \code{ggplotFuncsMedDevn}.}
-\item{plots.by.med}{A \code{\link{character}} that give the names of the set of 
-             \code{\link{factor}}s by which medians deviations data is to be 
-             grouped and a separate plot produced for each group. If \code{NULL}, 
-             no groups are formed. If a set of \code{\link{factor}}s, such as  
-             \code{Type}, \code{Tuning} and \code{Method}, that uniquely index the 
-             combinations of the smoothing-parameter values is specified, then 
-             groups are formed for each combination of the levels of the these 
-             \code{\link{factor}}s, and and a separate plot is produced for each combination.}
- \item{plots.group.med}{A \code{\link{character}} that gives the names of the set 
-             of \code{\link{factor}}s by which the subset of medians deviations data 
-             within a single facet in a single plot is to be grouped for plotting  
-             as separate lines.}
-  \item{facet.x.med}{A \code{\link{character}} giving the \code{\link{factor}}s 
-             to be used to form subsets to be plotted in separate columns of the 
-             medians deviations plots. The default of \code{"."} results 
-             in no split into columns.}
- \item{facet.y.med}{A \code{\link{character}} giving the \code{\link{factor}}s 
-             to be used to form subsets to be plotted in separate rows of the 
-             medians deviations plots. The default of \code{"."} results 
-             in no split into rows.}
- \item{colour.values.med}{A \code{\link{character}} vector specifying the values of 
-              the colours to use in drawing the lines for the medians deviations
-              within a facet. If this is a named vector, then the values will be 
-              matched based on the names. If unnamed, values will be matched in order 
-              (usually alphabetical) within the limits of the scale.}
- \item{shape.values.med}{A \code{\link{numeric}} vector specifying the values of 
-              the shapes to use in drawing the points for the medians deviations
-              within a facet. If this is a named vector, then the values will be 
-              matched based on the names. If unnamed, values will be matched in 
-              order. If \code{NULL}, as many of the values 
-              \code{c(21:24,7,9,10,11,3,4)} as are needed will be used. If more 
-              than 10 values are needed, \code{shape.values.med} will need to be 
-              set to to a \code{\link{numeric}} of the required length.}
- \item{alpha.med}{A \code{\link{numeric}} specifying the degrees of 
-            transparency to be used in plotting a median deviations plot. 
-            It is a ratio in which the denominator specifies the number of 
-            points (or lines) that must be overplotted to give a solid cover.}
- \item{propn.note.med}{A \code{\link{logical}} indicating whether a note giving the 
-             proportion of the median value of the \code{response} for each time is 
-             to be included in the \code{medians.deviations} plots.}
- \item{propn.types.med}{A \code{\link{numeric}} giving, for each of the 
-             \code{trait.types}, the proportion of the median value of the 
-             \code{response} for each time to be used to plot envelopes in the 
-             median deviations plots . If set to \code{NULL}, the plots of the 
-             proprotion envelopes are omitted.}
- \item{ggplotFuncsMedDevn}{A \code{\link{list}}, each element of which contains the 
-                results of evaluating a \code{\link{ggplot}} function. 
-                It is created by calling the \code{\link{list}} function with 
-                a \code{\link{ggplot}} function call for each element.
-                These functions are applied in creating the \code{ggplot} object.}
+ \item{meddevn.plot.args}{A named \code{\link{list}} that is most easily 
+             generated using \code{\link{args4meddevn.plot}}, it documenting the 
+             options available for varying median deviations plots. \emph{Note 
+             that if \code{\link{args4meddevn.plot}} is to be called to change 
+             from the default settings given in the default \code{plotSmoothsMedianDevns} 
+             call and some of those settings are to be retained, then the arguments 
+             whose settings are to be retained must also be included in the call 
+             to \code{\link{args4meddevn.plot}}; be aware that if you call 
+             \code{\link{args4meddevn.plot}}, then the defaults for this call are 
+             those for \code{\link{args4meddevn.plot}}, \bold{NOT} the call to 
+             \code{\link{args4meddevn.plot}} shown as the default for 
+             \code{plotSmoothsMedianDevns}.}}
  \item{printPlot}{A \code{\link{logical}} indicating whether or not to print the 
                   plot.}
- \item{...}{allows passing of arguments to \code{\link{plotProfiles}}.}
+ \item{...}{allows passing of arguments to other functions; not used at present.}
 }
 \value{A \code{\link{list}} that consists of two components:  (i) a componenent named  
        \code{plots} that stores a two-level \code{\link{list}} of the median deviations 
@@ -167,21 +114,28 @@ plotSmoothsMedianDevns(data, response, response.smoothed = NULL,
        \code{\link{list}} is in an object of class \code{\link{ggplot}}, which can be 
        plotted using \code{print}.}
 \author{Chris Brien}
-\seealso{\code{\link{probeSmooths}}, \code{\link{plotSmoothsComparison}}, \code{\link{plotDeviationsBoxes}}, \code{\link{ggplot}}.}
+\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{args4meddevn.plot}}, \code{\link{plotSmoothsComparison}}, \code{\link{plotDeviationsBoxes}}, \code{\link{ggplot}}.}
 \examples{
 data(exampleData)
 vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1))
 traits <- probeSmooths(data = longi.dat, 
                        response = "PSA", response.smoothed = "sPSA", 
-                       times = "DAP", df = c(4:7), 
-                       which.plots = "none", 
-                       propn.types.med = NULL)
+                       times = "DAP", 
+                       get.rates = FALSE, trait.types = "response", 
+                       smoothing.args = 
+                         args4smoothing(smoothing.methods = "direct", 
+                                        spline.types = "NCSS", 
+                                        df = c(4,7), lambdas = NULL), 
+                       which.plots = "none")
 med <- plotSmoothsMedianDevns(data = traits, 
                               response = "PSA", response.smoothed = "sPSA", 
-                              times = "DAP", 
-                              plots.group.med = "Tuning",  
-                              trait.types = "response", propn.types.med = 0.02,
-                              ggplotFuncsMedDevn = vline)
+                              times = "DAP", trait.types = "response",  
+                              meddevn.plot.args = 
+                                args4meddevn.plot(plots.by = NULL, 
+                                                  plots.group = "Tuning", 
+                                                  facet.x = ".", facet.y = ".", 
+                                                  propn.types = 0.02,
+                                                  ggplotFuncs = vline))
 }
 \keyword{hplot}
 \keyword{manip}
