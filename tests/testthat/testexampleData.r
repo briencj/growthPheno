@@ -93,7 +93,7 @@ test_that("exampleData_growthPheno", {
                                                                spline.types = "N", 
                                                                df = c(4,7), lambdas = NULL),
                                               profile.plot.args = 
-                                                args4profile.plot(facet.x = "Tuning", 
+                                                args4profile_plot(facet.x = "Tuning", 
                                                                   facet.y = "Treatment.1",
                                                                   ggplotFuncs = vline)))
   testthat::expect_equal(nrow(tmp), 560)
@@ -114,7 +114,7 @@ test_that("exampleData_growthPheno", {
                                   x.title = "DAP", 
                                   trait.types = "response", 
                                   meddevn.plot.args = 
-                                    args4meddevn.plot(plots.by = NULL, 
+                                    args4meddevn_plot(plots.by = NULL, 
                                                       plots.group = "Tuning", 
                                                       facet.x = ".", facet.y = "Treatment.1",
                                                       propn.types = 0.05,

@@ -32,11 +32,11 @@
              other \code{\link{factor}}s associated with the \code{data}. 
              The \code{\link{factor}}s that are to be used for the profile plots and 
              deviations boxplots are supplied via the argument \code{profile.plot.args} 
-             using the helper function \code{\link{args4profile.plot}} to set 
+             using the helper function \code{\link{args4profile_plot}} to set 
              \code{plots.by}, \code{facet.x}, and \code{facet.y}; for the plots of 
              the medians of the deviations, the \code{\link{factor}}s are supplied via 
              the argument \code{meddevn.plot.args} using the helper function 
-             \code{\link{args4meddevn.plot}} to set \code{plots.by}, \code{facet.x}, 
+             \code{\link{args4meddevn_plot}} to set \code{plots.by}, \code{facet.x}, 
              \code{facet.y} and \code{plots.group}. Here, the basic principle is that 
              the number of levels combinations of the smoothing-parameter 
              \code{\link{factor}}s included in the set of \code{plots} and 
@@ -51,7 +51,7 @@
              \code{facets} arguments. 
 
              The following profiles plots can be produced using 
-             \code{\link{args4profile.plot}}: (i) separate plots of the 
+             \code{\link{args4profile_plot}}: (i) separate plots of the 
              smoothed traits for each combination of the smoothing parameters 
              (include \code{Type}, \code{Tuning} and \code{Method} in \code{plots.by}); 
              (ii) as for (i), with the corresponding plot for the unsmoothed trait 
@@ -81,8 +81,8 @@
                       rates.method, ntimes2span.}
                 \item{\bold{Smoothing arguments:} smoothing.args (see \code{\link{args4smoothing}}).}
                 \item{\bold{General plot control:} x.title, y.titles, facet.labeller, which.plots.} 
-                \item{\bold{Profile plots (pf) features:} profile.plot.args (see \code{\link{args4profile.plot}})} 
-                \item{\bold{Median-deviations (med) plots features:} meddevn.plot.args (see \code{\link{args4meddevn.plot}})} 
+                \item{\bold{Profile plots (pf) features:} profile.plot.args (see \code{\link{args4profile_plot}})} 
+                \item{\bold{Median-deviations (med) plots features:} meddevn.plot.args (see \code{\link{args4meddevn_plot}})} 
              }
 }
 \usage{
@@ -99,11 +99,11 @@ probeSmooths(data, response = "PSA", response.smoothed = NULL,
              x.title = NULL, y.titles = NULL, 
              which.plots = "profiles", 
              profile.plot.args = 
-               args4profile.plot(plots.by = NULL, 
+               args4profile_plot(plots.by = NULL, 
                                  facet.x = ".", facet.y = ".", 
                                  include.raw = "no"), 
              meddevn.plot.args = 
-               args4meddevn.plot(plots.by = NULL, plots.group = NULL, 
+               args4meddevn_plot(plots.by = NULL, plots.group = NULL, 
                                  facet.x = ".", facet.y = ".",
                                  propn.note = TRUE, 
                                  propn.types = c(0.1, 0.5, 0.75)), 
@@ -221,28 +221,28 @@ probeSmooths(data, response = "PSA", response.smoothed = NULL,
              The arguments to \code{probeSmooths} that apply to \code{medians.deviations} 
              plots have the suffix \code{med}.}
  \item{profile.plot.args}{A named \code{\link{list}} that is most easily 
-             generated using \code{\link{args4profile.plot}}, it documenting the 
+             generated using \code{\link{args4profile_plot}}, it documenting the 
              options available for varying profile plots and boxplots. \emph{Note 
-             that if \code{\link{args4profile.plot}} is to be called to change 
+             that if \code{\link{args4profile_plot}} is to be called to change 
              from the default settings given in the default \code{probeSmooths} call 
              and some of those settings are to be retained, then the arguments 
              whose settings are to be retained must also be included in the call 
-             to \code{\link{args4profile.plot}}; be aware that if you call 
-             \code{\link{args4profile.plot}}, then the defaults for this call are 
-             those for \code{\link{args4profile.plot}}, \bold{NOT} the call to 
-             \code{\link{args4profile.plot}} shown as the default for 
+             to \code{\link{args4profile_plot}}; be aware that if you call 
+             \code{\link{args4profile_plot}}, then the defaults for this call are 
+             those for \code{\link{args4profile_plot}}, \bold{NOT} the call to 
+             \code{\link{args4profile_plot}} shown as the default for 
              \code{probeSmooths}.}}
  \item{meddevn.plot.args}{A named \code{\link{list}} that is most easily 
-             generated using \code{\link{args4meddevn.plot}}, it documenting the 
+             generated using \code{\link{args4meddevn_plot}}, it documenting the 
              options available for varying median deviations plots. \emph{Note 
-             that if \code{\link{args4meddevn.plot}} is to be called to change 
+             that if \code{\link{args4meddevn_plot}} is to be called to change 
              from the default settings given in the default \code{probeSmooths} call 
              and some of those settings are to be retained, then the arguments 
              whose settings are to be retained must also be included in the call 
-             to \code{\link{args4meddevn.plot}}; be aware that if you call 
-             \code{\link{args4meddevn.plot}}, then the defaults for this call are 
-             those for \code{\link{args4meddevn.plot}}, \bold{NOT} the call to 
-             \code{\link{args4meddevn.plot}} shown as the default for 
+             to \code{\link{args4meddevn_plot}}; be aware that if you call 
+             \code{\link{args4meddevn_plot}}, then the defaults for this call are 
+             those for \code{\link{args4meddevn_plot}}, \bold{NOT} the call to 
+             \code{\link{args4meddevn_plot}} shown as the default for 
              \code{probeSmooths}.}}
  \item{ggplotFuncsDevnBoxes}{A \code{\link{list}}, each element of which contains 
               the results of evaluating a \code{\link{ggplot}} function. 
@@ -282,7 +282,7 @@ probeSmooths(data, response = "PSA", response.smoothed = NULL,
 
        The \code{\link{smooths.frame}} is returned invisibly.}
 \author{Chris Brien}
-\seealso{\code{\link{args4smoothing}}, , \code{\link{args4meddevn.plot}}, \code{\link{args4profile.plot}}, 
+\seealso{\code{\link{args4smoothing}}, , \code{\link{args4meddevn_plot}}, \code{\link{args4profile_plot}}, 
          \code{\link{traitSmooth}}, \cr 
          \code{\link{smoothSpline}}, \code{\link{byIndv4Times_SplinesGRs}}, \code{\link{byIndv4Times_GRsDiff}},  
          \code{\link{smooth.spline}}, \code{\link{psNormal}}, \code{\link{plotSmoothsComparison}}, \cr
@@ -294,7 +294,7 @@ probeSmooths(data = longi.dat, response = "PSA", response.smoothed = "sPSA",
              times = "DAP", 
              smoothing.args = args4smoothing(df = c(4,7)), 
              profile.plot.args = 
-               args4profile.plot(plots.by = NULL, 
+               args4profile_plot(plots.by = NULL, 
                                  facet.x = "Tuning", 
                                  facet.y = c("Smarthouse", "Treatment.1"), 
                                  include.raw = "no", 
@@ -342,7 +342,7 @@ if (requireNamespace("nlme", quietly = TRUE))
                                 external.smooths = extra.dat), 
                which.plots = "median", 
                meddevn.plot.args = 
-                 args4meddevn.plot(plots.by = "Type", 
+                 args4meddevn_plot(plots.by = "Type", 
                                    plots.group = "Tuning",  
                                    facet.x = ".", facet.y = ".", 
                                    propn.types = c(0.02,0.1, 0.2),
@@ -362,7 +362,7 @@ probeSmooths(data = tomato.dat,
                               combinations      = "parallel"),
              which.plots = "medians.deviations",
              meddevn.plot.args = 
-               args4meddevn.plot(plots.by = NULL, 
+               args4meddevn_plot(plots.by = NULL, 
                                  plots.group = c("Type", "Tuning", "Method"),              
                                  facet.x = ".", facet.y = ".", 
                                  propn.note = FALSE, propn.types = NULL))

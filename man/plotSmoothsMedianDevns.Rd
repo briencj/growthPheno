@@ -33,7 +33,7 @@ plotSmoothsMedianDevns(data, response, response.smoothed = NULL,
                        trait.types = c("response", "AGR", "RGR"), 
                        x.title = NULL, y.titles = NULL, 
                        meddevn.plot.args = 
-                         args4meddevn.plot(plots.by = NULL, plots.group = NULL,
+                         args4meddevn_plot(plots.by = NULL, plots.group = NULL,
                                            facet.x = ".", facet.y = ".", 
                                            propn.note = TRUE, 
                                            propn.types = c(0.1, 0.5, 0.75)), 
@@ -88,16 +88,16 @@ plotSmoothsMedianDevns(data, response, response.smoothed = NULL,
              If \code{NULL}, then set to the traits derived for \code{response} 
              from \code{trait.types}.}
  \item{meddevn.plot.args}{A named \code{\link{list}} that is most easily 
-             generated using \code{\link{args4meddevn.plot}}, it documenting the 
+             generated using \code{\link{args4meddevn_plot}}, it documenting the 
              options available for varying median deviations plots. \emph{Note 
-             that if \code{\link{args4meddevn.plot}} is to be called to change 
+             that if \code{\link{args4meddevn_plot}} is to be called to change 
              from the default settings given in the default \code{plotSmoothsMedianDevns} 
              call and some of those settings are to be retained, then the arguments 
              whose settings are to be retained must also be included in the call 
-             to \code{\link{args4meddevn.plot}}; be aware that if you call 
-             \code{\link{args4meddevn.plot}}, then the defaults for this call are 
-             those for \code{\link{args4meddevn.plot}}, \bold{NOT} the call to 
-             \code{\link{args4meddevn.plot}} shown as the default for 
+             to \code{\link{args4meddevn_plot}}; be aware that if you call 
+             \code{\link{args4meddevn_plot}}, then the defaults for this call are 
+             those for \code{\link{args4meddevn_plot}}, \bold{NOT} the call to 
+             \code{\link{args4meddevn_plot}} shown as the default for 
              \code{plotSmoothsMedianDevns}.}}
  \item{printPlot}{A \code{\link{logical}} indicating whether or not to print the 
                   plot.}
@@ -114,7 +114,7 @@ plotSmoothsMedianDevns(data, response, response.smoothed = NULL,
        \code{\link{list}} is in an object of class \code{\link{ggplot}}, which can be 
        plotted using \code{print}.}
 \author{Chris Brien}
-\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{args4meddevn.plot}}, \code{\link{plotSmoothsComparison}}, \code{\link{plotDeviationsBoxes}}, \code{\link{ggplot}}.}
+\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{args4meddevn_plot}}, \code{\link{plotSmoothsComparison}}, \code{\link{plotDeviationsBoxes}}, \code{\link{ggplot}}.}
 \examples{
 data(exampleData)
 vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1))
@@ -131,7 +131,7 @@ med <- plotSmoothsMedianDevns(data = traits,
                               response = "PSA", response.smoothed = "sPSA", 
                               times = "DAP", trait.types = "response",  
                               meddevn.plot.args = 
-                                args4meddevn.plot(plots.by = NULL, 
+                                args4meddevn_plot(plots.by = NULL, 
                                                   plots.group = "Tuning", 
                                                   facet.x = ".", facet.y = ".", 
                                                   propn.types = 0.02,

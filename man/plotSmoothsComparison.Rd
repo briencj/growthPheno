@@ -55,7 +55,7 @@ plotSmoothsComparison(data, response, response.smoothed = NULL,
                       which.plots =  "profiles", 
                       x.title = NULL, y.titles = NULL, 
                       profile.plot.args = 
-                        args4profile.plot(plots.by = NULL, 
+                        args4profile_plot(plots.by = NULL, 
                                           facet.x = ".", facet.y = ".", 
                                           include.raw = "no"),
                       ggplotFuncsDevnBoxes = NULL, 
@@ -122,17 +122,17 @@ plotSmoothsComparison(data, response, response.smoothed = NULL,
              If \code{NULL}, then set to the traits derived for \code{response} 
              from \code{trait.types}.}
  \item{profile.plot.args}{A named \code{\link{list}} that is most easily 
-             generated using \code{\link{args4profile.plot}}, it documenting the 
+             generated using \code{\link{args4profile_plot}}, it documenting the 
              options available for varying profile plots and boxplots. \emph{Note 
-             that if \code{\link{args4profile.plot}} is to be called to change 
+             that if \code{\link{args4profile_plot}} is to be called to change 
              from the default settings given in the default 
              \code{plotSmoothsComparison} call 
              and some of those settings are to be retained, then the arguments 
              whose settings are to be retained must also be included in the call 
-             to \code{\link{args4profile.plot}}; be aware that if you call 
-             \code{\link{args4profile.plot}}, then the defaults for this call are 
-             those for \code{\link{args4profile.plot}}, \bold{NOT} the call to 
-             \code{\link{args4profile.plot}} shown as the default for 
+             to \code{\link{args4profile_plot}}; be aware that if you call 
+             \code{\link{args4profile_plot}}, then the defaults for this call are 
+             those for \code{\link{args4profile_plot}}, \bold{NOT} the call to 
+             \code{\link{args4profile_plot}} shown as the default for 
              \code{plotSmoothsComparison}.}}
  \item{ggplotFuncsDevnBoxes}{A \code{\link{list}}, each element of which contains 
                 the results of evaluating a \code{\link{ggplot}} function. 
@@ -161,7 +161,7 @@ plotSmoothsComparison(data, response, response.smoothed = NULL,
         option, the \code{deviations} \code{\link{list}} will be empty. 
 }
 \author{Chris Brien}
-\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{args4profile.plot}}, \code{\link{plotDeviationsBoxes}}, \code{\link{plotSmoothsMedianDevns}}, \code{\link{ggplot}}.}
+\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{args4profile_plot}}, \code{\link{plotDeviationsBoxes}}, \code{\link{plotSmoothsMedianDevns}}, \code{\link{ggplot}}.}
 \examples{
 data(exampleData)
 vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1))
@@ -179,7 +179,7 @@ plotSmoothsComparison(data = traits,
                       times = "DAP", x.title = "DAP",
                       #only facet.x is changed from the probeSmooth default
                       profile.plot.args = 
-                        args4profile.plot(plots.by = NULL, 
+                        args4profile_plot(plots.by = NULL, 
                                           facet.x = "Tuning", facet.y = ".", 
                                           include.raw = "no", 
                                           ggplotFuncs = vline))

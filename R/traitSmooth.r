@@ -101,7 +101,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                                      trait.types = c("response", "AGR", "RGR"), 
                                      x.title = NULL, y.titles = NULL, 
                                      meddevn.plot.args = 
-                                       args4meddevn.plot(plots.by = NULL, plots.group = NULL,
+                                       args4meddevn_plot(plots.by = NULL, plots.group = NULL,
                                                          facet.x = ".", facet.y = ".", 
                                                          propn.note = TRUE, 
                                                          propn.types = c(0.1, 0.5, 0.75)), 
@@ -441,7 +441,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                                     trait.types = c("response", "AGR", "RGR"), 
                                     which.plots =  "profiles", 
                                     x.title = NULL, y.titles = NULL, 
-                                    profile.plot.args = args4profile.plot(plots.by = NULL, 
+                                    profile.plot.args = args4profile_plot(plots.by = NULL, 
                                                                           facet.x = ".", facet.y = ".", 
                                                                           include.raw = "no"),
                                     ggplotFuncsDevnBoxes = NULL, 
@@ -451,14 +451,14 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
   inargs <- list(...)
   checkEllipsisArgs(c("plotSmoothsComparison","plotProfiles"), inargs)
   
-  #Find out if any plotProfiles arguments that args4profile.plot handles have been supplied in '...'
+  #Find out if any plotProfiles arguments that args4profile_plot handles have been supplied in '...'
   if (length(inargs))
   {
-    usedProfile.args <- formalArgs(args4profile.plot)
+    usedProfile.args <- formalArgs(args4profile_plot)
     doubleargs <- intersect(names(inargs), usedProfile.args)
     if (length(doubleargs))
       stop("the  'plotProfiles' arguments ",paste0(doubleargs, collapse = ", "), 
-           " conflict with 'args4profile.plot' arguments")
+           " conflict with 'args4profile_plot' arguments")
   }
   pltProfile.args <- NULL
   
@@ -1287,11 +1287,11 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
                                             df = NULL, lambdas = NULL), 
                            x.title = NULL, y.titles = NULL, which.plots = "profiles", 
                            profile.plot.args = 
-                             args4profile.plot(plots.by = NULL, 
+                             args4profile_plot(plots.by = NULL, 
                                                facet.x = ".", facet.y = ".", 
                                                include.raw = "no"), 
                            meddevn.plot.args = 
-                             args4meddevn.plot(plots.by = NULL, plots.group = NULL, 
+                             args4meddevn_plot(plots.by = NULL, plots.group = NULL, 
                                                facet.x = ".", facet.y = ".",
                                                propn.note = TRUE, 
                                                propn.types = c(0.1, 0.5, 0.75)), 
@@ -1698,8 +1698,8 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
                                 keep.columns = NULL, 
                                 x.title = NULL, y.titles = NULL, 
                                 trait.types = c("response.smoothed", "AGR", "RGR"),
-                                chosen.smooth = args4chosen.smooth(), 
-                                chosen.plot.args = args4chosen.plot(), 
+                                chosen.smooth = args4chosen_smooth(), 
+                                chosen.plot.args = args4chosen_plot(), 
                                 mergedata = NULL, 
                                 ...)
 {
@@ -1823,15 +1823,15 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
     }
     names(y.titles) <- responses.plot
     
-    #Find out if any plotProfiles arguments that args4profile.plot handles have been supplied in '...'
+    #Find out if any plotProfiles arguments that args4profile_plot handles have been supplied in '...'
     if (length(inargs))
     {
       usedProfile.args <- c("facet.x","facet.y","labeller","scales","colour","colour.column","colour.values",
-                            "alpha","addMediansWhiskers","ggplotFuncs") #formalArgs(args4profile.plot)
+                            "alpha","addMediansWhiskers","ggplotFuncs") #formalArgs(args4profile_plot)
       doubleargs <- intersect(names(inargs), usedProfile.args)
       if (length(doubleargs) > 0)
         stop("the  'plotProfiles' arguments ",paste0(doubleargs, collapse = ", "), 
-             " conflict with 'args4profile.plot' arguments")
+             " conflict with 'args4profile_plot' arguments")
     } else
       usedProfile.args <- NULL
     
@@ -1884,10 +1884,10 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
                           smoothing.args = args4smoothing(), 
                           x.title = NULL, y.titles = NULL, 
                           which.plots = c("profiles", "medians.deviations"), 
-                          profile.plot.args = args4profile.plot(), 
-                          meddevn.plot.args = args4meddevn.plot(), 
-                          chosen.smooth.args = args4chosen.smooth(),
-                          chosen.plot.args = args4chosen.plot(), 
+                          profile.plot.args = args4profile_plot(), 
+                          meddevn.plot.args = args4meddevn_plot(), 
+                          chosen.smooth.args = args4chosen_smooth(),
+                          chosen.plot.args = args4chosen_plot(), 
                           ggplotFuncsDevnBoxes = NULL,
                           mergedata = NULL, 
                           ...)

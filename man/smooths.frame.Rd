@@ -67,7 +67,7 @@ smths <- probeSmooths(data = longi.dat,
                                         spline.types = "NCSS", 
                                         df = c(4,7), lambdas = NULL), 
                       profile.plot.args = 
-                        args4profile.plot(plots.by = NULL, 
+                        args4profile_plot(plots.by = NULL, 
                                           facet.x = "Tuning", 
                                           facet.y = "Treatment.1", 
                                           include.raw = "no", 

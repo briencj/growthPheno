@@ -1,16 +1,16 @@
-\name{args4meddevn.plot}
-\alias{args4meddevn.plot}
+\name{args4meddevn_plot}
+\alias{args4meddevn_plot}
 \title{Creates a \code{list} of the values for the options of median deviations plots for smooths}
 \description{Creates a \code{list} of the values for the options of median deviations plots for smooths. 
              Note that the arguments \code{plots.by}, \code{plots.group}, \code{facet.x} and \code{facet.y} 
              jointly define the organization of the plots. The default settings are optimized for \code{\link{traitSmooth}} so that, 
-             if you want to change any of these from their default settings when using \code{args4meddevn.plot} with a function 
+             if you want to change any of these from their default settings when using \code{args4meddevn_plot} with a function 
              other than \code{\link{traitSmooth}}, then it is recommended that you specify all of them to ensure that the complete set 
              has been correctly specified. Otherwise, the default settings will be those shown here and these may be different to the 
-             default settings shown for the function with which you are using \code{args4meddevn.plot}.
+             default settings shown for the function with which you are using \code{args4meddevn_plot}.
 }
 \usage{
-args4meddevn.plot(plots.by = NULL, plots.group = "Tuning", 
+args4meddevn_plot(plots.by = NULL, plots.group = "Tuning", 
                   facet.x = c("Method","Type"), facet.y = ".",  
                   facet.labeller = NULL, facet.scales = "free_x",
                   breaks.spacing.x = -4, angle.x = 0, 
@@ -92,7 +92,7 @@ args4meddevn.plot(plots.by = NULL, plots.group = "Tuning",
 \author{Chris Brien}
 \seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}} and \code{\link{plotSmoothsMedianDevns}}.}
 \examples{
-args4meddevn.plot(plots.by = "Type", plots.group = "Tuning",  
+args4meddevn_plot(plots.by = "Type", plots.group = "Tuning",  
                   facet.x = "Method", facet.y = ".",
                   propn.types = c(0.02,0.1, 0.2))
 }

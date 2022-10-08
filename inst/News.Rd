@@ -1,9 +1,13 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.1-11 (2022-10-08)}{
+  \itemize{
+  \item{Revise the names of args4chosen.plot, args4chosen.smooth and args4meddevn.plot, args4profile.plot to args4chosen_plot, args4chosen_smooth, args4meddevn_plot and args4profile_plot.}
+  }}
 \section{growthPheno Version 2.1-10 (2022-10-07)}{
   \itemize{
   \item{Revamp the traitSmooth, ProbeSmooths, plotSmoothsComparisons, PlotSmoothsMedians arguments so that groups of them are specified by the new functions args4chosen.plot, args4chosen.smooth, args4meddevn.plot, args4profile.plot and args4smoothing.}
-  \item{Revise the Tomato vignette.}
+  \item{Revise the Tomato vignette for this version.}
   }}
 \section{growthPheno Version 2.0-20 (2022-09-26)}{
   \itemize{

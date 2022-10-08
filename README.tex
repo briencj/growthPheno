@@ -33,13 +33,6 @@
   \KOMAoptions{parskip=half}}
 \makeatother
 \usepackage{xcolor}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\hypersetup{
-  pdftitle={growthPheno},
-  hidelinks,
-  pdfcreator={LaTeX via pandoc}}
-\urlstyle{same} % disable monospaced font for URLs
 \usepackage[margin=1in]{geometry}
 \usepackage{graphicx}
 \makeatletter
@@ -61,6 +54,13 @@
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={growthPheno},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
 
 \title{growthPheno}
 \author{}
@@ -72,8 +72,8 @@
 \href{http://www.repostatus.org/\#active}{\includegraphics{http://www.repostatus.org/badges/latest/active.svg}}
 \href{https://cran.r-project.org/}{\includegraphics{https://img.shields.io/badge/R\%3E\%3D-3.5.0-6666ff.svg}}
 \href{https://cran.r-project.org/package=growthPheno}{\includegraphics{http://www.r-pkg.org/badges/version/growthPheno}}
-\href{/commits/master}{\includegraphics{https://img.shields.io/badge/Package\%20version-2.0.15-orange.svg?style=flat-square}}
-\href{/commits/master}{\includegraphics{https://img.shields.io/badge/last\%20change-2022--07--16-yellowgreen.svg}}
+\href{/commits/master}{\includegraphics{https://img.shields.io/badge/Package\%20version-2.1.11-orange.svg?style=flat-square}}
+\href{/commits/master}{\includegraphics{https://img.shields.io/badge/last\%20change-2022--10--08-yellowgreen.svg}}
 \href{http://choosealicense.com/licenses/gpl-2.0/}{\includegraphics{https://img.shields.io/badge/license-GPL\%20(\%3E\%3D2)-green.svg}}
 \href{commits/master}{\includegraphics{https://cranlogs.r-pkg.org/badges/last-week/growthPheno}}
 
@@ -167,8 +167,9 @@ units) over time. There should be a unique identifier for each
 individual and a time variable, such as Days after Planting (DAP), that
 contain no repeats for an individual. The combination of the identifier
 and a time for an individual should be unique to that individual. For
-imaging data, the carts/pots may be arranged in a grid of Lanes
-\(\times\) Positions.
+imaging data, the individuals may be arranged in a grid of Lanes
+\(\times\) Positions. That is, the minimum set of columns is an
+individuals, a times and one or more primary trait columns.
 
 The full set of functions falls into the following natural groupings:
 

@@ -269,7 +269,7 @@ setScaleTime <- function(times, breaks.spacing.x = -2)
 }
 
 #Function to put options for median deviations plots into a list
-args4meddevn.plot <- function(plots.by = NULL, plots.group = "Tuning", 
+args4meddevn_plot <- function(plots.by = NULL, plots.group = "Tuning", 
                               facet.x = c("Method","Type"), facet.y = ".", 
                               facet.labeller = NULL, facet.scales = "free_x",
                               breaks.spacing.x = -4, angle.x = 0, 
@@ -279,7 +279,7 @@ args4meddevn.plot <- function(plots.by = NULL, plots.group = "Tuning",
                               ...)
 {
   inargs <- list(...)
-  checkEllipsisArgs("args4meddevn.plot", inargs)
+  checkEllipsisArgs("args4meddevn_plot", inargs)
   
   #Checking of the arguments that control the plots layout for the medians deviations plots 
   checkLayoutArgs(data = NULL, plots.by, plts.group = plots.group, facet.x, facet.y)
@@ -299,7 +299,7 @@ args4meddevn.plot <- function(plots.by = NULL, plots.group = "Tuning",
 }
 
 #Function to put options for the chosen plots into a list
-args4chosen.plot <- function(plots.by = NULL, 
+args4chosen_plot <- function(plots.by = NULL, 
                               facet.x = ".", facet.y = ".", 
                               include.raw = "no", 
                               collapse.facets.x = FALSE, collapse.facets.y = FALSE, 
@@ -312,7 +312,7 @@ args4chosen.plot <- function(plots.by = NULL,
                               ...)
 {
   inargs <- list(...)
-  checkEllipsisArgs("args4chosen.plot", inargs)
+  checkEllipsisArgs("args4chosen_plot", inargs)
   
   pf.opts <- list(plots.by = plots.by, 
                   facet.x = facet.x, facet.y = facet.y, 
@@ -331,7 +331,7 @@ args4chosen.plot <- function(plots.by = NULL,
 }
 
 #Function to put smoothing parameters options into a list
-args4chosen.smooth <- function(smoothing.methods = "logarithmic", 
+args4chosen_smooth <- function(smoothing.methods = "logarithmic", 
                                spline.types = "PS", 
                                df = NULL, 
                                lambdas = NULL,
@@ -358,7 +358,7 @@ args4chosen.smooth <- function(smoothing.methods = "logarithmic",
 }
 
 #Function to put options for profile plots into a list
-args4profile.plot <- function(plots.by = "Type", 
+args4profile_plot <- function(plots.by = "Type", 
                               facet.x = c("Method", "Tuning"), facet.y = ".", 
                               include.raw = "facet.x", 
                               collapse.facets.x = TRUE, collapse.facets.y = FALSE, 
@@ -371,7 +371,7 @@ args4profile.plot <- function(plots.by = "Type",
                               ...)
 {
   inargs <- list(...)
-  checkEllipsisArgs("args4profile.plot", inargs)
+  checkEllipsisArgs("args4profile_plot", inargs)
   
   checkLayoutArgs(data = NULL, plots.by, plts.group = NULL, facet.x, facet.y)
   

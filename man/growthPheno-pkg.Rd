@@ -29,16 +29,16 @@
     \tab individual, from smoothed traits over time. \cr
     \cr    
     (ii) Helper functions  \cr\cr
-    \code{\link{args4chosen.plot}}
+    \code{\link{args4chosen_plot}}
     \tab Creates a \code{list} of the values for the options of \cr 
     \tab profile plots for the chosen smooth. \cr
-    \code{\link{args4chosen.smooth}}
+    \code{\link{args4chosen_smooth}}
     \tab Creates a \code{list} of the values for the smoothing \cr
     \tab parameters for which a smooth is to be extracted. \cr
-    \code{\link{args4meddevn.plot}}
+    \code{\link{args4meddevn_plot}}
     \tab Creates a \code{list} of the values for the options of \cr 
     \tab median deviations plots for smooths. \cr
-    \code{\link{args4profile.plot}}
+    \code{\link{args4profile_plot}}
     \tab Creates a \code{list} of the values for the options of \cr 
     \tab profile plots for comparing smooths. \cr
     \code{\link{args4smoothing}}

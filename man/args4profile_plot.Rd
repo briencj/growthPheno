@@ -1,15 +1,15 @@
-\name{args4profile.plot}
-\alias{args4profile.plot}
+\name{args4profile_plot}
+\alias{args4profile_plot}
 \title{Creates a \code{list} of the values for the options of profile plots for comparing smooths}
 \description{Creates a \code{list} of the values for the options of profile plots (and boxplots facets) for comparing smooths.
              Note that \code{plots.by}, \code{facet.x}, \code{facet.y} and \code{include.raw} jointly 
              define the organization of the plots. The default settings are optimized for \code{\link{traitSmooth}} so that, 
-             if you want to change any of these from their default settings when using \code{args4profile.plot} with a function 
+             if you want to change any of these from their default settings when using \code{args4profile_plot} with a function 
              other than \code{\link{traitSmooth}}, then it is recommended that you specify all of them to ensure that the complete set 
              has been correctly specified. Otherwise, the default settings will be those shown here and these may be different to the 
-             default settings shown for the function with which you are using \code{args4profile.plot}.}
+             default settings shown for the function with which you are using \code{args4profile_plot}.}
 \usage{
-args4profile.plot(plots.by = "Type", 
+args4profile_plot(plots.by = "Type", 
                   facet.x = c("Method", "Tuning"), facet.y = ".", 
                   include.raw = "facet.x", 
                   collapse.facets.x = TRUE, collapse.facets.y = FALSE, 
@@ -99,9 +99,9 @@ args4profile.plot(plots.by = "Type",
 } 
 \value{A named \code{\link{list}}.}
 \author{Chris Brien}
-\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{plotSmoothsComparison}} and \code{\link{args4chosen.plot}}.}
+\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{plotSmoothsComparison}} and \code{\link{args4chosen_plot}}.}
 \examples{
-args4profile.plot(plots.by = "Type", 
+args4profile_plot(plots.by = "Type", 
                   facet.x = "Tuning", facet.y = c("Smarthouse", "Treatment.1"), 
                   include.raw = "facet.x", 
                   alpha  = 0.4, 

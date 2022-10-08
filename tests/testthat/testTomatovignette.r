@@ -65,14 +65,14 @@ test_that("Tomatovignette_growthPheno", {
                                                             smoothing.segments = DAP.segs, 
                                                             external.smooths = logist.dat),
                             profile.plot.args = 
-                              args4profile.plot(facet.y = "AMF", 
+                              args4profile_plot(facet.y = "AMF", 
                                                 colour.column = "Zn", 
                                                 facet.labeller = labeller(AMF = labelAMF)), 
                             meddevn.plot.args = 
-                              args4meddevn.plot(facet.y = "AMF", 
+                              args4meddevn_plot(facet.y = "AMF", 
                                                 facet.labeller = labeller(AMF = labelAMF)), 
                             chosen.plot.args = 
-                              args4chosen.plot(facet.y = "AMF",
+                              args4chosen_plot(facet.y = "AMF",
                                                facet.labeller = labeller(AMF = labelAMF),
                                                colour.column = "Zn", 
                                                ggplotFuncs = vline.DAP.endpts), 
@@ -96,12 +96,12 @@ test_that("Tomatovignette_growthPheno", {
                                            smoothing.segments = DAP.segs),
                           chosen.smooth.args = NULL, 
                           profile.plot.args = 
-                            args4profile.plot(plots.by = NULL, 
+                            args4profile_plot(plots.by = NULL, 
                                               facet.x = tune.fac, facet.y = "AMF", 
                                               facet.labeller = labeller(AMF = labelAMF), 
                                               colour.column = "AMF"), 
                           meddevn.plot.args = 
-                            args4meddevn.plot(plots.by = NULL, plots.group = tune.fac, 
+                            args4meddevn_plot(plots.by = NULL, plots.group = tune.fac, 
                                               facet.x = ".", facet.y = "AMF", 
                                               facet.labeller = labeller(AMF = labelAMF)))
   testthat::expect_equal(nrow(smth.dat), 2240)
@@ -115,10 +115,10 @@ test_that("Tomatovignette_growthPheno", {
                            keep.columns = c("AMF","Zn"), 
                            smoothing.args = NULL, which.plots = "none", 
                            chosen.smooth.args = 
-                             args4chosen.smooth(smoothing.methods = "log", 
+                             args4chosen_smooth(smoothing.methods = "log", 
                                                 spline.types = "PS", lambdas = 1), 
                            chosen.plot.args = 
-                             args4chosen.plot(facet.y = "AMF",
+                             args4chosen_plot(facet.y = "AMF",
                                               facet.labeller = labeller(AMF = labelAMF),
                                               colour.column = "Zn", 
                                               ggplotFuncs = vline.DAP.endpts), 
@@ -144,12 +144,12 @@ test_that("Tomatovignette_growthPheno", {
                                              smoothing.segments = DAP.segs),
                             chosen.smooth.args = NULL, 
                             profile.plot.args = 
-                              args4profile.plot(plots.by = NULL,
+                              args4profile_plot(plots.by = NULL,
                                                 facet.y = "AMF", 
                                                 colour.column = "Zn", 
                                                 facet.labeller = labeller(AMF = labelAMF)),
                             meddevn.plot.args = 
-                              args4meddevn.plot(plots.by = NULL,
+                              args4meddevn_plot(plots.by = NULL,
                                                 facet.y = "AMF",  
                                                 facet.labeller = labeller(AMF = labelAMF))))
   testthat::expect_equal(nrow(smth.dat), 7840)
@@ -168,12 +168,12 @@ test_that("Tomatovignette_growthPheno", {
                                                 combinations = "parallel"),
                 chosen.smooth.args = NULL, 
                 profile.plot.args = 
-                  args4profile.plot(plots.by = NULL, 
+                  args4profile_plot(plots.by = NULL, 
                                     facet.x = tune.fac, facet.y = "AMF",  
                                     colour.column = "AMF", 
                                     facet.labeller = labeller(AMF = labelAMF)), 
                 meddevn.plot.args = 
-                  args4meddevn.plot(plots.by = NULL, plots.group = tune.fac, 
+                  args4meddevn_plot(plots.by = NULL, plots.group = tune.fac, 
                                     facet.x = ".", facet.y = "AMF", 
                                     facet.labeller = labeller(AMF = labelAMF))))  
   
@@ -184,11 +184,11 @@ test_that("Tomatovignette_growthPheno", {
                            trait.types = "response",  
                            smoothing.args = NULL, which.plots = NULL, 
                            chosen.smooth.args = 
-                             args4chosen.smooth(smoothing.method = "direct",
+                             args4chosen_smooth(smoothing.method = "direct",
                                                 spline.type = "PS", 
                                                 lambdas = 0.316),  #tried 1 first
                            chosen.plot.args = 
-                             args4chosen.plot(facet.y = "AMF", 
+                             args4chosen_plot(facet.y = "AMF", 
                                               facet.labeller = labeller(AMF = labelAMF),
                                               colour.column = "Zn",
                                               ggplotFuncs = vline.DAP.endpts),

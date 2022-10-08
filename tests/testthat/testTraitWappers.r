@@ -19,13 +19,13 @@ test_that("exampleData_traitSmooth", {
                             individuals = "Snapshot.ID.Tag", times = "DAP", 
                             keep.columns = trt.facets, 
                             profile.plot.args = 
-                              args4profile.plot(facet.y = trt.facets, 
+                              args4profile_plot(facet.y = trt.facets, 
                                                 include.raw = "no",
                                                 breaks.spacing.x = -2, 
                                                 addMediansWhiskers = TRUE, #used  whenever plotLongitudinal is used
                                                 ggplotFuncs = vline),
                             chosen.plot.args = 
-                              args4chosen.plot(facet.y = trt.facets), 
+                              args4chosen_plot(facet.y = trt.facets), 
                             mergedata = longi.dat), 
     regexp = "containing missing values")
   testthat::expect_equal(nrow(smth.dat), 280)
@@ -43,7 +43,7 @@ test_that("exampleData_traitSmooth", {
                           chosen.smooth.args = NULL, 
                           which.plots = "profile", 
                           profile.plot.args = 
-                            args4profile.plot(facet.y = trt.facets, 
+                            args4profile_plot(facet.y = trt.facets, 
                                               include.raw = "no",
                                               collapse.facets.x = FALSE,
                                               breaks.spacing.x = -2, 
@@ -58,7 +58,7 @@ test_that("exampleData_traitSmooth", {
                          chosen.smooth.args = NULL, 
                          which.plots = "profile", 
                          profile.plot.args = 
-                           args4profile.plot(facet.y = trt.facets, 
+                           args4profile_plot(facet.y = trt.facets, 
                                              include.raw = "facet.x",
                                              collapse.facets.x = FALSE,
                                              breaks.spacing.x = -2, 
@@ -72,9 +72,9 @@ test_that("exampleData_traitSmooth", {
                          individuals = "Snapshot.ID.Tag",times = "DAP", 
                          which.plots = "none", 
                          chosen.smooth.args = 
-                           args4chosen.smooth(lambda = 3.162), 
+                           args4chosen_smooth(lambda = 3.162), 
                          chosen.plot.args = 
-                           args4chosen.plot(facet.y = trt.facets, 
+                           args4chosen_plot(facet.y = trt.facets, 
                                             ggplotFuncs = vline), 
                          mergedata = longi.dat)
   testthat::expect_equal(nrow(tmp.dat), 280)
@@ -109,7 +109,7 @@ test_that("exampleData_traitSmooth", {
                           chosen.smooth.args = NULL, 
                           which.plots = "profile",
                           profile.plot.args = 
-                            args4profile.plot(plots.by = "Type", 
+                            args4profile_plot(plots.by = "Type", 
                                               facet.x = trt.facets, facet.y = "Tuning", 
                                               include.raw = "facet.y", 
                                               collapse.facets.x = FALSE,
@@ -128,7 +128,7 @@ test_that("exampleData_traitSmooth", {
                           chosen.smooth = NULL, 
                           which.plots = "profile",
                           profile.plot.args = 
-                            args4profile.plot(plots.by = "Type", 
+                            args4profile_plot(plots.by = "Type", 
                                               facet.x = trt.facets, facet.y = "Tuning", 
                                               include.raw = "facet.y", 
                                               collapse.facets.x = FALSE,

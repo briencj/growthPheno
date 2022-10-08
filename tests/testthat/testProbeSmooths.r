@@ -55,7 +55,7 @@ test_that("chickpea_growthPheno", {
                                                               spline.types = "NCSS", 
                                                               df = df, lambdas = NULL), 
                                              profile.plot.args = 
-                                               args4profile.plot(breaks.spacing.x = 2,
+                                               args4profile_plot(breaks.spacing.x = 2,
                                                                  plots.by = "Tuning", 
                                                                  facet.x = "Treatment.1", 
                                                                  facet.y = "Smarthouse")
@@ -73,7 +73,7 @@ test_that("chickpea_growthPheno", {
                                                               df=df, 
                                                               lambdas = list(NCSS = 0.0001)),
                                              profile.plot.args = 
-                                               args4profile.plot(breaks.spacing.x = 2,
+                                               args4profile_plot(breaks.spacing.x = 2,
                                                                  plots.by = "Tuning", 
                                                                  facet.x = "Treatment.1", 
                                                                  facet.y = "Smarthouse",
@@ -92,7 +92,7 @@ test_that("chickpea_growthPheno", {
                                                             df=7, 
                                                             lambdas = list(NCSS = 0.0001, PS = 1)),
                                            profile.plot.args = 
-                                             args4profile.plot(breaks.spacing.x = 2,
+                                             args4profile_plot(breaks.spacing.x = 2,
                                                                plots.by = "Tuning", 
                                                                facet.x = "Treatment.1", 
                                                                facet.y = "Smarthouse")
@@ -108,7 +108,7 @@ test_that("chickpea_growthPheno", {
                                                               df=7, 
                                                               lambdas = list(NCSS = 0.0001, PS = 1)),
                                              profile.plot.args = 
-                                               args4profile.plot(breaks.spacing.x = 2,
+                                               args4profile_plot(breaks.spacing.x = 2,
                                                                  plots.by = c("Type","Tuning"), 
                                                                  facet.x = "Treatment.1", facet.y = "Smarthouse",  
                                                                  include.raw = "facet.x")),
@@ -125,7 +125,7 @@ test_that("chickpea_growthPheno", {
                                                               df=7, 
                                                               lambdas = list(NCSS = 0.0001, PS = 1)),
                                              profile.plot.args = 
-                                               args4profile.plot(breaks.spacing.x = 2,
+                                               args4profile_plot(breaks.spacing.x = 2,
                                                                  plots.by = c("Type","Tuning"), 
                                                                  facet.x = "Treatment.1", facet.y = "Smarthouse",  
                                                                  include.raw = "alone")),
@@ -153,7 +153,7 @@ test_that("chickpea_growthPheno", {
   testthat::expect_error(plotSmoothsComparison(data = t, response="ShootArea1000", 
                                                times = "TimeAfterPlanting", 
                                                profile.plot.args = 
-                                                 args4profile.plot(plots.by = "Smarthouse", 
+                                                 args4profile_plot(plots.by = "Smarthouse", 
                                                                    facet.x = c("Treatment.1", "Method", "Tuning"), 
                                                                    facet.y = ".", 
                                                                    include.raw = "no")),
@@ -163,7 +163,7 @@ test_that("chickpea_growthPheno", {
                                                 times = "TimeAfterPlanting", 
                                                 trait.types = ("response"), 
                                                 profile.plot.args = 
-                                                  args4profile.plot(plots.by = "Tuning", 
+                                                  args4profile_plot(plots.by = "Tuning", 
                                                                     facet.x = c("Smarthouse", "Treatment.1"), 
                                                                     facet.y = ".", 
                                                                     include.raw = "no")))
@@ -171,7 +171,7 @@ test_that("chickpea_growthPheno", {
                                                 times = "TimeAfterPlanting", 
                                                 trait.types = ("response"), 
                                                 profile.plot.args = 
-                                                  args4profile.plot(plots.by = "Smarthouse", 
+                                                  args4profile_plot(plots.by = "Smarthouse", 
                                                                     facet.x = c("Method", "Treatment.1", "Tuning"), 
                                                                     facet.y = ".", 
                                                                     include.raw = "no")))
@@ -179,7 +179,7 @@ test_that("chickpea_growthPheno", {
                                                 times = "TimeAfterPlanting", 
                                                 trait.types = ("response"), 
                                                 profile.plot.args = 
-                                                  args4profile.plot(plots.by = "Smarthouse", 
+                                                  args4profile_plot(plots.by = "Smarthouse", 
                                                                     facet.x = c("Method", "Treatment.1", "Tuning"), 
                                                                     collapse.facets.x = FALSE, 
                                                                     facet.y = ".", 
@@ -188,7 +188,7 @@ test_that("chickpea_growthPheno", {
                                                 times = "TimeAfterPlanting", 
                                                 trait.types = ("response"), 
                                                 profile.plot.args = 
-                                                  args4profile.plot(plots.by = "Smarthouse", 
+                                                  args4profile_plot(plots.by = "Smarthouse", 
                                                                     facet.x = c("Method", "Treatment.1", "Tuning"),
                                                                     facet.y = ".", 
                                                                     include.raw = "facet.x")))
@@ -197,7 +197,7 @@ test_that("chickpea_growthPheno", {
                                                 times = "TimeAfterPlanting", 
                                                 trait.types = ("response"), 
                                                 profile.plot.args = 
-                                                  args4profile.plot(plots.by = "Smarthouse", 
+                                                  args4profile_plot(plots.by = "Smarthouse", 
                                                                     facet.x = c("Method", "Treatment.1", "Tuning"), 
                                                                     facet.y = ".", 
                                                                     include.raw = "no", 
@@ -208,7 +208,7 @@ test_that("chickpea_growthPheno", {
                           times = "TimeAfterPlanting", 
                           trait.types = ("response"), 
                           profile.plot.args = 
-                            args4profile.plot(plots.by = "Smarthouse", 
+                            args4profile_plot(plots.by = "Smarthouse", 
                                               facet.x = c("Method", "Treatment.1", "Tuning"), 
                                               facet.y = ".", 
                                               collapse.facets.x = FALSE, 
@@ -219,7 +219,7 @@ test_that("chickpea_growthPheno", {
                           times = "TimeAfterPlanting", 
                           trait.types = ("response"), 
                           profile.plot.args = 
-                            args4profile.plot(plots.by = "Smarthouse", 
+                            args4profile_plot(plots.by = "Smarthouse", 
                                               facet.x = ".", 
                                               facet.y = c("Method", "Treatment.1", "Tuning"), 
                                               collapse.facets.y = FALSE, include.raw = "facet.y")))
@@ -229,7 +229,7 @@ test_that("chickpea_growthPheno", {
                           times = "TimeAfterPlanting", 
                           trait.types = ("response"), 
                           profile.plot.args = 
-                            args4profile.plot(plots.by = "Smarthouse", 
+                            args4profile_plot(plots.by = "Smarthouse", 
                                               facet.x = c("Method", "Tuning"), 
                                               facet.y = "Treatment.1", 
                                               collapse.facets.x = FALSE, 
@@ -240,7 +240,7 @@ test_that("chickpea_growthPheno", {
                           times = "TimeAfterPlanting", 
                           trait.types = ("response"), 
                           profile.plot.args = 
-                            args4profile.plot(plots.by = "Smarthouse", 
+                            args4profile_plot(plots.by = "Smarthouse", 
                                               facet.x = ".", 
                                               facet.y = c("Method", "Treatment.1", "Tuning"), 
                                               collapse.facets.y = FALSE, 
@@ -250,7 +250,7 @@ test_that("chickpea_growthPheno", {
                                                 times = "TimeAfterPlanting", 
                                                 trait.types = ("response"), 
                                                 profile.plot.args = 
-                                                  args4profile.plot(plots.by = "Smarthouse", 
+                                                  args4profile_plot(plots.by = "Smarthouse", 
                                                                     facet.x = c("Method", "Treatment.1", "Tuning"), 
                                                                     facet.y = ".", 
                                                                     include.raw = "no",
@@ -275,7 +275,7 @@ test_that("chickpea_growthPheno", {
                           times = "TimeAfterPlanting", 
                           trait.types = ("response"), 
                           profile.plot.args = 
-                            args4profile.plot(breaks.spacing.x = -1, 
+                            args4profile_plot(breaks.spacing.x = -1, 
                                               plots.by = "Smarthouse", 
                                               facet.x = c("Method", "Treatment.1", "Tuning"), 
                                               facet.y = ".", 
@@ -292,7 +292,7 @@ test_that("chickpea_growthPheno", {
                                                                              df = df, lambdas = NULL), 
                                              which.plots = "medians.dev", 
                                              meddevn.plot.args = 
-                                               args4meddevn.plot(plots.by = NULL, 
+                                               args4meddevn_plot(plots.by = NULL, 
                                                                  plots.group = "Tuning", 
                                                                  facet.x = ".", 
                                                                  facet.y = c("Smarthouse", "Treatment.1"),
@@ -308,7 +308,7 @@ test_that("chickpea_growthPheno", {
                                                                             spline.types = "NCSS", 
                                                                             df = df, lambdas = NULL), 
                                             profile.plot.args = 
-                                              args4profile.plot(breaks.spacing.x = -1, 
+                                              args4profile_plot(breaks.spacing.x = -1, 
                                                                 plots.by = "Tuning", 
                                                                 facet.x = "Treatment.1", 
                                                                 facet.y = "Smarthouse", 
@@ -325,7 +325,7 @@ test_that("chickpea_growthPheno", {
                                                                             spline.types = "NCSS", 
                                                                             df = df, lambdas = NULL), 
                                             profile.plot.args = 
-                                              args4profile.plot(breaks.spacing.x = -1, 
+                                              args4profile_plot(breaks.spacing.x = -1, 
                                                                 plots.by = NULL, 
                                                                 facet.x = c("Treatment.1", "Tuning"), 
                                                                 facet.y = "Smarthouse")))
@@ -339,7 +339,7 @@ test_that("chickpea_growthPheno", {
                                                              spline.types = "NCSS", 
                                                              df = df, lambdas = NULL), 
                                             profile.plot.args = 
-                                              args4profile.plot(breaks.spacing.x = -1, 
+                                              args4profile_plot(breaks.spacing.x = -1, 
                                                                 plots.by = NULL, 
                                                                 facet.x = "Tuning", 
                                                                 facet.y = "Treatment.1",
@@ -363,7 +363,7 @@ test_that("chickpea_growthPheno", {
                                                              df = df, lambdas = NULL), 
                                             which.plots = c("profiles", "absolute"),
                                             profile.plot.args = 
-                                              args4profile.plot(plots.by = NULL, 
+                                              args4profile_plot(plots.by = NULL, 
                                                                 facet.x = "Tuning", 
                                                                 facet.y = "Treatment.1")))
   testthat::expect_equal(nrow(t), 16960)
@@ -383,7 +383,7 @@ test_that("chickpea_growthPheno", {
                                                               df = df, lambdas = NULL), 
                                              which.plots = c("profiles", "absolute", "relative"), 
                                              profile.plot.args = 
-                                               args4profile.plot(plots.by = NULL, 
+                                               args4profile_plot(plots.by = NULL, 
                                                                  facet.x = "Tuning", 
                                                                  facet.y = "Treatment.1")))
   testthat::expect_equal(nrow(t), 16960)
@@ -401,7 +401,7 @@ test_that("chickpea_growthPheno", {
                                                              spline.types = "NCSS", 
                                                              df = df, lambdas = NULL), 
                                             profile.plot.args = 
-                                              args4profile.plot(plots.by = NULL, 
+                                              args4profile_plot(plots.by = NULL, 
                                                                 facet.x = "Tuning", 
                                                                 facet.y = c("Smarthouse", "Treatment.1"))))
   testthat::expect_equal(nrow(t), 16960)
@@ -427,7 +427,7 @@ test_that("exampleData_growthPheno", {
                                                                               spline.types = "NCSS", 
                                                                               df = c(4,7), lambdas = NULL), 
                                               profile.plot.args = 
-                                                args4profile.plot(plots.by = NULL, 
+                                                args4profile_plot(plots.by = NULL, 
                                                                   facet.x = "Tuning", 
                                                                   facet.y = "Treatment.1", 
                                                                   ggplotFuncs = vline)))
@@ -442,7 +442,7 @@ test_that("exampleData_growthPheno", {
                                                         spline.types = "NCSS", 
                                                         df = c(4,7), lambdas = NULL), 
                         profile.plot.args = 
-                          args4profile.plot(plots.by = NULL, 
+                          args4profile_plot(plots.by = NULL, 
                                             facet.x = "Method", 
                                             facet.y = ".", 
                                             ggplotFuncs = vline)),
@@ -458,7 +458,7 @@ test_that("exampleData_growthPheno", {
                                                                                spline.types = "NCSS", 
                                                                                df = c(4,7), lambdas = NULL), 
                                                profile.plot.args = 
-                                                 args4profile.plot(plots.by = NULL, 
+                                                 args4profile_plot(plots.by = NULL, 
                                                                    facet.x = "Tuning", 
                                                                    facet.y = ".", 
                                                                    ggplotFuncs = vline)))
@@ -472,7 +472,7 @@ test_that("exampleData_growthPheno", {
                                                                                spline.types = "NCSS", 
                                                                                df = c(4,7), lambdas = NULL), 
                                                profile.plot.args = 
-                                                 args4profile.plot(plots.by = NULL, 
+                                                 args4profile_plot(plots.by = NULL, 
                                                                    facet.x = "Tuning", 
                                                                    facet.y = ".", 
                                                                    alpha = 0.6, 
@@ -490,7 +490,7 @@ test_that("exampleData_growthPheno", {
                                                                               spline.types = "NCSS", 
                                                                               df = c(4,7), lambdas = NULL), 
                                               profile.plot.args = 
-                                                args4profile.plot(plots.by = NULL, 
+                                                args4profile_plot(plots.by = NULL, 
                                                                   facet.x = "Tuning", 
                                                                   facet.y = ".", 
                                                                   alpha = 0.5, 
@@ -506,12 +506,12 @@ test_that("exampleData_growthPheno", {
                                                                                df = c(4,7), lambdas = NULL), 
                                                which.plots = c("profiles", "medians.dev"), 
                                                profile.plot.args = 
-                                                 args4profile.plot(plots.by = NULL, 
+                                                 args4profile_plot(plots.by = NULL, 
                                                                    facet.x = "Tuning", 
                                                                    facet.y = ".", 
                                                                    ggplotFuncs = vline),
                                                meddevn.plot.args = 
-                                                 args4meddevn.plot(plots.by = NULL, 
+                                                 args4meddevn_plot(plots.by = NULL, 
                                                                    plots.group = "Tuning", 
                                                                    facet.x = ".", 
                                                                    facet.y = ".", 
@@ -527,7 +527,7 @@ test_that("exampleData_growthPheno", {
                                                                                df = c(4,7), lambdas = NULL), 
                                                which.plots = "medians.dev", 
                                                meddevn.plot.args = 
-                                                 args4meddevn.plot(plots.by = NULL, 
+                                                 args4meddevn_plot(plots.by = NULL, 
                                                                    plots.group = "Tuning", 
                                                                    facet.x = ".", 
                                                                    facet.y = ".", 
@@ -541,7 +541,7 @@ test_that("exampleData_growthPheno", {
                                                                               spline.types = "NCSS", 
                                                                               df = c(4,7), lambdas = NULL), 
                                               profile.plot.args = 
-                                                args4profile.plot(plots.by = NULL, 
+                                                args4profile_plot(plots.by = NULL, 
                                                                   facet.x = "Tuning", 
                                                                   facet.y = "Treatment.1", 
                                                                   ggplotFuncs = vline)))
@@ -554,7 +554,7 @@ test_that("exampleData_growthPheno", {
                                                         trait.types = "response", 
                                                         x.title = "DAP", 
                                                         meddevn.plot.args = 
-                                                          args4meddevn.plot(plots.by = "Tuning", 
+                                                          args4meddevn_plot(plots.by = "Tuning", 
                                                                             plots.group = NULL, 
                                                                             facet.x = ".", 
                                                                             facet.y = ".", 
@@ -572,7 +572,7 @@ test_that("exampleData_growthPheno", {
                                                         trait.types = "response", 
                                                         x.title = "DAP", 
                                                         meddevn.plot.args = 
-                                                          args4meddevn.plot(plots.by = "Tuning", 
+                                                          args4meddevn_plot(plots.by = "Tuning", 
                                                                             plots.group = NULL, 
                                                                             facet.x = ".", 
                                                                             facet.y = ".", 
@@ -592,12 +592,12 @@ test_that("exampleData_growthPheno", {
                                                                                   df = c(4,7), lambdas = NULL), 
                                                   which.plots = c("medians.dev", "absolute"),
                                                   profile.plot.args = 
-                                                    args4profile.plot(plots.by = NULL, 
+                                                    args4profile_plot(plots.by = NULL, 
                                                                       facet.x = "Tuning", #for the absolute.deviations
                                                                       facet.y = ".", 
                                                                       ggplotFuncs = vline),
                                                   meddevn.plot.args = 
-                                                    args4meddevn.plot(plots.by = NULL, 
+                                                    args4meddevn_plot(plots.by = NULL, 
                                                                       plots.group = "Tuning", 
                                                                       facet.x = ".", 
                                                                       facet.y = ".", 
@@ -641,7 +641,7 @@ test_that("exampleData_growthPheno", {
                                                         x.title = "DAP", 
                                                         trait.types = "response", 
                                                         meddevn.plot.args = 
-                                                          args4meddevn.plot(plots.by = NULL, 
+                                                          args4meddevn_plot(plots.by = NULL, 
                                                                             plots.group = "Tuning",  
                                                                             facet.x = ".",
                                                                             facet.y = c("Treatment.1", "Genotype.ID"),
@@ -659,7 +659,7 @@ test_that("exampleData_growthPheno", {
                                                         trait.types = "response", 
                                                         x.title = "DAP", 
                                                         meddevn.plot.args = 
-                                                          args4meddevn.plot(plots.by = NULL, 
+                                                          args4meddevn_plot(plots.by = NULL, 
                                                                             plots.group = "Tuning",  
                                                                             facet.x = ".",
                                                                             facet.y = ".",
@@ -682,11 +682,11 @@ test_that("exampleData_growthPheno", {
                                                                external.smooths = extra.dat), 
                                which.plots = c("medians.dev", "absolute"),
                                profile.plot.args = 
-                                 args4profile.plot(plots.by = NULL, 
+                                 args4profile_plot(plots.by = NULL, 
                                                    facet.x = "Tuning", facet.y = ".", 
                                                    include.raw = "facet.x"),      
                                meddevn.plot.args = 
-                                 args4meddevn.plot(plots.by = NULL, 
+                                 args4meddevn_plot(plots.by = NULL, 
                                                    plots.group = "Tuning",  
                                                    facet.x = ".", facet.y = ".",
                                                    propn.types = NULL)))
@@ -698,7 +698,7 @@ test_that("exampleData_growthPheno", {
                                                          response = "PSA", times = "DAP", 
                                                          x.title = "DAP", 
                                                          meddevn.plot.args = 
-                                                           args4meddevn.plot(plots.by = "Type", 
+                                                           args4meddevn_plot(plots.by = "Type", 
                                                                              plots.group = "Tuning",  
                                                                              facet.x = ".", facet.y = ".",
                                                                              propn.types = c(0.02,0.1, 0.2),
@@ -716,7 +716,7 @@ test_that("exampleData_growthPheno", {
                                 response = "PSA", times = "DAP", 
                                 x.title = "DAP", 
                                 profile.plot.args = 
-                                  args4profile.plot(plots.by = "Type", 
+                                  args4profile_plot(plots.by = "Type", 
                                                     facet.x = "Tuning", facet.y = ".", 
                                                     include.raw = "facet.x", 
                                                     alpha = 0.2, 
@@ -733,7 +733,7 @@ test_that("exampleData_growthPheno", {
   plotSmoothsComparison(data = smth.extra, response = "PSA", times = "DAP", 
                         x.title = "DAP", 
                         profile.plot.args = 
-                          args4profile.plot(plots.by = NULL, 
+                          args4profile_plot(plots.by = NULL, 
                                             facet.x = c("Type", "Tuning"), facet.y = ".", 
                                             include.raw = "facet.x", 
                                             colour.column = "Method", 
@@ -744,7 +744,7 @@ test_that("exampleData_growthPheno", {
   plts <- plotSmoothsComparison(data = smth.extra, response = "PSA", times = "DAP", 
                                 x.title = "DAP", 
                                 profile.plot.args = 
-                                  args4profile.plot(plots.by = "Type", 
+                                  args4profile_plot(plots.by = "Type", 
                                                     facet.x = "Tuning", facet.y = ".", 
                                                     include.raw = "facet.x", 
                                                     colour = "olivedrab",
@@ -761,10 +761,10 @@ test_that("exampleData_growthPheno", {
                                                                        external.smooths = extra.dat), 
                                                       which.plots = c("medians.dev", "absolute"),
                                                       profile.plot.args = 
-                                                        args4profile.plot(plots.by = NULL, 
+                                                        args4profile_plot(plots.by = NULL, 
                                                                           facet.x = c("Type", "Tuning"), facet.y = "."),
                                                       meddevn.plot.args = 
-                                                        args4meddevn.plot(plots.by = NULL, 
+                                                        args4meddevn_plot(plots.by = NULL, 
                                                                           plots.group = c("Type", "Tuning"),  
                                                                           facet.x = ".", facet.y = ".",
                                                                           propn.types = NULL)))
@@ -776,7 +776,7 @@ test_that("exampleData_growthPheno", {
                                                          response = "PSA", times = "DAP", 
                                                          x.title = "DAP", 
                                                          meddevn.plot.args = 
-                                                           args4meddevn.plot(plots.by = NULL, 
+                                                           args4meddevn_plot(plots.by = NULL, 
                                                                              plots.group = c("Type", "Tuning"),  
                                                                              facet.x = ".", facet.y = ".",
                                                                              propn.types = c(0.02,0.1, 0.2),
@@ -794,7 +794,7 @@ test_that("exampleData_growthPheno", {
                                                          response = "PSA", times = "DAP", 
                                                          x.title = "DAP", 
                                                          meddevn.plot.args = 
-                                                           args4meddevn.plot(plots.by = NULL, 
+                                                           args4meddevn_plot(plots.by = NULL, 
                                                                              plots.group = "Tuning",  
                                                                              facet.x = "Type", facet.y = ".",
                                                                              propn.types = c(0.02,0.1, 0.2),
@@ -808,7 +808,7 @@ test_that("exampleData_growthPheno", {
                                                          response = "PSA", times = "DAP", 
                                                          x.title = "DAP", 
                                                          meddevn.plot.args = 
-                                                           args4meddevn.plot(plots.by = NULL, 
+                                                           args4meddevn_plot(plots.by = NULL, 
                                                                              plots.group = "Tuning",  
                                                                              facet.x = ".", facet.y = "Type",
                                                                              propn.types = c(0.02,0.1, 0.2),
@@ -822,7 +822,7 @@ test_that("exampleData_growthPheno", {
                                                          response = "PSA", times = "DAP", 
                                                          x.title = "DAP", 
                                                          meddevn.plot.args = 
-                                                           args4meddevn.plot(plots.by = NULL, 
+                                                           args4meddevn_plot(plots.by = NULL, 
                                                                              plots.group = "Tuning",  
                                                                              facet.x = "Type", facet.y = ".",
                                                                              propn.types = c(0.02,0.1, 0.2),
@@ -865,11 +865,11 @@ test_that("tomato_growthPheno", {
                                          df = c(4,7), lambdas = NULL), 
                         which.plots = c("profiles", "medians.dev"),
                         profile.plot.args = 
-                          args4profile.plot(plots.by = "Tuning", 
+                          args4profile_plot(plots.by = "Tuning", 
                                             facet.x = "Method", facet.y = c("Zn","AMF"), 
                                             facet.labeller = labels),
                         meddevn.plot.args = 
-                          args4meddevn.plot(plots.by = "Tuning", 
+                          args4meddevn_plot(plots.by = "Tuning", 
                                             plots.group = "Method", 
                                             facet.x = ".", facet.y = c("Zn","AMF"),
                                             facet.labeller = labels)),
@@ -886,7 +886,7 @@ test_that("tomato_growthPheno", {
                                                         x.title = "DAP", 
                                                         y.titles = "PSA deviation (kpixels)",
                                                         meddevn.plot.args = 
-                                                          args4meddevn.plot(plots.by = NULL, 
+                                                          args4meddevn_plot(plots.by = NULL, 
                                                                             plots.group = c("Method","Tuning"), 
                                                                             facet.x = "Zn", facet.y = "AMF",
                                                                             propn.types = 0.1,
@@ -907,7 +907,7 @@ test_that("tomato_growthPheno", {
                                                                 df = 4:5, lambdas = NULL), 
                                                which.plots = "medians.dev", 
                                                meddevn.plot.args = 
-                                                 args4meddevn.plot(plots.by = "Method", 
+                                                 args4meddevn_plot(plots.by = "Method", 
                                                                    plots.group = "Tuning", 
                                                                    facet.x = ".", facet.y = ".",
                                                                    propn.types = c(0.02, 0.2, 0.5),
@@ -931,7 +931,7 @@ test_that("tomato_growthPheno", {
                                                          response.smoothed = "sPSA", 
                                                          times = "DAP", x.title = "DAP", 
                                                          meddevn.plot.args = 
-                                                           args4meddevn.plot(plots.by = "Tuning", 
+                                                           args4meddevn_plot(plots.by = "Tuning", 
                                                                              plots.group = "Method", 
                                                                              facet.x = ".", facet.y = ".", 
                                                                              propn.types = c(0.02, 0.2, 0.5))))
@@ -954,7 +954,7 @@ test_that("tomato_growthPheno", {
                                                                 df=5, lambdas = NULL),
                                                which.plots = "medians.dev", 
                                                meddevn.plot.args = 
-                                                 args4meddevn.plot(plots.by = "Tuning", 
+                                                 args4meddevn_plot(plots.by = "Tuning", 
                                                                    plots.group = NULL, 
                                                                    facet.x = ".", facet.y = ".", 
                                                                    colour.values = "blue", 
@@ -972,7 +972,7 @@ test_that("tomato_growthPheno", {
                                                                 df=5, lambdas = NULL),
                                                which.plots = "medians.dev", 
                                                meddevn.plot.args = 
-                                                 args4meddevn.plot(plots.by = "Tuning", 
+                                                 args4meddevn_plot(plots.by = "Tuning", 
                                                                    plots.group = NULL, 
                                                                    facet.x = ".", facet.y = ".", 
                                                                    propn.types = c(0.02, 0.2, 0.5))))
@@ -992,7 +992,7 @@ test_that("tomato_growthPheno", {
                                                smoothing.args = spar,
                                                which.plots = "medians.dev", 
                                                meddevn.plot.args = 
-                                                 args4meddevn.plot(plots.by = NULL, 
+                                                 args4meddevn_plot(plots.by = NULL, 
                                                                    plots.group = c("Type", "Tuning", "Method"), 
                                                                    facet.x = ".", facet.y = ".", 
                                                                    colour.values = cols[1:3], 
@@ -1010,11 +1010,11 @@ test_that("tomato_growthPheno", {
                                                                                          df=5:6, lambdas = c(0.1,1), 
                                                                                          npspline.segments = 30),
                                                profile.plot.args = 
-                                                 args4profile.plot(plots.by = NULL, 
+                                                 args4profile_plot(plots.by = NULL, 
                                                                    facet.x = c("Type", "Tuning"), facet.y = ".", 
                                                                    include.raw = "no"), 
                                                meddevn.plot.args = 
-                                                 args4meddevn.plot(plots.by = NULL, 
+                                                 args4meddevn_plot(plots.by = NULL, 
                                                                    plots.group = "Tuning", 
                                                                    facet.x = "Type", facet.y = ".", 
                                                                    propn.types = c(0.02, 0.2, 0.5))))
@@ -1038,7 +1038,7 @@ test_that("tomato_growthPheno", {
                                                   times = "DAP", 
                                                   which.plots = "profiles", 
                                                   profile.plot.args = 
-                                                    args4profile.plot(
+                                                    args4profile_plot(
                                                       plots.by = c("Type", "Tuning", "Method"), 
                                                       facet.x = ".", facet.y = ".", 
                                                       include.raw = "alone",
@@ -1056,7 +1056,7 @@ test_that("tomato_growthPheno", {
                           times = "DAP", 
                           which.plots = "profiles", 
                           profile.plot.args = 
-                            args4profile.plot(
+                            args4profile_plot(
                               plots.by = c("Type", "Tuning", "Method"), 
                               facet.x = ".", facet.y = ".", 
                               include.raw = "facet.x",
@@ -1070,7 +1070,7 @@ test_that("tomato_growthPheno", {
                                                 times = "DAP", 
                                                 which.plots = "profiles", 
                                                 profile.plot.args = 
-                                                  args4profile.plot(
+                                                  args4profile_plot(
                                                     plots.by = c("Type", "Tuning", "Method"), 
                                                     facet.x = ".", facet.y = ".", 
                                                     include.raw = "no")))
@@ -1080,7 +1080,7 @@ test_that("tomato_growthPheno", {
                                                 times = "DAP", 
                                                 which.plots = "profiles", 
                                                 profile.plot.args = 
-                                                  args4profile.plot(
+                                                  args4profile_plot(
                                                     plots.by = c("Type", "Tuning"), 
                                                     facet.x = ".", facet.y = "Method", 
                                                     include.raw = "facet.y", 
@@ -1094,7 +1094,7 @@ test_that("tomato_growthPheno", {
                                                 times = "DAP", 
                                                 which.plots = "profiles", 
                                                 profile.plot.args = 
-                                                  args4profile.plot(
+                                                  args4profile_plot(
                                                     plots.by = NULL, 
                                                     facet.x = "Tuning", facet.y = ".", 
                                                     include.raw = "facet.x", 
@@ -1105,7 +1105,7 @@ test_that("tomato_growthPheno", {
                                                 times = "DAP", 
                                                 which.plots = "profiles", 
                                                 profile.plot.args = 
-                                                  args4profile.plot(
+                                                  args4profile_plot(
                                                     plots.by = NULL, 
                                                     facet.x = c("Type","Tuning","Method"), 
                                                     facet.y = ".", 
@@ -1122,7 +1122,7 @@ test_that("tomato_growthPheno", {
                           rates.method = "deriv",
                           which.plots = "profiles",
                           profile.plot.args = 
-                            args4profile.plot(
+                            args4profile_plot(
                               plots.by = NULL, 
                               facet.x = "Method", 
                               facet.y = ".", 
@@ -1163,12 +1163,12 @@ test_that("tomato_growthPheno", {
                                            lambdas = list(PS = lambdas)), 
                           which.plots = c("medians.dev", "profiles"), 
                           profile.plot.args = 
-                            args4profile.plot(plots.by = "Type", 
+                            args4profile_plot(plots.by = "Type", 
                                               facet.x = c("Tuning"), facet.y = ".", 
                                               include.raw = "facet.x", 
                                               ggplotFuncs = theme.profile),
                           meddevn.plot.args = 
-                            args4meddevn.plot(plots.by = NULL, 
+                            args4meddevn_plot(plots.by = NULL, 
                                               plots.group = "Tuning",
                                               facet.x = "Type", facet.y = ".", 
                                               propn.types = NULL))
@@ -1214,7 +1214,7 @@ test_that("RicePrepped_growthPheno", {
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "response", 
                                 meddevn.plot.args = 
-                                  args4meddevn.plot(plots.by = NULL, plots.group = "Tuning", 
+                                  args4meddevn_plot(plots.by = NULL, plots.group = "Tuning", 
                                                     facet.x = ".", facet.y = c("Smarthouse","Salinity"),
                                                     propn.types = 0.025)))
   testthat::expect_equal(length(t$plots), 1)
@@ -1227,7 +1227,7 @@ test_that("RicePrepped_growthPheno", {
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "response", 
                                 meddevn.plot.args = 
-                                  args4meddevn.plot(plots.by = "Type", plots.group = "Tuning", 
+                                  args4meddevn_plot(plots.by = "Type", plots.group = "Tuning", 
                                                     facet.x = ".", facet.y = c("Smarthouse","Salinity"),
                                                     propn.types = 0.025)))
   testthat::expect_equal(length(t$plots), 1)
@@ -1240,7 +1240,7 @@ test_that("RicePrepped_growthPheno", {
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "response", 
                                 meddevn.plot.args = 
-                                  args4meddevn.plot(plots.by = NULL, plots.group = "Tuning", 
+                                  args4meddevn_plot(plots.by = NULL, plots.group = "Tuning", 
                                                     facet.x = "Type", 
                                                     facet.y = c("Smarthouse","Salinity"),
                                                     propn.types = 0.025)))
@@ -1255,7 +1255,7 @@ test_that("RicePrepped_growthPheno", {
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "response", 
                                 meddevn.plot.args = 
-                                  args4meddevn.plot(plots.by = NULL, plots.group = "Tuning", 
+                                  args4meddevn_plot(plots.by = NULL, plots.group = "Tuning", 
                                                     facet.x = c("Smarthouse"), 
                                                     facet.y = c("Salinity","Type"),
                                                     propn.types = 0.025)))
@@ -1263,7 +1263,7 @@ test_that("RicePrepped_growthPheno", {
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "response", 
                                 meddevn.plot.args = 
-                                  args4meddevn.plot(plots.by = NULL, plots.group = "Tuning", 
+                                  args4meddevn_plot(plots.by = NULL, plots.group = "Tuning", 
                                                     facet.x = c("Salinity","Type"),
                                                     facet.y = c("Smarthouse"), 
                                                     propn.types = FALSE)))
@@ -1271,7 +1271,7 @@ test_that("RicePrepped_growthPheno", {
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "response", 
                                 meddevn.plot.args = 
-                                  args4meddevn.plot(plots.by = NULL, plots.group = "Tuning", 
+                                  args4meddevn_plot(plots.by = NULL, plots.group = "Tuning", 
                                                     facet.x = c("Salinity","Type"),
                                                     facet.y = c("Smarthouse"), 
                                                     propn.types = 0.025)))
@@ -1287,7 +1287,7 @@ test_that("RicePrepped_growthPheno", {
     t <- plotSmoothsMedianDevns(data = smth, response = "PSA", response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "response", 
                                 meddevn.plot.args = 
-                                  args4meddevn.plot(plots.by = c("Method","Type"), 
+                                  args4meddevn_plot(plots.by = c("Method","Type"), 
                                                     plots.group = "Tuning", 
                                                     facet.x = ".", 
                                                     facet.y = c("Smarthouse","Salinity"),
@@ -1304,7 +1304,7 @@ test_that("RicePrepped_growthPheno", {
     plotSmoothsComparison(data = smth, response="PSA", response.smoothed = "sPSA",
                           times = "DAST", trait.types = "response", 
                           profile.plot.args = 
-                            args4profile.plot(plots.by = "Smarthouse", 
+                            args4profile_plot(plots.by = "Smarthouse", 
                                               facet.x = c("Method", "Tuning"), 
                                               facet.y = "Salinity", 
                                               collapse.facets.x = FALSE, 
@@ -1315,7 +1315,7 @@ test_that("RicePrepped_growthPheno", {
     plotSmoothsComparison(data = smth, response="PSA", response.smoothed = "sPSA",
                           times = "DAST", trait.types = "response", 
                           profile.plot.args = 
-                            args4profile.plot(plots.by = "Smarthouse", 
+                            args4profile_plot(plots.by = "Smarthouse", 
                                               facet.x = c("Method", "Tuning"), 
                                               facet.y = "Salinity", 
                                               collapse.facets.x = FALSE, 
@@ -1327,7 +1327,7 @@ test_that("RicePrepped_growthPheno", {
     plotSmoothsComparison(data = smth[smth$DAST != 1, ], response="PSA", response.smoothed = "sPSA",
                           times = "DAST", trait.types = "response", 
                           profile.plot.args = 
-                            args4profile.plot(plots.by = "Smarthouse", 
+                            args4profile_plot(plots.by = "Smarthouse", 
                                               facet.x = c("Method", "Tuning"), 
                                               facet.y = "Salinity", 
                                               collapse.facets.x = FALSE, 
@@ -1338,7 +1338,7 @@ test_that("RicePrepped_growthPheno", {
     plotSmoothsComparison(data = smth[smth$DAST != 1, ], response="PSA", response.smoothed = "sPSA",
                           times = "DAST", trait.types = "response", 
                           profile.plot.args = 
-                            args4profile.plot(plots.by = "Smarthouse", 
+                            args4profile_plot(plots.by = "Smarthouse", 
                                               facet.x = c("Method", "Tuning"), 
                                               facet.y = "Salinity", 
                                               collapse.facets.x = FALSE, 
@@ -1349,7 +1349,7 @@ test_that("RicePrepped_growthPheno", {
       plotSmoothsComparison(data = smth[smth$DAST != 1, ], response="PSA", response.smoothed = "sPSA",
                             times = "DAST", trait.types = "response", 
                             profile.plot.args = 
-                              args4profile.plot(plots.by = "Smarthouse", 
+                              args4profile_plot(plots.by = "Smarthouse", 
                                                 facet.x = c("Method", "Tuning"), 
                                                 facet.y = "Salinity", 
                                                 collapse.facets.x = FALSE, 
@@ -1366,7 +1366,7 @@ testthat::expect_warning(
                                         lambdas = c(0.1,1,10)), 
                        which.plots = "medians.dev", 
                        meddevn.plot.args = 
-                         args4meddevn.plot(plots.by = "Type", 
+                         args4meddevn_plot(plots.by = "Type", 
                                            plots.group = "Tuning", 
                                            facet.x = ".", facet.y = c("Smarthouse","Salinity"))),
   regexp = "Need at least 4 distinct x values to fit a spline - all fitted values set to NA")
@@ -1442,7 +1442,7 @@ testthat::expect_warning(
                                 response.smoothed = "sPSA",
                                 times = "DAST", trait.types = "AGR", 
                                 meddevn.plot.args = 
-                                  args4meddevn.plot(plots.by = NULL, plots.group = "Tuning", 
+                                  args4meddevn_plot(plots.by = NULL, plots.group = "Tuning", 
                                                     facet.x = ".", facet.y = c("Smarthouse","Salinity"),
                                                     propn.types = 0.025)))
   testthat::expect_equal(length(t$plots), 1)

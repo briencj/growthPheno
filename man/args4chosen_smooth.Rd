@@ -1,12 +1,12 @@
-\name{args4chosen.smooth}
-\alias{args4chosen.smooth}
+\name{args4chosen_smooth}
+\alias{args4chosen_smooth}
 \title{Creates a \code{list} of the values for the smoothing parameters for 
              which a smooth is to be extracted}
 \description{Creates a \code{\link{list}} of the values for the smoothing parameters for 
              which a smooth is to be extracted. 
              The default settings for these are optimized for \code{\link{traitSmooth}}.}
 \usage{
-args4chosen.smooth(smoothing.methods = "logarithmic", 
+args4chosen_smooth(smoothing.methods = "logarithmic", 
                    spline.types = "PS", 
                    df = NULL, 
                    lambdas = NULL,
@@ -34,9 +34,9 @@ args4chosen.smooth(smoothing.methods = "logarithmic",
 \seealso{\code{\link{traitSmooth}} and \code{\link{probeSmooths}}.}
 \examples{
 
-args4chosen.smooth(smoothing.methods = "direct", 
+args4chosen_smooth(smoothing.methods = "direct", 
                    spline.types = "NCSS", df = 4)
-args4chosen.smooth(smoothing.methods = "log", 
+args4chosen_smooth(smoothing.methods = "log", 
                    spline.types = "PS", lambdas = 0.36)
 }
 \keyword{data}

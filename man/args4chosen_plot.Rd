@@ -1,11 +1,11 @@
-\name{args4chosen.plot}
-\alias{args4chosen.plot}
+\name{args4chosen_plot}
+\alias{args4chosen_plot}
 \title{Creates a \code{list} of the values for the options of profile plots for the chosen smooth}
 \description{Creates a \code{list} of the values for the options of profile plots (and boxplots facets) for comparing smooths.
              Note that \code{plots.by}, \code{facet.x}, \code{facet.y} and \code{include.raw} jointly 
              define the organization of the plots. The default settings are optimized for \code{\link{traitSmooth}}.}
 \usage{
-args4chosen.plot(plots.by = NULL, 
+args4chosen_plot(plots.by = NULL, 
                  facet.x = ".", facet.y = ".", 
                  include.raw = "no", 
                  collapse.facets.x = FALSE, collapse.facets.y = FALSE, 
@@ -95,9 +95,9 @@ args4chosen.plot(plots.by = NULL,
 } 
 \value{A named \code{\link{list}}.}
 \author{Chris Brien}
-\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{plotSmoothsComparison}} and \code{\link{args4profile.plot}}.}
+\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{plotSmoothsComparison}} and \code{\link{args4profile_plot}}.}
 \examples{
-args4chosen.plot(plots.by = "Type", 
+args4chosen_plot(plots.by = "Type", 
                  facet.x = "Tuning", facet.y = c("Smarthouse", "Treatment.1"), 
                  include.raw = "facet.x", 
                  alpha  = 0.4, 
