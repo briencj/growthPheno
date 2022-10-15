@@ -184,8 +184,9 @@ traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP",
              whole of the imaging period.}
  \item{responses4overall.max}{A \code{\link{character}} specifying the names of the 
              columns containing responses for which columns of the values are 
-             to be formed that relate to the maximum of the response for each 
-             individual over the whole of the imaging period.}
+             to be formed for the maximum of the response for each 
+             individual over the whole of the imaging period and the \code{times} value 
+             at which the maximum occurred.}
  \item{intvl.overall}{A \code{\link{numeric}} giving the starts and stop times of imaging. 
              If \code{NULL}, the start time will be the minimum of \code{starts.intvl} 
              and the stop time will be the maximum of \code{stops.intvl}.}

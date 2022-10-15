@@ -353,7 +353,7 @@ args4chosen_smooth <- function(smoothing.methods = "logarithmic",
                       spline.types = stypes, 
                       df = df, 
                       lambdas = lambdas, 
-                      combinations = combinations)
+                      combinations = comb.opt)
   return(smth.params)
 }
 
@@ -407,6 +407,7 @@ args4smoothing <- function(smoothing.methods = "logarithmic",
   checkEllipsisArgs("args4smoothing", inargs)
   
   options <- c("allvalid", "parallel", "single")
+  comb.opt <- options[check.arg.values(combinations, options=options)]
   #Deal with smoothing arguments
   smethods.opt <- c("direct", "logarithmic")
   smethods <- smethods.opt[unlist(lapply(smoothing.methods, check.arg.values, options=smethods.opt))]
@@ -435,7 +436,7 @@ args4smoothing <- function(smoothing.methods = "logarithmic",
                       na.x.action = na.x.action, na.y.action = na.y.action, 
                       external.smooths = external.smooths, 
                       correctBoundaries = correctBoundaries, 
-                      combinations = combinations)
+                      combinations = comb.opt)
   return(smth.params)
 }
 
@@ -564,12 +565,12 @@ makeSmoothSchemes <- function(combinations, smethods, stypes, df, lambdas)
     
   } else
   {
-    if (combinations == "parallel")
+    if (any(c("single", "parallel") %in% combinations))
     { 
-      #Check all f the same length
+      #Check all of the same length
       if (!all(sapply(list(smethods, stypes, df, lambdas), 
                       function(x, first) length(x) == first, first = length(smethods))))
-        stop(paste0("For combinations set to parallel, smoothing mewthods, spline.types, df and lambdas must be of the same length ", 
+        stop(paste0("For combinations set to parallel, smoothing methods, spline.types, df and lambdas must be of the same length ", 
                     "(if df or lambdas not NULL pad with NAs)"))
       
       TVal <- df
@@ -583,8 +584,7 @@ makeSmoothSchemes <- function(combinations, smethods, stypes, df, lambdas)
                                  Tuning = paste(TPar, TVal, sep = "-"), 
                                  Method = smethods)
       attr(spar.schemes, which = "nschemes") <- nrow(spar.schemes)
-    } else
-      stop("The setting of combinations in smoothing parameters must be either allvalid or parallel")
+    } 
   }
   return(spar.schemes) 
 }

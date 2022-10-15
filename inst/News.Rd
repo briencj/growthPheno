@@ -1,5 +1,13 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.1-12 (2022-10-15)}{
+  \itemize{
+  \item{Fix bug in args4chosen_plot where \code{angle.x} was being ignored.}
+  \item{Fix bug in traitSmooth where \code{trait.types} was being ignored by chosen.cmooth.args.}
+  \item{Fix bug in traitSmooth where \code{combinations} was not being passed correctly.}
+  \item{Fix bug in probeSmmoths and TraitSmooth in which a smooth was not produced when the \code{combinations} was set to  \code{single} for the \code{smoothing.args} argument.}
+  \item{Rebuild the Tomato vignette.}
+  }}
 \section{growthPheno Version 2.1-11 (2022-10-08)}{
   \itemize{
   \item{Revise the names of args4chosen.plot, args4chosen.smooth and args4meddevn.plot, args4profile.plot to args4chosen_plot, args4chosen_smooth, args4meddevn_plot and args4profile_plot.}

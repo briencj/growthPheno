@@ -1323,6 +1323,16 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
   if (is.null(x.title))
     x.title <- times
   
+  if (!is.allnull(smoothing.args) &&  smoothing.args$combinations == "single")
+  {
+    if (any(unlist(lapply(names(smoothing.args)[1:4], 
+                          function(x, smth.args) length(smth.args[x]) > 1, 
+                          smth.args = smoothing.args))))
+      stop("All of the components of smoothing.args must be single-valued when combinations is single")
+    if (is.null(smoothing.args$df)) smoothing.args$df <- NA
+    if (is.null(smoothing.args$lambdas)) smoothing.args$lambdas <- NA
+  }
+  
   #Get the options for the profile plots options from the list
   plots.by.pf <- profile.plot.args$plots.by
   facet.x.pf <- profile.plot.args$facet.x
@@ -1401,13 +1411,15 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
         stop("It must be that at least one of df and lambda is not NULL in smoothing.args")
       
       #Get the smoothing arguments
+      options <- c("allvalid", "parallel", "single")
+      comb.opt <- options[check.arg.values(smoothing.args$combinations, options=options)]
       smethods = smoothing.args$smoothing.methods
       stypes = smoothing.args$spline.types
       df = smoothing.args$df
       lambdas = smoothing.args$lambdas 
       
       #Construct the set of schemes for which smooths are to be generated
-      spar.schemes <- makeSmoothSchemes(combinations = smoothing.args$combinations, 
+      spar.schemes <- makeSmoothSchemes(combinations = comb.opt, 
                                         smethods = smethods, stypes = stypes, 
                                         df = df, lambdas = lambdas)
       
@@ -1712,53 +1724,12 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
   options <- c("allvalid","parallel","single")
   comb.opt <- options[check.arg.values(chosen.smooth$combinations, options=options)]
   if (comb.opt != "single")
-    stop("combinations must be single for chosen.smooth")
+    stop("combinations must be single for chosen.smooth.args")
   
   if (any(unlist(lapply(chosen.smooth, function(x) (length(x) > 1)))))
-    stop("All of the components of chosen.smooth must be single-valued")
-  # smethods.opt <- c("direct", "logarithmic")
-  # smethod <- smethods.opt[check.arg.values(chosen.smooth$smoothing.method, options=smethods.opt)]
-  # smethods <- levels(smooths$Method)
-  # stypes.opt <- c("NCSS", "PS")
-  # stype <- stypes.opt[check.arg.values(chosen.smooth$spline.type, options=stypes.opt)]
-  # stypes <- levels(smooths$Type)
-  # 
-  # if (!(stype %in% stypes))
-  #   stype <- setdiff(stypes, stype)[1]
-  # if (!(smethod %in% smethods))
-  #   smethod <- setdiff(smethods, smethod)[1]
-  # if (is.allnull(chosen.smooth$df) && is.allnull(chosen.smooth$lambdas))
-  # {
-  #   if (stype == "NCSS"  && ("df" %in% levels(smooths$TunePar)))
-  #   { 
-  #     df <- factor(smooths$TuneVal[smooths$TunePar == "df"])
-  #     df <- as.numeric(levels(df))
-  #     chosen.smooth$df <- df[floor((length(df)+1)/2)]
-  #   }
-  #   else
-  #   {
-  #     if ("lambda" %in% levels(smooths$TunePar))
-  #     { 
-  #       lambdas <- factor(smooths$TuneVal[smooths$TunePar == "lambda" & smooths$Type == stype])
-  #       lambdas <- as.numeric(levels(lambdas))
-  #       chosen.smooth$lambdas <- 
-  #         lambdas[floor((length(lambdas)+1)/2)]
-  #     }
-  #     else
-  #       chosen.smooth$df <- NULL
-  #   }
-  # }
-  # if (!is.allnull(chosen.smooth$df))
-  # {
-  #   tunepar = "df"
-  #   tuneval = as.character(chosen.smooth$df)
-  # } else
-  # {
-  #   tunepar = "lambda"
-  #   tuneval = as.character(chosen.smooth$lambdas)
-  # }
+    stop("All of the components of chosen.smooth.args must be single-valued")
   if ((!is.allnull(chosen.smooth$df) && !is.allnull(chosen.smooth$lambdas)))
-    stop("One of df and lambda must be NULL in chosen.smooth")
+    stop("One of df and lambda must be NULL in chosen.smooth.args")
   combos <- levels(with(smooths, fac.combine(list(Type,TunePar,TuneVal,Method), 
                                              combine.levels = TRUE, sep = "-")))
   tparams <- conv2TuneParams(smth.args = chosen.smooth, smth = smooths)
@@ -1770,7 +1741,7 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
   choice <- paste0(sapply(tparams, as.character), collapse = "-")
   if (!(choice %in% combos))
     stop("The combination of the values of Type, TunePar, TuneVal and Method ", 
-         "given in chosen.smooth are not amongst those for the set of smooths in data")
+         "given in chosen.smooth.args are not amongst those for the set of smooths in data")
   
   #Get subset 
   smth <- smooths[smooths$Type == stype & smooths$TunePar == tunepar &
@@ -1865,7 +1836,10 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
                                  x.title = x.title,
                                  y.title = y.titles[kresp],
                                  printPlot = TRUE,
-                                 ggplotFuncs = c(x.axis, chosen.plot.args$ggplotFuncs), 
+                                 ggplotFuncs = c(x.axis, 
+                                                 list(theme(axis.text.x = 
+                                                         element_text(angle = chosen.plot.args$angle.x))), 
+                                                 chosen.plot.args$ggplotFuncs), 
                                  ...))
   } 
   
@@ -1930,8 +1904,7 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
            " occur(s) in chosen.plots.args - only a single smooth is to be plotted and they are unnecessary")
     
     traits <- c("response.smoothed", "AGR", "RGR", "all")
-    traits <- traits[unlist(lapply(inargs$trait.types, check.arg.values,
-                                   options=traits))]
+    traits <- traits[unlist(lapply(trait.types, check.arg.values, options=traits))]
     if ("all" %in% traits)
       traits <- c("response.smoothed", "AGR", "RGR")
 
