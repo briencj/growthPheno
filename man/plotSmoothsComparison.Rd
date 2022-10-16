@@ -18,12 +18,12 @@
              \code{smoothing.methods} (see \code{\link{probeSmooths}}). 
 
              Multiple plots, possibly each having multiple facets, are produced using \code{ggplot2}. 
-             The layout of these plots is controlled via the arguments \code{plots.by.pf}, 
-             \code{facet.x.pf} and \code{facet.y.pf}. The basic principle is that the number of levels 
+             The layout of these plots is controlled via the arguments \code{plots.by}, 
+             \code{facet.x} and \code{facet.y}. The basic principle is that the number of levels 
              combinations of the smoothing-parameter \code{\link{factor}}s \code{Type}, \code{TunePar}, 
              \code{TuneVal}, \code{Tuning} (the combination of (\code{TunePar} and \code{TuneVal}), and 
-             \code{Method} that are included  in \code{plots.by.pf}, \code{facet.x.pf} and 
-             \code{facet.y.pf} must be the same as those covered by the combinations of the values 
+             \code{Method} that are included  in \code{plots.by}, \code{facet.x} and 
+             \code{facet.y} must be the same as those covered by the combinations of the values 
              supplied to \code{spline.types}, \code{df}, \code{lambdas} and \code{Method} and incorporated 
              into the \code{\link{smooths.frame}} input to \code{plotSmoothsComparison} via the 
              \code{data} argument. This ensures that smooths from different parameter sets are not 
@@ -33,32 +33,30 @@
 
              The following profiles plots can be produced: (i) separate plots of the 
              smoothed traits for each combination of the smoothing parameters 
-             (include \code{Type}, \code{Tuning} and \code{Method} in \code{plots.by.pf}); 
+             (include \code{Type}, \code{Tuning} and \code{Method} in \code{plots.by}); 
              (ii) as for (i), with the corresponding plot for the unsmoothed trait 
-             preceeding the plots for the smoothed trait (also set \code{include.raw.pf} to 
+             preceeding the plots for the smoothed trait (also set \code{include.raw} to 
              \code{alone}); (iii) profiles plots that compare a smoothed trait for all 
              combinations of the values of the smoothing parameters, arranging the plots 
              side-by-side or one above the other (include \code{Type}, \code{Tuning} and 
-             \code{Method} in \code{facet.x.pf} and/or \code{facet.y.pf} - to include the 
-             unsmoothed trait set \code{include.raw.pf} to one of \code{facet.x} or 
+             \code{Method} in \code{facet.x} and/or \code{facet.y} - to include the 
+             unsmoothed trait set \code{include.raw} to one of \code{facet.x} or 
              \code{facet.y}; (iv) as for (iii), except that separate plots are 
              produced for each combination of the levels of the \code{\link{factor}}s 
              in \code{plot.by} and each plot compares the smoothed traits for the 
-             smoothing-parameter \code{\link{factor}}s included in \code{facet.x.pf} 
-             and/or \code{facet.y.pf} (set both \code{plots.by.pf} and one or more of 
-             \code{facet.x.pf} and \code{facet.y.pf}). 
+             smoothing-parameter \code{\link{factor}}s included in \code{facet.x} 
+             and/or \code{facet.y} (set both \code{plots.by} and one or more of 
+             \code{facet.x} and \code{facet.y}). 
 }
 \usage{
 plotSmoothsComparison(data, response, response.smoothed = NULL, 
                       individuals = "Snapshot.ID.Tag", times = "DAP", 
                       trait.types = c("response", "AGR", "RGR"), 
-                      which.plots =  "profiles", 
                       x.title = NULL, y.titles = NULL, 
                       profile.plot.args = 
                         args4profile_plot(plots.by = NULL, 
                                           facet.x = ".", facet.y = ".", 
                                           include.raw = "no"),
-                      ggplotFuncsDevnBoxes = NULL, 
                       printPlot = TRUE, ...)
 }
 \arguments{
@@ -72,7 +70,7 @@ plotSmoothsComparison(data, response, response.smoothed = NULL,
              for the smoothing parameters. The \code{\link{smooths.frame}} must include 
              the columns \code{Type}, \code{TunePar}, \code{TuneVal}, \code{Tuning} and 
              \code{Method}, and the columns nominated using the arguments 
-             \code{individuals}, \code{times}, \code{plots.by.pf}, \code{facet.x.pf}, \code{facet.y.pf}, 
+             \code{individuals}, \code{times}, \code{plots.by}, \code{facet.x}, \code{facet.y}, 
              \code{response}, \code{response.smoothed}, and, if requested, 
              the AGR and the RGR of the \code{response} and \code{response.smoothed}. 
              The names of the growth rates should be formed from \code{response} and 
@@ -101,20 +99,6 @@ plotSmoothsComparison(data, response, response.smoothed = NULL,
              Irrespective of the setting of \code{get.rates}, the nominated traits 
              are plotted. If \code{all}, each of \code{response}, \code{AGR} and 
              \code{RGR} is plotted.}
-\item{which.plots}{A \code{\link{logical}} indicating which plots are to be produced. 
-             The options are either \code{none} or some combination of \code{profiles}, 
-             \code{absolute.boxplots}, \code{relative.boxplots} and 
-             \code{medians.deviations}. The types of \code{profiles} plots are described 
-             in the introduction to this function. Boxplots of the absolute deviations 
-             are specified by \code{absolute.boxplots}, the absolute deviations being 
-             the values of a trait minus their smoothed values (observed - smoothed). 
-             Boxplots of the relative deviations are specified by \code{relative.boxplots}, 
-             the relative deviations being the absolute deviations divided by the 
-             smoothed values of the trait. The option \code{medians.deviations} results 
-             in a plot that compares the medians of the absolute deviations over the 
-             values of \code{times} for each combination of the levels of the 
-             smoothing-parameter \code{\link{factor}}s and any nominated 
-             non-smoothing-parameter \code{\link{factor}}s.}
  \item{x.title}{Title for the x-axis, used for all plots. If \code{NULL} then set to 
              \code{times}.}
  \item{y.titles}{A \code{\link{character}} giving the titles for the y-axis, 
@@ -134,12 +118,6 @@ plotSmoothsComparison(data, response, response.smoothed = NULL,
              those for \code{\link{args4profile_plot}}, \bold{NOT} the call to 
              \code{\link{args4profile_plot}} shown as the default for 
              \code{plotSmoothsComparison}.}}
- \item{ggplotFuncsDevnBoxes}{A \code{\link{list}}, each element of which contains 
-                the results of evaluating a \code{\link{ggplot}} function. 
-                It is created by calling the \code{\link{list}} function with 
-                a \code{\link{ggplot}} function call for each element.
-                These functions are applied in creating the \code{ggplot} 
-                object for deviations boxplot.}
  \item{printPlot}{A \code{\link{logical}} indicating whether or not to print any 
              plots.}
  \item{...}{allows passing of arguments to \code{\link{plotProfiles}}.}
@@ -147,18 +125,12 @@ plotSmoothsComparison(data, response, response.smoothed = NULL,
 \value{A multilevel \code{\link{list}} that contains the \code{\link{ggplot}} 
         objects for the plots produced. The first-level \code{\link{list}} 
         has a component for each \code{trait.types} and each of these is a 
-        second-level \code{\link{list}} with two components named 
-        \code{profiles} and \code{deviations} that contain the trait 
-        profile plots and the deviations boxplots for a \code{response}. 
-        The \code{profiles} component may contain components labelled 
+        second-level \code{\link{list}} that contains the trait 
+        profile plots and for a \code{trait}. It may contain components labelled 
         \code{Unsmoothed}, \code{all} or for one of the levels of the 
-        \code{\link{factor}}s in \code{plots.by.pf}; each of these third-level 
+        \code{\link{factor}}s in \code{plots.by}; each of these third-level 
         \code{\link{list}}s contains a \code{\link{ggplot}} object that can 
         be plotted using \code{print}. 
-        If \code{which.plots} does not include \code{profiles} then the 
-        \code{profiles} \code{\link{list}} will be empty i.e. of length zero. 
-        Similarly, if \code{which.plots} does not include a \code{boxplots} 
-        option, the \code{deviations} \code{\link{list}} will be empty. 
 }
 \author{Chris Brien}
 \seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{args4profile_plot}}, \code{\link{plotDeviationsBoxes}}, \code{\link{plotSmoothsMedianDevns}}, \code{\link{ggplot}}.}

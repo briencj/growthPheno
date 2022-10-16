@@ -365,12 +365,31 @@ test_that("chickpea_growthPheno", {
                                             profile.plot.args = 
                                               args4profile_plot(plots.by = NULL, 
                                                                 facet.x = "Tuning", 
-                                                                facet.y = "Treatment.1")))
+                                                                facet.y = "Treatment.1"),
+                                            devnboxes.plot.args = 
+                                              args4devnboxes_plot(plots.by = NULL, 
+                                                                  facet.x = "Tuning", 
+                                                                  facet.y = "Treatment.1")))
   testthat::expect_equal(nrow(t), 16960)
   testthat::expect_true(all(c("Type", "TunePar", "TuneVal", "Tuning", "Method", 
                               "Snapshot.ID.Tag", "TimeAfterPlanting",  
                               "Treatment.1", "ShootArea1000", "sShootArea1000") 
                             %in% names(t)))
+  
+  #Check plots.by in plotSmoothsDevnBoxplots
+  plts <- plotSmoothsDevnBoxplots(data = t, response="ShootArea1000", 
+                                  times = "TimeAfterPlanting", 
+                                  x.title = "DAP", 
+                                  trait.types=c("response"), 
+                                  devnboxes.plot.args = 
+                                    args4devnboxes_plot(plots.by = "Tuning", 
+                                                        facet.x = "'Tuning'", 
+                                                        facet.y = "Treatment.1"))
+  testthat::expect_equal(length(plts), 1)
+  testthat::expect_equal(names(plts), "ShootArea1000")
+  testthat::expect_equal(names(plts[[1]]), "absolute")
+  testthat::expect_equal(length(plts[[1]][["absolute"]]), 2)
+  testthat::expect_true(all(names(plts[[1]][["absolute"]]) == c("df-4", "df-7")))
   
   #plots.by.pf gives separate plots
   testthat::expect_warning(t <- probeSmooths(data = dat1, response="ShootArea1000", 
@@ -385,7 +404,11 @@ test_that("chickpea_growthPheno", {
                                              profile.plot.args = 
                                                args4profile_plot(plots.by = NULL, 
                                                                  facet.x = "Tuning", 
-                                                                 facet.y = "Treatment.1")))
+                                                                 facet.y = "Treatment.1"),
+                                             devnboxes.plot.args = 
+                                               args4devnboxes_plot(plots.by = NULL, 
+                                                                   facet.x = "Tuning", 
+                                                                   facet.y = "Treatment.1")))
   testthat::expect_equal(nrow(t), 16960)
   testthat::expect_lt(max(abs(t[t$TuneVal == "4", "ShootArea1000"] - t[t$TuneVal == "4", "sShootArea1000"]), 
                           na.rm = TRUE) - 5.563407, 1e-07)
@@ -591,18 +614,19 @@ test_that("exampleData_growthPheno", {
                                                                                   spline.types = "NCSS", 
                                                                                   df = c(4,7), lambdas = NULL), 
                                                   which.plots = c("medians.dev", "absolute"),
-                                                  profile.plot.args = 
-                                                    args4profile_plot(plots.by = NULL, 
-                                                                      facet.x = "Tuning", #for the absolute.deviations
-                                                                      facet.y = ".", 
-                                                                      ggplotFuncs = vline),
+                                                  profile.plot.args = NULL,
                                                   meddevn.plot.args = 
                                                     args4meddevn_plot(plots.by = NULL, 
                                                                       plots.group = "Tuning", 
                                                                       facet.x = ".", 
                                                                       facet.y = ".", 
                                                                       propn.types = NULL,
-                                                                      ggplotFuncs = vline)))
+                                                                      ggplotFuncs = vline), 
+                                                  devnboxes.plot.args = 
+                                                    args4devnboxes_plot(plots.by = NULL, 
+                                                                        facet.x = "Tuning",
+                                                                        facet.y = ".", 
+                                                                        ggplotFuncs = vline)))
   testthat::expect_equal(nrow(traits), 560)
   testthat::expect_equal(ncol(traits), 14)
   
@@ -681,15 +705,14 @@ test_that("exampleData_growthPheno", {
                                                                df = c(4,7), lambdas = NULL,
                                                                external.smooths = extra.dat), 
                                which.plots = c("medians.dev", "absolute"),
-                               profile.plot.args = 
-                                 args4profile_plot(plots.by = NULL, 
-                                                   facet.x = "Tuning", facet.y = ".", 
-                                                   include.raw = "facet.x"),      
                                meddevn.plot.args = 
                                  args4meddevn_plot(plots.by = NULL, 
                                                    plots.group = "Tuning",  
                                                    facet.x = ".", facet.y = ".",
-                                                   propn.types = NULL)))
+                                                   propn.types = NULL), 
+                               devnboxes.plot.args = 
+                                 args4devnboxes_plot(plots.by = NULL, 
+                                                     facet.x = "Tuning", facet.y = ".")))
   testthat::expect_equal(nrow(smth.extra), 1120)
   testthat::expect_equal(ncol(smth.extra), 14)
  
@@ -711,6 +734,19 @@ test_that("exampleData_growthPheno", {
                          c("df-4","df-7","Logistic","Logis-4par"))
   testthat::expect_equal(length(med$plots), 3)
   
+  testthat::expect_warning(
+    t <- plotSmoothsDevnBoxplots(data = smth.extra, 
+                                 response = "PSA", times = "DAP", 
+                                 devnboxes.plot.args = 
+                                   args4devnboxes_plot(plots.by = "Type", 
+                                                       facet.x = "Tuning", 
+                                                       facet.y = ".")))
+  testthat::expect_equal(length(t), 3)
+  testthat::expect_true(all(names(t) == c("PSA", "PSA.AGR", "PSA.RGR")))
+  testthat::expect_equal(names(t[[1]]), "absolute")
+  testthat::expect_equal(length(t[[1]][["absolute"]]), 2)
+  testthat::expect_true(all(names(t[[1]][["absolute"]]) == c("NCSS", "NonLinear")))
+
   #Use plots.by different to that in  probeSmooths
   plts <- plotSmoothsComparison(data = smth.extra, 
                                 response = "PSA", times = "DAP", 
@@ -723,8 +759,8 @@ test_that("exampleData_growthPheno", {
                                                     ggplotFuncs = vline))      
   testthat::expect_equal(length(plts), 3)
   testthat::expect_true(all(c("PSA","PSA.AGR","PSA.RGR") %in% names(plts)))
-  testthat::expect_true(all(c("profiles", "deviations") %in% names(plts$PSA)))
-  testthat::expect_true(all(c("profiles", "deviations") %in% names(plts$PSA.AGR)))
+  testthat::expect_true("profiles" == names(plts$PSA))
+  testthat::expect_true("profiles" == names(plts$PSA.AGR))
   testthat::expect_equal(length(plts$PSA$deviations), 0)
   testthat::expect_equal(length(plts$PSA$profiles), 2)
   testthat::expect_true(all(c("NCSS", "NonLinear") %in% names(plts$PSA$profiles)))
@@ -760,14 +796,15 @@ test_that("exampleData_growthPheno", {
                                                                        df = c(4,7), lambdas = NULL,
                                                                        external.smooths = extra.dat), 
                                                       which.plots = c("medians.dev", "absolute"),
-                                                      profile.plot.args = 
-                                                        args4profile_plot(plots.by = NULL, 
-                                                                          facet.x = c("Type", "Tuning"), facet.y = "."),
                                                       meddevn.plot.args = 
                                                         args4meddevn_plot(plots.by = NULL, 
                                                                           plots.group = c("Type", "Tuning"),  
                                                                           facet.x = ".", facet.y = ".",
-                                                                          propn.types = NULL)))
+                                                                          propn.types = NULL), 
+                                                      devnboxes.plot.args = 
+                                                        args4devnboxes_plot(plots.by = NULL, 
+                                                                            facet.x = c("Type", "Tuning"), 
+                                                                            facet.y = ".")))
   testthat::expect_equal(nrow(smth.extra), 1120)
   testthat::expect_equal(ncol(smth.extra), 14)
   
@@ -1036,7 +1073,6 @@ test_that("tomato_growthPheno", {
                             plotSmoothsComparison(data = tom, response = "PSA", 
                                                   response.smoothed = "sPSA", 
                                                   times = "DAP", 
-                                                  which.plots = "profiles", 
                                                   profile.plot.args = 
                                                     args4profile_plot(
                                                       plots.by = c("Type", "Tuning", "Method"), 
@@ -1054,7 +1090,6 @@ test_that("tomato_growthPheno", {
     plotSmoothsComparison(data = tom, response = "PSA", 
                           response.smoothed = "sPSA", 
                           times = "DAP", 
-                          which.plots = "profiles", 
                           profile.plot.args = 
                             args4profile_plot(
                               plots.by = c("Type", "Tuning", "Method"), 
@@ -1068,7 +1103,6 @@ test_that("tomato_growthPheno", {
   testthat::expect_silent(plotSmoothsComparison(data = tom, response = "PSA", 
                                                 response.smoothed = "sPSA", 
                                                 times = "DAP", 
-                                                which.plots = "profiles", 
                                                 profile.plot.args = 
                                                   args4profile_plot(
                                                     plots.by = c("Type", "Tuning", "Method"), 
@@ -1078,7 +1112,6 @@ test_that("tomato_growthPheno", {
   testthat::expect_silent(plotSmoothsComparison(data = tom, response = "PSA", 
                                                 response.smoothed = "sPSA", 
                                                 times = "DAP", 
-                                                which.plots = "profiles", 
                                                 profile.plot.args = 
                                                   args4profile_plot(
                                                     plots.by = c("Type", "Tuning"), 
@@ -1092,7 +1125,6 @@ test_that("tomato_growthPheno", {
   testthat::expect_silent(plotSmoothsComparison(data = tom, response = "PSA", 
                                                 response.smoothed = "sPSA", 
                                                 times = "DAP", 
-                                                which.plots = "profiles", 
                                                 profile.plot.args = 
                                                   args4profile_plot(
                                                     plots.by = NULL, 
@@ -1103,7 +1135,6 @@ test_that("tomato_growthPheno", {
   testthat::expect_silent(plotSmoothsComparison(data = tom, response = "PSA", 
                                                 response.smoothed = "sPSA", 
                                                 times = "DAP", 
-                                                which.plots = "profiles", 
                                                 profile.plot.args = 
                                                   args4profile_plot(
                                                     plots.by = NULL, 

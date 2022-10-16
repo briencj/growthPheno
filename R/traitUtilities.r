@@ -358,6 +358,32 @@ args4chosen_smooth <- function(smoothing.methods = "logarithmic",
 }
 
 #Function to put options for profile plots into a list
+args4devnboxes_plot <- function(plots.by = "Type", 
+                                facet.x = c("Method", "Tuning"), facet.y = ".", 
+                                collapse.facets.x = TRUE, collapse.facets.y = FALSE, 
+                                facet.labeller = NULL, facet.scales = "fixed", 
+                                angle.x = 0, 
+                                which.plots = "none", 
+                                ggplotFuncs = NULL, 
+                                ...)
+{
+  inargs <- list(...)
+  checkEllipsisArgs("args4devnboxes_plot", inargs)
+  
+  checkLayoutArgs(data = NULL, plots.by, plts.group = NULL, facet.x, facet.y)
+  
+  box.opts <- list(plots.by = plots.by, 
+                   facet.x = facet.x, facet.y = facet.y, 
+                   collapse.facets.x = collapse.facets.x, 
+                   collapse.facets.y = collapse.facets.y, 
+                   facet.labeller = facet.labeller, 
+                   facet.scales = facet.scales, 
+                   angle.x = angle.x, 
+                   ggplotFuncs = ggplotFuncs)
+  return(box.opts)
+}
+
+#Function to put options for profile plots into a list
 args4profile_plot <- function(plots.by = "Type", 
                               facet.x = c("Method", "Tuning"), facet.y = ".", 
                               include.raw = "facet.x", 

@@ -30,10 +30,12 @@
              \code{TunePar}, \code{TuneVal}, \code{Tuning} (the combination 
              of \code{TunePar} and \code{TuneVal}) and \code{Method}, as well as 
              other \code{\link{factor}}s associated with the \code{data}. 
-             The \code{\link{factor}}s that are to be used for the profile plots and 
-             deviations boxplots are supplied via the argument \code{profile.plot.args} 
-             using the helper function \code{\link{args4profile_plot}} to set 
-             \code{plots.by}, \code{facet.x}, and \code{facet.y}; for the plots of 
+             The \code{\link{factor}}s that are to be used for the profile plots 
+             are supplied via the argument \code{profile.plot.args} 
+             using the helper function \code{\link{args4profile_plot}} and for the 
+             and deviations boxplots using the helper function 
+             \code{\link{args4devnboxes_plot}}. These helper functions set 
+             \code{plots.by}, \code{facet.x}, and \code{facet.y}. For the plots of 
              the medians of the deviations, the \code{\link{factor}}s are supplied via 
              the argument \code{meddevn.plot.args} using the helper function 
              \code{\link{args4meddevn_plot}} to set \code{plots.by}, \code{facet.x}, 
@@ -83,6 +85,7 @@
                 \item{\bold{General plot control:} x.title, y.titles, facet.labeller, which.plots.} 
                 \item{\bold{Profile plots (pf) features:} profile.plot.args (see \code{\link{args4profile_plot}})} 
                 \item{\bold{Median-deviations (med) plots features:} meddevn.plot.args (see \code{\link{args4meddevn_plot}})} 
+                \item{\bold{Deviations boxplots (box) features:} devnboxes.plot.args (see \code{\link{args4devnboxes_plot}})} 
              }
 }
 \usage{
@@ -107,7 +110,11 @@ probeSmooths(data, response = "PSA", response.smoothed = NULL,
                                  facet.x = ".", facet.y = ".",
                                  propn.note = TRUE, 
                                  propn.types = c(0.1, 0.5, 0.75)), 
-             ggplotFuncsDevnBoxes = NULL, ...)}
+             devnboxes.plot.args = 
+               args4devnboxes_plot(plots.by = NULL, 
+                                 facet.x = ".", facet.y = ".", 
+                                 which.plots = "none"), 
+             ...)}
 \arguments{
  \item{data}{A \code{\link{data.frame}} containing the data or a \code{\link{smooths.frame}} 
              as is produced by \code{probeSmooths}. if \code{data} is not a 
@@ -244,12 +251,18 @@ probeSmooths(data, response = "PSA", response.smoothed = NULL,
              those for \code{\link{args4meddevn_plot}}, \bold{NOT} the call to 
              \code{\link{args4meddevn_plot}} shown as the default for 
              \code{probeSmooths}.}}
- \item{ggplotFuncsDevnBoxes}{A \code{\link{list}}, each element of which contains 
-              the results of evaluating a \code{\link{ggplot}} function. 
-              It is created by calling the \code{\link{list}} function with 
-              a \code{\link{ggplot}} function call for each element.
-              These functions are applied in creating the \code{ggplot} 
-              object for deviations boxplot only.}
+ \item{devnboxes.plot.args}{A named \code{\link{list}} that is most easily 
+             generated using \code{\link{args4devnboxes_plot}}, it documenting the 
+             options available for varying the boxplots. \emph{Note 
+             that if \code{\link{args4devnboxes_plot}} is to be called to change 
+             from the default settings given in the default \code{probeSmooths} 
+             call and some of those settings are to be retained, then the arguments 
+             whose settings are to be retained must also be included in the call 
+             to \code{\link{args4devnboxes_plot}}; be aware that if you call 
+             \code{\link{args4devnboxes_plot}}, then the defaults for this call 
+             are those for \code{\link{args4devnboxes_plot}}, \bold{NOT} the call 
+             to \code{\link{args4devnboxes_plot}} shown as the default for 
+             \code{probeSmooths}.}}
  \item{...}{allows passing of arguments to \code{\link{plotProfiles}}.}
 }
 \value{A \code{\link{smooths.frame}} that contains the unsmoothed and smoothed data 

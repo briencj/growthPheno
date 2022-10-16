@@ -5,8 +5,11 @@
 \usage{
 plotDeviationsBoxes(data, observed, smoothed, x.factor, 
                     x.title = NULL, y.titles = NULL,
-                    facet.x = ".", facet.y = ".", labeller = NULL, 
-                    df, deviations.plots = "absolute", 
+                    facet.x = ".", facet.y = ".", 
+                    facet.labeller = NULL, 
+                    facet.scales = "fixed", 
+                    angle.x = 0, 
+                    deviations.plots = "absolute", 
                     ggplotFuncs = NULL, printPlot = TRUE, ...)
  }
 \arguments{
@@ -29,12 +32,15 @@ plotDeviationsBoxes(data, observed, smoothed, x.factor,
  \item{facet.y}{A \code{\link{data.frame}} giving the variable to be used to 
                 form subsets to be plotted in separate rows of plots.
                 Use \code{"."} if a split into columns is not wanted.}
- \item{labeller}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
+ \item{facet.labeller}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
                  facets of a plot produced using the \code{\link{ggplot}} function. 
                  For more information see \code{\link{ggplot}}.}
- \item{df}{A \code{\link{numeric}} specifying the smoothing degrees of freedom used in 
-            producing the \code{response.smoothed} and which is to be used in labelling 
-            the plot.}
+ \item{facet.scales}{A \code{\link{character}} specifying whether the scales are shared 
+             across all facets of a plot ("fixed"), or do they vary across rows (the 
+             default, "free_x"), columns ("free_y"), or both rows and columns ("free")?}
+ \item{angle.x}{A \code{\link{numeric}} between 0 and 360 that gives the angle of the 
+             x-axis text to the x-axis. It can also be set by supplying, in 
+             \code{ggplotFuncs}, a \code{theme} function from \code{ggplot2}.}
  \item{deviations.plots}{A \code{\link{character}} specifying whether 
               \code{absolute} and/or \code{relative} deviations are to be plotted.}
  \item{ggplotFuncs}{A \code{\link{list}}, each element of which contains the 

@@ -16,8 +16,8 @@
              Multiple plots, possibly each having multiple facets, are produced using \code{ggplot2}. 
              The layout of these plots is controlled via the smoothing-parameter \code{\link{factor}}s 
              \code{Type}, \code{Tuning} (the combination of \code{TunePar} and \code{TuneVal}) and 
-             \code{Method} that can be supplied to the arguments \code{plots.by.med}, 
-             \code{plots.group.med}, \code{facet.x.med} and \code{facet.y.med}. These \code{plots} and 
+             \code{Method} that can be supplied to the arguments \code{plots.by}, 
+             \code{plots.group}, \code{facet.x} and \code{facet.y}. These \code{plots} and 
              \code{facet} arguments can also include \code{\link{factor}}s other than the 
              smoothing-parameter \code{\link{factor}}s, that are also associated with the data. 
              The basic principle is that the number of levels combinations of the smoothing-parameter 
@@ -48,8 +48,8 @@ plotSmoothsMedianDevns(data, response, response.smoothed = NULL,
              each response occupies a single column. The \code{\link{smooths.frame}} 
              must include the columns \code{Type}, \code{TunePar}, \code{TuneVal}, 
              \code{Tuning} and \code{Method}, and the columns nominated using the 
-             arguments \code{individuals}, \code{times}, \code{plots.by.med}, 
-             \code{facet.x.med}, \code{facet.y.med}, \code{plots.group.med}, \code{response}, 
+             arguments \code{individuals}, \code{times}, \code{plots.by}, 
+             \code{facet.x}, \code{facet.y}, \code{plots.group}, \code{response}, 
              \code{response.smoothed}, and, if requested, the AGR and the RGR of the 
              \code{response} and \code{response.smoothed}. The names of the growth 
              rates should be formed from \code{response} and \code{response.smoothed} 
@@ -107,8 +107,8 @@ plotSmoothsMedianDevns(data, response, response.smoothed = NULL,
        \code{plots} that stores a two-level \code{\link{list}} of the median deviations 
        plots; the first-level \code{\link{list}} has a component for each 
        \code{trait.types} and each of these \code{\link{list}}(s) is a second-level 
-       \code{\link{list}} that contains the set of plots specified by \code{plots.by.med} 
-       (if \code{plots.by.med} is \code{NULL}, a single plot is stored); (ii) a component named 
+       \code{\link{list}} that contains the set of plots specified by \code{plots.by} 
+       (if \code{plots.by} is \code{NULL}, a single plot is stored); (ii) a component named 
        \code{med.dev.dat} that stores the \code{\link{data.frame}} containing the 
        median deviations that have been plotted.  Each plot in the \code{plots} 
        \code{\link{list}} is in an object of class \code{\link{ggplot}}, which can be 

@@ -8,27 +8,35 @@
                 \item{Smooth:}{Produces \code{response.smoothed} using splines for a set of 
                       smoothing parameter settings and, optionally, computes growth 
                       rates either as differences or derivatives. 
-                      (see \code{smoothing.args} below and \code{\link{args4smoothing}})} 
+                      (see \code{smoothing.args} below and \code{\link{args4smoothing}}) 
                       This step is bypassed if a \code{\link{data.frame}} that is also of 
-                      class \code{\link{smooths.frame}} is supplied to \code{data}.
+                      class \code{\link{smooths.frame}} is supplied to \code{data}.}
                 \item{Profile plots:}{Produces profile plots of \code{response.smoothed} and its 
                       growth rates that compare the smooths; also, boxplots of the 
                       deviations of the observed from smoothed data can be obtained. 
-                      (see \code{profile.plot.args} below and \code{\link{args4profile_plot}})} 
-                      Whether these plots are produced is controlled via \code{which.plots}. 
-                \item{Median deviations plots:}{Produces plots of the medians of the deviations of the observed 
-                      \code{response}, and its growth rates, from \code{response.smoothed},  
+                      (see \code{profile.plot.args} below and \code{\link{args4profile_plot}}) 
+                      Whether these plots are produced is controlled via \code{which.plots} or 
+                      whether \code{profile.plot.args} is set to \code{NULL}.} 
+                \item{Median deviations plots:}{Produces plots of the medians of the deviations of 
+                      the observed \code{response}, and its growth rates, from \code{response.smoothed},  
                       and its growth rates. These aid in the assessment of the different smooths. 
-                      (see \code{meddevn.plot.args} below and \code{\link{args4meddevn_plot}})}
-                      Whether these plots are produced is controlled via \code{which.plots}. 
-                \item{Choose a smooth:}{Extract a single, favoured \code{response.smoothed}, and its growth rates, 
-                      for a chosen set of smoothing parameter settings. 
-                      (see \code{chosen.smooth.args} below and \code{\link{args4chosen_smooth}})} 
-                      This step will be omitted if \code{chosen.smooth.args} is \code{NULL}. 
+                      (see \code{meddevn.plot.args} below and \code{\link{args4meddevn_plot}})
+                      Whether these plots are produced is controlled via \code{which.plots} or 
+                      whether \code{meddevn.plot.args} is set to \code{NULL}.} 
+                \item{Deviations boxplots:}{Produces boxplots of the absolute or relative deviations 
+                       of the observed \code{response}, and its growth rates, from \code{response.smoothed},  
+                      and its growth rates. These aid in the assessment of the different smooths. 
+                      (see \code{devnboxes.plot.args} below and \code{\link{args4devnboxes_plot}})
+                      Whether these plots are produced is controlled via \code{which.plots} or 
+                      whether \code{devnboxes.plot.args} is set to \code{NULL}.}
+                \item{Choose a smooth:}{Extract a single, favoured \code{response.smoothed}, 
+                      and its growth rates, for a chosen set of smoothing parameter settings. 
+                      (see \code{chosen.smooth.args} below and \code{\link{args4chosen_smooth}}) 
+                      This step will be omitted if \code{chosen.smooth.args} is \code{NULL}.} 
                 \item{Chosen smooth plot:}{Produces profile plots of the chosen smooth and its growth rates. 
-                      (see \code{chosen.plot.args} below and \code{\link{args4chosen_plot}})} 
-                      The \code{\link{logical}} argument \code{chosen.plot} determines whether 
-                      or not this plot is produced,
+                      (see \code{chosen.plot.args} below and \code{\link{args4chosen_plot}}) 
+                      Whether these plots are produced is controlled by whether 
+                      \code{chosen.plot.args} is set to \code{NULL}.}
 }
              Each of the `\code{args4}' functions has a set of defaults that will be used if 
              the corresponding argument, ending in `\code{.args}', is omitted. The defaults 
@@ -54,9 +62,9 @@ traitSmooth(data, response, response.smoothed, individuals, times,
             which.plots = c("profiles", "medians.deviations"), 
             profile.plot.args = args4profile_plot(), 
             meddevn.plot.args = args4meddevn_plot(), 
+            devnboxes.plot.args = args4devnboxes_plot(),
             chosen.smooth.args = args4chosen_smooth(), 
             chosen.plot.args = args4chosen_plot(), 
-            ggplotFuncsDevnBoxes = NULL,
             mergedata = NULL, 
             ...)
 }
@@ -150,31 +158,35 @@ traitSmooth(data, response, response.smoothed, individuals, times,
              The options are either \code{none} or some combination of \code{profiles}, 
              \code{absolute.boxplots}, \code{relative.boxplots} and 
              \code{medians.deviations}. The various \code{profiles} plots that can be 
-             poduced are described in the introduction to this function.} 
+             poduced are described in the introduction to this function. 
+             The plot of a chosen smooth is dealt with separately by the argument 
+             \code{chosen.plot.args}.} 
  \item{profile.plot.args}{A named \code{\link{list}} that is most easily 
              generated using \code{\link{args4profile_plot}}, it documenting the 
-             options available for varying profile plots and boxplots. \emph{Note 
-             that if \code{\link{args4profile_plot}} is to be called to change 
-             from the default settings given in the default \code{traitSmooth} call 
-             and some of those settings are to be retained, then the arguments 
-             whose settings are to be retained must also be included in the call 
-             to \code{\link{args4profile_plot}}; be aware that if you call 
-             \code{\link{args4profile_plot}}, then the defaults for this call are 
-             those for \code{\link{args4profile_plot}}, \bold{NOT} the call to 
-             \code{\link{args4profile_plot}} shown as the default for 
-             \code{traitSmooth}.}}
+             options available for varying the profile plots. \emph{Note 
+             that if \code{\link{args4profile_plot}} is being called from 
+             \code{traitSmooth} to change some arguments from the default 
+             settings, then it is safest to set all of the following arguments 
+             in the call: \code{plots.by}, \code{facet.x} \code{facet.y} and 
+             \code{include.raw}.} If this argument is set to \code{NULL}, these 
+             plots will not be produced.}
  \item{meddevn.plot.args}{A named \code{\link{list}} that is most easily 
              generated using \code{\link{args4meddevn_plot}}, it documenting the 
              options available for varying median deviations plots. \emph{Note 
-             that if \code{\link{args4meddevn_plot}} is to be called to change 
-             from the default settings given in the default \code{traitSmooth} 
-             call and some of those settings are to be retained, then the arguments 
-             whose settings are to be retained must also be included in the call 
-             to \code{\link{args4meddevn_plot}}; be aware that if you call 
-             \code{\link{args4meddevn_plot}}, then the defaults for this call are 
-             those for \code{\link{args4meddevn_plot}}, \bold{NOT} the call to 
-             \code{\link{args4meddevn_plot}} shown as the default for 
-             \code{traitSmooth}.}}
+             that if \code{\link{args4meddevn_plot}} is being called from 
+             \code{traitSmooth} to change some arguments from the default 
+             settings, then it is safest to set all of the following arguments 
+             in the call: \code{plots.by}, \code{plots.group}, \code{facet.x} 
+             and \code{facet.y}.} If this argument is set to \code{NULL}, these 
+             plots will not be produced.}
+ \item{devnboxes.plot.args}{A named \code{\link{list}} that is most easily 
+             generated using \code{\link{args4devnboxes_plot}}, it documenting the 
+             options available for varying the boxplots. \emph{Note 
+             that if \code{\link{args4devnboxes_plot}} is being called from 
+             \code{traitSmooth} to change some arguments from the default 
+             settings, then it is safest to set all of the following arguments in 
+             the call: \code{plots.by}, \code{facet.x} and \code{facet.y}.} If this 
+             argument is set to \code{NULL}, these plots will not be produced.}
 \item{chosen.smooth.args}{A named \code{\link{list}} with just one element or 
              \code{NULL} for each component. It is most easily generated using 
              \code{\link{args4chosen_smooth}} with \code{combinations} set to 
@@ -183,33 +195,28 @@ traitSmooth(data, response, response.smoothed, individuals, times,
              \code{df} and \code{lambdas} for a single smooth that is to be 
              extracted and that is amongst the smooths that have been produced 
              for the settings specified in \code{smoothing.methods}. If both 
-             \code{df} and \code{lambda} in \code{chosen.smooth.args} are \code{NULL}, 
-             then, depending on the settings for \code{spline.type} and 
-             \code{smoothng.method}, the value of either \code{df} or \code{lambdas} 
-             that is the median value or the observed value immediatly below the 
-             median value will be added to \code{chosen.smooth.args}. Otherwise, one of 
-             \code{df} and \code{lambda} should be \code{NULL} and the other should 
-             be a single \code{numeric} value. If a value in \code{chosen.smooth.args} 
-             is not amongst those investigated, a value that was investigated will 
-             be substituted.}
+             \code{df} and \code{lambda} in \code{chosen.smooth.args} are 
+             \code{NULL}, then, depending on the settings for \code{spline.type} 
+             and \code{smoothng.method}, the value of either \code{df} or 
+             \code{lambdas} that is the median value or the observed value 
+             immediatly below the median value will be added to 
+             \code{chosen.smooth.args}. Otherwise, one of \code{df} and 
+             \code{lambda} should be \code{NULL} and the other should be a 
+             single \code{numeric} value. If a value in 
+             \code{chosen.smooth.args} is not amongst those investigated, a 
+             value that was investigated will be substituted.}
  \item{chosen.plot.args}{A named \code{\link{list}} that is most easily 
              generated using \code{\link{args4chosen_plot}}, it documenting the 
              options available for varying profile plots. Because this plot 
              includes only a single smooth, the \code{chosen.smooth.args}, the 
              smoothing-parameter \code{\link{factor}}s are unnecessary and an 
              error will be given if any are included. \emph{Note that if 
-             \code{\link{args4profile_plot}} is to be called to change from the 
+             \code{\link{args4chosen_plot}} is to be called to change from the 
              default settings given in the default \code{traitSmooth} call, 
-             then you will need to set all of the following areguments: 
+             then it is safest to set all of the following arguments in the call: 
              \code{plots.by}, \code{facet.x}, \code{facet.y} and 
              \code{include.raw}.} If set to \code{NULL}, then no chosen-smooth plot 
              will be produced.}
- \item{ggplotFuncsDevnBoxes}{A \code{\link{list}}, each element of which contains 
-              the results of evaluating a \code{\link{ggplot}} function. 
-              It is created by calling the \code{\link{list}} function with 
-              a \code{\link{ggplot}} function call for each element.
-              These functions are applied in creating the \code{ggplot} 
-              object for deviations boxplots only.}
  \item{mergedata}{A \code{\link{data.frame}} that is to have the values for the 
              \code{trait.types} for the smooth specified by \code{chosen.smooth.args} 
              \code{\link{merge}}d with it. It must contain columns with the names given 

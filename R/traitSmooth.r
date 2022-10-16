@@ -1,16 +1,17 @@
 #Function to produce a single plot of deviations boxplots 
 plotDeviationsBoxes <- function(data, observed, smoothed, x.factor, 
                                 x.title = NULL, y.titles = NULL,
-                                facet.x = ".", facet.y = ".", labeller = NULL, 
-                                df, deviations.plots = "absolute", 
+                                facet.x = ".", facet.y = ".", 
+                                facet.labeller = NULL, 
+                                facet.scales = "fixed", 
+                                angle.x = 0, 
+                                deviations.plots = "absolute", 
                                 ggplotFuncs = NULL, printPlot = TRUE, ...)  
 {
   options <- c("none", "profiles", "absolute.boxplots", "relative.boxplots", 
                "medians.deviations", "compare.medians") #needed for probeSmoothing only
   devnplots <- options[unlist(lapply(deviations.plots, check.arg.values, 
                                      options=options))]
-  if (length(df) > 1)
-    stop("Deviations boxplots can only be plotted for a single df at a time")
   if ("none" %in% devnplots)
     devnplots <- "none"
   else
@@ -48,21 +49,22 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
     if (all(facet.x != ".") | all(facet.y != "."))
     {
       facet.form <- facet.char2formula(facet.x,facet.y)
-      if (is.null(labeller))
-        ggfacet <- list(facet_grid(facet.form))
+      if (is.null(facet.labeller))
+        ggfacet <- list(facet_grid(facet.form, scales = facet.scales))
       else
-        ggfacet <- list(facet_grid(facet.form, labeller = labeller))
+        ggfacet <- list(facet_grid(facet.form, labeller = facet.labeller, scales = facet.scales))
       ggfacet <- c(ggfacet, 
                    list(theme(strip.text = element_text(size=strip.text.size, face="bold"))))
     }
-    
+
     plotDevnBox <- function(dat, y.ytitle, ggplotFuncs = NULL, printPlot = TRUE)
     {
       plt <- ggplot(data = dat, aes_string(x = x.factor, y = "deviations"), ...) +
         theme_bw() + 
         theme(panel.grid.major = element_line(colour = "grey60", size = 0.5), 
               panel.grid.minor = element_line(colour = "grey80", size = 0.5),
-              axis.title = element_text(face="bold")) +
+              axis.title = element_text(face="bold"),
+              axis.text.x = element_text(angle = angle.x)) +
         geom_boxplot() + 
         geom_hline(yintercept=0, colour="blue") +
         ylab(y.ytitle) + xlab(x.title) + 
@@ -96,6 +98,167 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
   invisible(plts)
 }
 
+"plotSmoothsDevnBoxplots" <- function(data, response, response.smoothed = NULL,
+                                      individuals = "Snapshot.ID.Tag", times = "DAP", 
+                                      trait.types = c("response", "AGR", "RGR"), 
+                                      which.plots =  "absolute.boxplots", 
+                                      x.title = NULL, y.titles = NULL, 
+                                      devnboxes.plot.args = 
+                                        args4devnboxes_plot(plots.by = NULL, 
+                                                            facet.x = ".", facet.y = "."),
+                                      printPlot = TRUE, ...)
+{
+  devnboxes.plot.args <- devnboxes.plot.args
+  inargs <- list(...)
+  checkEllipsisArgs(c("plotSmoothsDevnBoxplots","plotDeviationsBoxes"), inargs)
+  
+  options <- c("none", "absolute.boxplots", "relative.boxplots")
+  plots <- options[unlist(lapply(which.plots, check.arg.values, options=options))]
+  if ("none" %in% plots & length(plots) > 1)
+    plots <- "none"
+
+  plts <- med.devn.dat <- NULL
+  #Check that plots are wanted
+  if (plots !=  "none" && !is.allnull(devnboxes.plot.args))
+  {
+    options <- c("response", "AGR", "RGR", "all")
+    traits <- options[unlist(lapply(trait.types, check.arg.values, options=options))]
+    if ("all" %in% traits)
+      traits <- c("response", "AGR", "RGR")
+    
+    #Get the options for the deviations boxplots options from the list
+    plots.by.box <- devnboxes.plot.args$plots.by
+    facet.x.box <- devnboxes.plot.args$facet.x
+    facet.y.box <- devnboxes.plot.args$facet.y 
+    collapse.facets.x.box <- devnboxes.plot.args$collapse.facets.x
+    collapse.facets.y.box <- devnboxes.plot.args$collapse.facets.y
+    facet.labeller <- devnboxes.plot.args$facet.labeller
+    scales.box <- devnboxes.plot.args$scales
+    angle.x.box <- devnboxes.plot.args$angle.x
+    ggplotFuncsDevnBoxes <- devnboxes.plot.args$ggplotFuncs
+    #Checking of the arguments that control the plots layout for boxplots
+    checkLayoutArgs(data = NULL, plots.by.box, plts.group = NULL, facet.x.box, facet.y.box)
+    
+    plts.by <- plots.by.box
+    
+    #Check have a valid smooths.frame
+    validsmoothsframe <- validSmoothsFrame(data)  
+    if (is.character(validsmoothsframe))
+      stop(validsmoothsframe)
+    checkPlotsArgs(data, plts.by = plts.by, facet.x = facet.x.box, facet.y = facet.y.box)
+    options <- c("none", "absolute.boxplots", "relative.boxplots")
+    plots <- options[unlist(lapply(which.plots, check.arg.values, options=options))]
+    if ("none" %in% plots & length(plots) > 1)
+      plots <- "none"
+    
+    if (is.null(x.title))
+      x.title <- times
+    if (is.null(response.smoothed))
+      response.smoothed <- paste0("s", response)
+    response.smooth <- response.smoothed
+    #Check that responses, response.smoothed, individuals and times are in data
+    checkNamesInData(c(response, response.smoothed, individuals, times), data = data)
+    
+    addRates <- function(traits, response, sep = ".")
+    {
+      unlist(lapply(traits, 
+                    function(trait, response)
+                    {
+                      if (!("response" %in% trait))
+                        response <- paste(response, trait, sep = sep)
+                      return(response)
+                    }, response = response))
+    }
+    kresp <- addRates(traits, response = response)
+    if (!all(kresp %in% names(data)))
+      stop("The following traits are not in the smooths.frame: ",
+           paste0(kresp[!(kresp %in% names(data))], collapse = ", "), 
+           "; perhaps, trait.types needs to be set differently")
+    kresp.sm <- addRates(traits, response = response.smoothed)
+    names(kresp.sm) <- kresp
+    
+    if (is.null(y.titles))
+    {
+      y.titles <- addRates(traits, response = response, sep = " ")
+      names(y.titles) <- kresp
+    } else
+    {
+      if (length(y.titles) != length(kresp))
+        stop("y.titles should be the same length as trait.types")
+      else
+        names(y.titles) <- kresp
+    }
+    
+    data[times] <- convertTimes2numeric(data[[times]])
+    times.factor <- ".Time.fac"
+    data[times.factor] <- data[times]
+    data[times.factor] <- with(data, eval(parse(text =times)))
+    data[times.factor] <- factor(unlist(data[times.factor]), 
+                                 labels = unique(data[times.factor])[order(unique(data[[times.factor]])),])
+    
+    #Determine whether there are any smooth.cols on the facets - if not must be in plots.by.box
+    smoothing.facets <- length(intersect(union(facet.x.box, facet.y.box), smooth.cols)) != 0
+    
+    #Set up the facets  
+    modfacet <- setupFacet(data = data, facet = facet.x.box, collapse.facets = collapse.facets.x.box, 
+                           combined.name = "Combined.x", smooth.cols = smooth.cols)
+    xfacet <- modfacet$newfacet
+    data <- modfacet$data
+    modfacet <- setupFacet(data = data, facet = facet.y.box, collapse.facets = collapse.facets.y.box, 
+                           combined.name = "Combined.y", smooth.cols = smooth.cols)
+    yfacet <- modfacet$newfacet
+    data <- modfacet$data
+    
+    #Do the plots
+    plts <- list()
+    for (k in kresp)
+    {
+      plts[[k]] <- list()
+      
+      if (is.allnull(plts.by)) #a single plot only
+        levs.by <- "all"
+      else
+      {
+        data$plots.by.box <- fac.mixcombine(data, plts.by, smooth.cols = smooth.cols)
+        levs.by <- levels(data$plots.by.box)
+      }
+      #Loop over plots.by.box
+      for (by in levs.by)
+      {
+        if (any(c("absolute.boxplots", "relative.boxplots") %in% plots))
+        {
+          y.titles.devn <- c(paste("Absolute", k, "deviations", sep = " "),
+                             paste("Relative", k, "deviations", sep = " "))
+          names(y.titles.devn) <- c("absolute.boxplots", "relative.boxplots")
+          y.titles.devn <- y.titles.devn[c("absolute.boxplots", "relative.boxplots") %in% plots]
+          
+          #Plot deviation plots for current plots.by.box
+          if (is.allnull(plts.by))
+            tmp1 <- data
+          else
+          { 
+            tmp1 <- data[data$plots.by.box==by,]
+            ggplotFuncsDevnBoxes <- c(ggplotFuncsDevnBoxes, list(ggtitle(paste0("Plot for ", by))))
+          }
+          plt <- plotDeviationsBoxes(data = tmp1, x.factor = times.factor, 
+                                     observed = k, smoothed = kresp.sm[k], 
+                                     deviations.plots = plots, 
+                                     x.title = x.title, y.titles = y.titles.devn, 
+                                     facet.x=xfacet, facet.y=facet.y.box, 
+                                     facet.labeller = facet.labeller, 
+                                     facet.scales = scales.box, 
+                                     angle.x = angle.x.box,
+                                     df = degfree, ggplotFuncs = ggplotFuncsDevnBoxes,
+                                     printPlot = printPlot)
+          plts[[k]][["absolute"]][[by]] <- plt[["absolute"]]
+          plts[[k]][["relative"]][[by]] <- plt[["relative"]]
+        }
+      }    
+    }
+  }
+  invisible(plts)
+}
+
 "plotSmoothsMedianDevns" <- function(data, response, response.smoothed = NULL, 
                                      individuals = "Snapshot.ID.Tag", times = "DAP", 
                                      trait.types = c("response", "AGR", "RGR"), 
@@ -110,327 +273,333 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
   meddevn.plot.args <- meddevn.plot.args
   inargs <- list(...)
   checkEllipsisArgs("plotSmoothsMedianDevns", inargs)
+ 
   
-  if (is.null(response.smoothed))
-    response.smoothed <- paste0("s", response)
-  #Check that responses, response.smoothed, individuals and times are in data
-  checkNamesInData(c(response, response.smoothed, individuals, times), data = data)
-  
-  options <- c("response", "AGR", "RGR", "all")
-  traits <- options[unlist(lapply(trait.types, check.arg.values, options=options))]
-  if ("all" %in% traits)
-    traits <- c("response", "AGR", "RGR")
-  
-  #Get the options for the median deviations plots options from the list
-  plots.by.med <- meddevn.plot.args$plots.by
-  plots.group.med <- meddevn.plot.args$plots.group
-  facet.x.med <- meddevn.plot.args$facet.x
-  facet.y.med <- meddevn.plot.args$facet.y
-  facet.labeller = meddevn.plot.args$facet.labeller
-  facet.scales.med <- meddevn.plot.args$facet.scales 
-  breaks.spacing.x <- meddevn.plot.args$breaks.spacing.x
-  angle.x <- meddevn.plot.args$angle.x
-  colour.values.med <- meddevn.plot.args$colour.values
-  shape.values.med <- meddevn.plot.args$shape.values
-  alpha.med <- meddevn.plot.args$alpha
-  propn.note.med <- meddevn.plot.args$propn.note
-  propn.types.med <- meddevn.plot.args$propn.types 
-  ggplotFuncsMedDevn <- meddevn.plot.args$ggplotFuncs
-  
-  plts.by <- plots.by.med
-  plts.group <- plots.group.med
-  
-  #Check have a valid smooths.frame
-  validsmoothsframe <- validSmoothsFrame(data)  
-  if (is.character(validsmoothsframe))
-    stop(validsmoothsframe)
-  checkPlotsArgs(data, plts.by, plts.group, facet.x = facet.x.med, facet.y = facet.y.med)
-  
-  strip.text.size <- 10
-  
-  dat <- data
-  
-  #Form data.frame with just columns needed 
-  #Create a factor Times that has the plotted values of x for its labels
-  if (is.null(x.title))
-    x.title <- times
-  data[times] <- convertTimes2numeric(data[[times]])
-  id.cols <- c(individuals, times) #, colour.column)
-  times.factor <- ".Time.fac"
-  dat[times.factor] <- dat[times]
-  dat[times.factor] <- with(dat, eval(parse(text =times)))
-  dat[times.factor] <- factor(unlist(dat[times.factor]), 
-                              labels = unique(dat[times.factor])[order(unique(dat[[times.factor]])),])
-  fac.group <- NULL
-  if (!is.allnull(plts.group))
-  { 
-    dat$SmoothParams <- fac.mixcombine(dat, plts.group, smooth.cols = smooth.cols)
-    fac.group <- "SmoothParams"
-    id.cols <- c(fac.group, id.cols)
-  }
-  
-  #Determine xfacet and fac.by
-  xfacet <- facet.x.med
-  if (!is.allnull(plts.by))
-  {
-    dat$fac.by <- fac.mixcombine(dat, plts.by, smooth.cols = smooth.cols)
-    id.cols <- c("fac.by", id.cols)
-  }
-  if (all(xfacet != "."))
-    id.cols <- c(id.cols, fac.getinFormula(xfacet))
-  if (all(facet.y.med != "."))
-    id.cols <- c(id.cols, fac.getinFormula(facet.y.med))
-  
-  #Set up facet
-  ggfacet <- list()
-  facet.cols <- NULL
-  if (all(xfacet != ".") || all(facet.y.med != "."))
-  {
-    facet.form <- facet.char2formula(xfacet, facet.y.med)
-    if (is.null(facet.labeller))
-      ggfacet <- list(facet_grid(facet.form, scales = facet.scales.med))
-    else
-      ggfacet <- list(facet_grid(facet.form, scales = facet.scales.med, labeller = facet.labeller))
-    facet.cols <- c(xfacet, facet.y.med)
-    facet.cols <- facet.cols[facet.cols != "."]
-  }
-  
-  #Form raw and smoothed trait names
-  addRates <- function(traits, response, sep = ".")
-  {
-    unlist(lapply(traits, 
-                  function(trait, response)
-                  {
-                    if (!("response" %in% trait))
-                      response <- paste(response, trait, sep = sep)
-                    return(response)
-                  }, response = response))
-  }
-  kresp <- addRates(traits, response = response)
-  kresp.sm <- addRates(traits, response = response.smoothed)
-  id.cols <- c(id.cols, kresp, kresp.sm)
-  if (!all(id.cols %in% names(dat)))
-    stop(paste("Do not have the following required columns in data: ", 
-               paste(id.cols[!(id.cols %in% names(dat))],collapse=", "), "\n", sep=""))
-  
-  kresp.devn <- paste(kresp, "devn", sep = ".")
-  names(kresp.sm) <- kresp
-  names(kresp.devn) <- kresp
-  if (is.null(y.titles))
-  {
-    y.titles <- paste("median", addRates(traits, response = response, sep = " "), "deviations")
-    names(y.titles) <- kresp
-  } else
-  {
-    if (length(y.titles) != length(kresp))
-      stop("y.titles should be the same length as trait.types")
-    else
+  plts <- med.devn.dat <- NULL
+  #Check that plots are wanted
+  if (!is.allnull(meddevn.plot.args))
+  {      
+    if (is.null(response.smoothed))
+      response.smoothed <- paste0("s", response)
+    #Check that responses, response.smoothed, individuals and times are in data
+    checkNamesInData(c(response, response.smoothed, individuals, times), data = data)
+    
+    options <- c("response", "AGR", "RGR", "all")
+    traits <- options[unlist(lapply(trait.types, check.arg.values, options=options))]
+    if ("all" %in% traits)
+      traits <- c("response", "AGR", "RGR")
+    
+    #Get the options for the median deviations plots options from the list
+    plots.by.med <- meddevn.plot.args$plots.by
+    plots.group.med <- meddevn.plot.args$plots.group
+    facet.x.med <- meddevn.plot.args$facet.x
+    facet.y.med <- meddevn.plot.args$facet.y
+    facet.labeller = meddevn.plot.args$facet.labeller
+    facet.scales.med <- meddevn.plot.args$facet.scales 
+    breaks.spacing.x <- meddevn.plot.args$breaks.spacing.x
+    angle.x <- meddevn.plot.args$angle.x
+    colour.values.med <- meddevn.plot.args$colour.values
+    shape.values.med <- meddevn.plot.args$shape.values
+    alpha.med <- meddevn.plot.args$alpha
+    propn.note.med <- meddevn.plot.args$propn.note
+    propn.types.med <- meddevn.plot.args$propn.types 
+    ggplotFuncsMedDevn <- meddevn.plot.args$ggplotFuncs
+    
+    plts.by <- plots.by.med
+    plts.group <- plots.group.med
+    
+    #Check have a valid smooths.frame
+    validsmoothsframe <- validSmoothsFrame(data)  
+    if (is.character(validsmoothsframe))
+      stop(validsmoothsframe)
+    checkPlotsArgs(data, plts.by, plts.group, facet.x = facet.x.med, facet.y = facet.y.med)
+    
+    strip.text.size <- 10
+    
+    dat <- data
+    
+    #Form data.frame with just columns needed 
+    #Create a factor Times that has the plotted values of x for its labels
+    if (is.null(x.title))
+      x.title <- times
+    data[times] <- convertTimes2numeric(data[[times]])
+    id.cols <- c(individuals, times) #, colour.column)
+    times.factor <- ".Time.fac"
+    dat[times.factor] <- dat[times]
+    dat[times.factor] <- with(dat, eval(parse(text =times)))
+    dat[times.factor] <- factor(unlist(dat[times.factor]), 
+                                labels = unique(dat[times.factor])[order(unique(dat[[times.factor]])),])
+    fac.group <- NULL
+    if (!is.allnull(plts.group))
+    { 
+      dat$SmoothParams <- fac.mixcombine(dat, plts.group, smooth.cols = smooth.cols)
+      fac.group <- "SmoothParams"
+      id.cols <- c(fac.group, id.cols)
+    }
+    
+    #Determine xfacet and fac.by
+    xfacet <- facet.x.med
+    if (!is.allnull(plts.by))
+    {
+      dat$fac.by <- fac.mixcombine(dat, plts.by, smooth.cols = smooth.cols)
+      id.cols <- c("fac.by", id.cols)
+    }
+    if (all(xfacet != "."))
+      id.cols <- c(id.cols, fac.getinFormula(xfacet))
+    if (all(facet.y.med != "."))
+      id.cols <- c(id.cols, fac.getinFormula(facet.y.med))
+    
+    #Set up facet
+    ggfacet <- list()
+    facet.cols <- NULL
+    if (all(xfacet != ".") || all(facet.y.med != "."))
+    {
+      facet.form <- facet.char2formula(xfacet, facet.y.med)
+      if (is.null(facet.labeller))
+        ggfacet <- list(facet_grid(facet.form, scales = facet.scales.med))
+      else
+        ggfacet <- list(facet_grid(facet.form, scales = facet.scales.med, labeller = facet.labeller))
+      facet.cols <- c(xfacet, facet.y.med)
+      facet.cols <- facet.cols[facet.cols != "."]
+    }
+    
+    #Form raw and smoothed trait names
+    addRates <- function(traits, response, sep = ".")
+    {
+      unlist(lapply(traits, 
+                    function(trait, response)
+                    {
+                      if (!("response" %in% trait))
+                        response <- paste(response, trait, sep = sep)
+                      return(response)
+                    }, response = response))
+    }
+    kresp <- addRates(traits, response = response)
+    kresp.sm <- addRates(traits, response = response.smoothed)
+    id.cols <- c(id.cols, kresp, kresp.sm)
+    if (!all(id.cols %in% names(dat)))
+      stop(paste("Do not have the following required columns in data: ", 
+                 paste(id.cols[!(id.cols %in% names(dat))],collapse=", "), "\n", sep=""))
+    
+    kresp.devn <- paste(kresp, "devn", sep = ".")
+    names(kresp.sm) <- kresp
+    names(kresp.devn) <- kresp
+    if (is.null(y.titles))
+    {
+      y.titles <- paste("median", addRates(traits, response = response, sep = " "), "deviations")
       names(y.titles) <- kresp
-  }
-  
-  #Calculate the deviations
-  dat[kresp.devn] <- dat[kresp] - dat[kresp.sm]
-  
-  #Calculate the median deviations
-  split.facs <- c(if (!is.allnull(plts.by)) "fac.by", 
-                  facet.cols, fac.group, times.factor) #NULL objects will be ignored
-  dat <- dat[c(split.facs, setdiff(names(dat), split.facs))]
-  dat <- dat[do.call(order, dat),]
-  tmp <- dat
-  tmp$split.fac <- dae::fac.combine(as.list(dat[split.facs]), combine.levels = TRUE)
-  dat.split <- split(tmp, f = tmp$split.fac)
-  med.devn.dat <- lapply(dat.split, 
-                         function(data, kresp.devn)
-                         { 
-                           med <- unlist(lapply(data[kresp.devn], median, na.rm = TRUE))
-                           krow <- cbind(data[1,split.facs], rbind(med))
-                           return(krow)
-                         },
-                         kresp.devn = kresp.devn)
-  med.devn.dat <- as.data.frame(do.call(rbind, med.devn.dat))
-  med.devn.dat[times] <- dae::as.numfac(unlist(med.devn.dat[times.factor]))
-  #Remove the times.factor
-  med.devn.dat <- med.devn.dat[,-match(times.factor, names(med.devn.dat))]
-  #Remove any missing values
-  med.devn.dat <- med.devn.dat[which(!is.na(med.devn.dat[kresp.devn[1]])), ]
-  
-  #Calculate the median responses
-  if (propn.note.med && !is.null(propn.types.med))
-  {
-    if (length(propn.types.med) != length(kresp))
-      stop("Length of propn.types.med is not the same as the number of trait.types")
-    names(propn.types.med) <- kresp
-    med.resp.dat <- lapply(dat.split, 
-                           function(data, kresp)
+    } else
+    {
+      if (length(y.titles) != length(kresp))
+        stop("y.titles should be the same length as trait.types")
+      else
+        names(y.titles) <- kresp
+    }
+    
+    #Calculate the deviations
+    dat[kresp.devn] <- dat[kresp] - dat[kresp.sm]
+    
+    #Calculate the median deviations
+    split.facs <- c(if (!is.allnull(plts.by)) "fac.by", 
+                    facet.cols, fac.group, times.factor) #NULL objects will be ignored
+    dat <- dat[c(split.facs, setdiff(names(dat), split.facs))]
+    dat <- dat[do.call(order, dat),]
+    tmp <- dat
+    tmp$split.fac <- dae::fac.combine(as.list(dat[split.facs]), combine.levels = TRUE)
+    dat.split <- split(tmp, f = tmp$split.fac)
+    med.devn.dat <- lapply(dat.split, 
+                           function(data, kresp.devn)
                            { 
-                             med <- unlist(lapply(data[kresp], median, na.rm = TRUE))
+                             med <- unlist(lapply(data[kresp.devn], median, na.rm = TRUE))
                              krow <- cbind(data[1,split.facs], rbind(med))
                              return(krow)
                            },
-                           kresp = kresp)
-    med.resp.dat <- as.data.frame(do.call(rbind, med.resp.dat))
-    med.resp.dat <- rbind(med.resp.dat, med.resp.dat)
-    med.resp.dat <- cbind(sign = rep(c(1,-1), each = nrow(med.resp.dat)/2),
-                          med.resp.dat)
-    med.resp.dat[kresp] <- as.data.frame(mapply(function(var, propn)
-    {
-      var <- propn * rep(c(1, -1), each = length(var)/2) * var
-    },
-    med.resp.dat[kresp], propn.types.med))
-    med.resp.dat[times] <- dae::as.numfac(unlist(med.resp.dat[times.factor]))
+                           kresp.devn = kresp.devn)
+    med.devn.dat <- as.data.frame(do.call(rbind, med.devn.dat))
+    med.devn.dat[times] <- dae::as.numfac(unlist(med.devn.dat[times.factor]))
     #Remove the times.factor
-    med.resp.dat <- med.resp.dat[,-match(times.factor, names(med.resp.dat))]
+    med.devn.dat <- med.devn.dat[,-match(times.factor, names(med.devn.dat))]
     #Remove any missing values
-    med.resp.dat <- med.resp.dat[which(!is.na(med.resp.dat[kresp[1]])), ]
-  }
-  
-  #Plot the median deviations for each trait
-  if (is.null(shape.values.med))
-    shape.values.med <- c(21:24,7,9,10,11,3,4)
-  
-  plts <- list()
-  for (k in kresp)
-  {
-    plts[[k]] <- list()
-    if (is.allnull(plts.by))
-      levs.by <- "all"
-    else
-      levs.by <- levels(med.devn.dat$fac.by)
-    for (p in levs.by)
-    { 
-      if (is.allnull(plts.by))
-        tmp <- med.devn.dat
-      else
-        tmp <- med.devn.dat[med.devn.dat$fac.by == p,]
-      if ("Method" %in% names(tmp))
-        tmp$Method <- with(tmp, dae::fac.recast(Method, 
-                                                newlevels = substring(levels(Method),1,3)))
-      plts[[k]][[p]] <- ggplot(tmp, aes_string(x = times, kresp.devn[k]), ...) +
-        ggfacet +
-        geom_hline(yintercept=0, linetype="solid", size=0.5, colour = "maroon", alpha=0.7) +
-        setScaleTime(tmp[[times]], breaks.spacing.x = breaks.spacing.x) +
-        xlab(x.title) + ylab(y.titles[k]) + theme_bw() +
-        theme(strip.text = element_text(size=strip.text.size, face="bold"),
-              axis.title = element_text(face="bold"), 
-              axis.text.x = element_text(angle = angle.x), 
-              panel.grid.major = element_line(colour = "grey60", size = 0.5), 
-              panel.grid.minor = element_line(colour = "grey80", size = 0.5))
-      
-      if (is.null(fac.group))
-      { 
-        if (is.allnull(colour.values.med))
-        { 
-          plts[[k]][[p]] <- plts[[k]][[p]] + geom_line (size=0.4, alpha=alpha.med)
-          if (is.allnull(shape.values.med))
-            plts[[k]][[p]] <- plts[[k]][[p]] + geom_point(alpha=alpha.med, size=1.5)
-          else
-            plts[[k]][[p]] <- plts[[k]][[p]] + 
-              geom_point(shape=shape.values.med[1], alpha=alpha.med, size=1.5)
-        }
-        else
-        { 
-          plts[[k]][[p]] <- plts[[k]][[p]] + 
-            geom_line (colour=colour.values.med[1], size=0.4, alpha=alpha.med)
-          if (is.allnull(shape.values.med))
-            plts[[k]][[p]] <- plts[[k]][[p]] + 
-              geom_point(colour=colour.values.med[1], 
-                         fill=colour.values.med[1], alpha=alpha.med, size=1.5)
-          else
-            plts[[k]][[p]] <- plts[[k]][[p]] + 
-              geom_point(colour=colour.values.med[1], shape=shape.values.med[1], 
-                         fill=colour.values.med[1], alpha=alpha.med, size=1.5)
-        }
-      }
-      else
-        plts[[k]][[p]] <- plts[[k]][[p]] + 
-        geom_line (aes_string(colour=fac.group), size=0.4, alpha=alpha.med) +
-        geom_point(aes_string(colour=fac.group, shape=fac.group, fill=fac.group), 
-                   alpha=alpha.med, size=1.5)
-      
-      if (!(is.null(colour.values.med)))
-        plts[[k]][[p]] <- plts[[k]][[p]] + scale_colour_manual(values = colour.values.med)
-      
-      if (!(is.null(shape.values.med)))
-        plts[[k]][[p]] <- plts[[k]][[p]] + scale_shape_manual(values = shape.values.med)
-      else
-        plts[[k]][[p]] <- plts[[k]][[p]] + scale_shape_manual(values = c(21:24,7,9,10,11))
-      
-      if (!is.allnull(plts.group) && fac.group == "SmoothParams")
-        plts[[k]][[p]] <- plts[[k]][[p]] + guides(shape=guide_legend(title = "Smoothing\nparameters"),
-                                                  fill=guide_legend(title = "Smoothing\nparameters"),
-                                                  colour=guide_legend(title = "Smoothing\nparameters"))
-      
-      if (!is.allnull(plts.by))
-        plts[[k]][[p]] <- plts[[k]][[p]] + ggtitle(paste("Plot for",p))
-      
-      #Plot an envelope of the response median
-      if (propn.note.med && !is.null(propn.types.med))
+    med.devn.dat <- med.devn.dat[which(!is.na(med.devn.dat[kresp.devn[1]])), ]
+    
+    #Calculate the median responses
+    if (propn.note.med && !is.null(propn.types.med))
+    {
+      if (length(propn.types.med) != length(kresp))
+        stop("Length of propn.types.med is not the same as the number of trait.types")
+      names(propn.types.med) <- kresp
+      med.resp.dat <- lapply(dat.split, 
+                             function(data, kresp)
+                             { 
+                               med <- unlist(lapply(data[kresp], median, na.rm = TRUE))
+                               krow <- cbind(data[1,split.facs], rbind(med))
+                               return(krow)
+                             },
+                             kresp = kresp)
+      med.resp.dat <- as.data.frame(do.call(rbind, med.resp.dat))
+      med.resp.dat <- rbind(med.resp.dat, med.resp.dat)
+      med.resp.dat <- cbind(sign = rep(c(1,-1), each = nrow(med.resp.dat)/2),
+                            med.resp.dat)
+      med.resp.dat[kresp] <- as.data.frame(mapply(function(var, propn)
       {
+        var <- propn * rep(c(1, -1), each = length(var)/2) * var
+      },
+      med.resp.dat[kresp], propn.types.med))
+      med.resp.dat[times] <- dae::as.numfac(unlist(med.resp.dat[times.factor]))
+      #Remove the times.factor
+      med.resp.dat <- med.resp.dat[,-match(times.factor, names(med.resp.dat))]
+      #Remove any missing values
+      med.resp.dat <- med.resp.dat[which(!is.na(med.resp.dat[kresp[1]])), ]
+    }
+    
+    #Plot the median deviations for each trait
+    if (is.null(shape.values.med))
+      shape.values.med <- c(21:24,7,9,10,11,3,4)
+    
+    plts <- list()
+    for (k in kresp)
+    {
+      plts[[k]] <- list()
+      if (is.allnull(plts.by))
+        levs.by <- "all"
+      else
+        levs.by <- levels(med.devn.dat$fac.by)
+      for (p in levs.by)
+      { 
         if (is.allnull(plts.by))
-          med.resp.tmp <- med.resp.dat
+          tmp <- med.devn.dat
         else
-          med.resp.tmp <- med.resp.dat[med.resp.dat$fac.by == p, ]
-        #Construct message to be plotted
-        if (propn.note.med)
-        {
-          xmin <- min(med.resp.tmp[times], na.rm = TRUE)
-          xrange <- max(med.resp.tmp[times], na.rm = TRUE) - xmin #not used at present
-          ymin <- min(med.resp.tmp[k], na.rm = TRUE)
-          envel <- data.frame(rep(xmin, 2),
-                              c(ymin+2.75, ymin))
-          names(envel) <- c(times, kresp.devn[k])
-          ncol.x <- 1
-          if (all(facet.x.med != "."))
-          {
-            lastlevs <- lapply(facet.x.med, 
-                               function(fac, med.resp.tmp) 
-                               {
-                                 lastlev <- levels(med.resp.tmp[[fac]])
-                                 lastlev <- rep(factor(lastlev[length(lastlev)], levels = lastlev), 2)
-                               }, med.resp.tmp = med.resp.tmp)
-            names(lastlevs) <- facet.x.med
-            envel <- cbind(envel, lastlevs)
+          tmp <- med.devn.dat[med.devn.dat$fac.by == p,]
+        if ("Method" %in% names(tmp))
+          tmp$Method <- with(tmp, dae::fac.recast(Method, 
+                                                  newlevels = substring(levels(Method),1,3)))
+        plts[[k]][[p]] <- ggplot(tmp, aes_string(x = times, kresp.devn[k]), ...) +
+          ggfacet +
+          geom_hline(yintercept=0, linetype="solid", size=0.5, colour = "maroon", alpha=0.7) +
+          setScaleTime(tmp[[times]], breaks.spacing.x = breaks.spacing.x) +
+          xlab(x.title) + ylab(y.titles[k]) + theme_bw() +
+          theme(strip.text = element_text(size=strip.text.size, face="bold"),
+                axis.title = element_text(face="bold"), 
+                axis.text.x = element_text(angle = angle.x), 
+                panel.grid.major = element_line(colour = "grey60", size = 0.5), 
+                panel.grid.minor = element_line(colour = "grey80", size = 0.5))
+        
+        if (is.null(fac.group))
+        { 
+          if (is.allnull(colour.values.med))
+          { 
+            plts[[k]][[p]] <- plts[[k]][[p]] + geom_line (size=0.4, alpha=alpha.med)
+            if (is.allnull(shape.values.med))
+              plts[[k]][[p]] <- plts[[k]][[p]] + geom_point(alpha=alpha.med, size=1.5)
+            else
+              plts[[k]][[p]] <- plts[[k]][[p]] + 
+                geom_point(shape=shape.values.med[1], alpha=alpha.med, size=1.5)
           }
-          if (all(facet.y.med != "."))
-          {
-            lastlevs <- lapply(facet.y.med, 
-                               function(fac, med.resp.tmp) 
-                               {
-                                 lastlev <- levels(med.resp.tmp[[fac]])
-                                 lastlev <- rep(factor(lastlev[length(lastlev)], levels = lastlev), 2)
-                               }, med.resp.tmp = med.resp.tmp)
-            names(lastlevs) <- facet.y.med
-            envel <- cbind(envel, lastlevs)
-          }
-          if (ncol.x >3)
-            envel$lab <- c("Envelope:", 
-                           paste(propn.types.med[k],"of response median"))
           else
-          {
-            envel <- envel[2,]
-            envel$lab <- paste("Envelope:", propn.types.med[k],"of response median")
+          { 
+            plts[[k]][[p]] <- plts[[k]][[p]] + 
+              geom_line (colour=colour.values.med[1], size=0.4, alpha=alpha.med)
+            if (is.allnull(shape.values.med))
+              plts[[k]][[p]] <- plts[[k]][[p]] + 
+                geom_point(colour=colour.values.med[1], 
+                           fill=colour.values.med[1], alpha=alpha.med, size=1.5)
+            else
+              plts[[k]][[p]] <- plts[[k]][[p]] + 
+                geom_point(colour=colour.values.med[1], shape=shape.values.med[1], 
+                           fill=colour.values.med[1], alpha=alpha.med, size=1.5)
           }
+        }
+        else
+          plts[[k]][[p]] <- plts[[k]][[p]] + 
+          geom_line (aes_string(colour=fac.group), size=0.4, alpha=alpha.med) +
+          geom_point(aes_string(colour=fac.group, shape=fac.group, fill=fac.group), 
+                     alpha=alpha.med, size=1.5)
+        
+        if (!(is.null(colour.values.med)))
+          plts[[k]][[p]] <- plts[[k]][[p]] + scale_colour_manual(values = colour.values.med)
+        
+        if (!(is.null(shape.values.med)))
+          plts[[k]][[p]] <- plts[[k]][[p]] + scale_shape_manual(values = shape.values.med)
+        else
+          plts[[k]][[p]] <- plts[[k]][[p]] + scale_shape_manual(values = c(21:24,7,9,10,11))
+        
+        if (!is.allnull(plts.group) && fac.group == "SmoothParams")
+          plts[[k]][[p]] <- plts[[k]][[p]] + guides(shape=guide_legend(title = "Smoothing\nparameters"),
+                                                    fill=guide_legend(title = "Smoothing\nparameters"),
+                                                    colour=guide_legend(title = "Smoothing\nparameters"))
+        
+        if (!is.allnull(plts.by))
+          plts[[k]][[p]] <- plts[[k]][[p]] + ggtitle(paste("Plot for",p))
+        
+        #Plot an envelope of the response median
+        if (propn.note.med && !is.null(propn.types.med))
+        {
+          if (is.allnull(plts.by))
+            med.resp.tmp <- med.resp.dat
+          else
+            med.resp.tmp <- med.resp.dat[med.resp.dat$fac.by == p, ]
+          #Construct message to be plotted
+          if (propn.note.med)
+          {
+            xmin <- min(med.resp.tmp[times], na.rm = TRUE)
+            xrange <- max(med.resp.tmp[times], na.rm = TRUE) - xmin #not used at present
+            ymin <- min(med.resp.tmp[k], na.rm = TRUE)
+            envel <- data.frame(rep(xmin, 2),
+                                c(ymin+2.75, ymin))
+            names(envel) <- c(times, kresp.devn[k])
+            ncol.x <- 1
+            if (all(facet.x.med != "."))
+            {
+              lastlevs <- lapply(facet.x.med, 
+                                 function(fac, med.resp.tmp) 
+                                 {
+                                   lastlev <- levels(med.resp.tmp[[fac]])
+                                   lastlev <- rep(factor(lastlev[length(lastlev)], levels = lastlev), 2)
+                                 }, med.resp.tmp = med.resp.tmp)
+              names(lastlevs) <- facet.x.med
+              envel <- cbind(envel, lastlevs)
+            }
+            if (all(facet.y.med != "."))
+            {
+              lastlevs <- lapply(facet.y.med, 
+                                 function(fac, med.resp.tmp) 
+                                 {
+                                   lastlev <- levels(med.resp.tmp[[fac]])
+                                   lastlev <- rep(factor(lastlev[length(lastlev)], levels = lastlev), 2)
+                                 }, med.resp.tmp = med.resp.tmp)
+              names(lastlevs) <- facet.y.med
+              envel <- cbind(envel, lastlevs)
+            }
+            if (ncol.x >3)
+              envel$lab <- c("Envelope:", 
+                             paste(propn.types.med[k],"of response median"))
+            else
+            {
+              envel <- envel[2,]
+              envel$lab <- paste("Envelope:", propn.types.med[k],"of response median")
+            }
+          }
+          
+          #Plot the envelope
+          plts[[k]][[p]] <- plts[[k]][[p]] + geom_line(data = med.resp.tmp, aes_string(y=k, group="sign"), 
+                                                       linetype="dashed")
+          if (propn.note.med)
+            plts[[k]][[p]] <- plts[[k]][[p]] + 
+            geom_text(data = envel, 
+                      mapping = aes_string(x = times, y = kresp.devn[k], 
+                                           label = "lab"), 
+                      hjust = 0, vjust=-Inf, 
+                      fontface = "plain", size = 3)
         }
         
-        #Plot the envelope
-        plts[[k]][[p]] <- plts[[k]][[p]] + geom_line(data = med.resp.tmp, aes_string(y=k, group="sign"), 
-                                                     linetype="dashed")
-        if (propn.note.med)
-          plts[[k]][[p]] <- plts[[k]][[p]] + 
-          geom_text(data = envel, 
-                    mapping = aes_string(x = times, y = kresp.devn[k], 
-                                         label = "lab"), 
-                    hjust = 0, vjust=-Inf, 
-                    fontface = "plain", size = 3)
+        if (!is.null(ggplotFuncsMedDevn))
+        {
+          for(f in ggplotFuncsMedDevn)
+            plts[[k]][[p]] <- plts[[k]][[p]] + f
+        }
+        if (printPlot)
+          print(plts[[k]][[p]])
       }
-      
-      if (!is.null(ggplotFuncsMedDevn))
-      {
-        for(f in ggplotFuncsMedDevn)
-          plts[[k]][[p]] <- plts[[k]][[p]] + f
-      }
-      if (printPlot)
-        print(plts[[k]][[p]])
     }
   }
   invisible(list(plots = plts, med.devn.dat = med.devn.dat))
@@ -439,256 +608,226 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
 "plotSmoothsComparison" <- function(data, response, response.smoothed = NULL,
                                     individuals = "Snapshot.ID.Tag", times = "DAP", 
                                     trait.types = c("response", "AGR", "RGR"), 
-                                    which.plots =  "profiles", 
                                     x.title = NULL, y.titles = NULL, 
                                     profile.plot.args = args4profile_plot(plots.by = NULL, 
                                                                           facet.x = ".", facet.y = ".", 
                                                                           include.raw = "no"),
-                                    ggplotFuncsDevnBoxes = NULL, 
                                     printPlot = TRUE, ...)
 {
   profile.plot.args <- profile.plot.args
   inargs <- list(...)
   checkEllipsisArgs(c("plotSmoothsComparison","plotProfiles"), inargs)
   
-  #Find out if any plotProfiles arguments that args4profile_plot handles have been supplied in '...'
-  if (length(inargs))
-  {
-    usedProfile.args <- formalArgs(args4profile_plot)
-    doubleargs <- intersect(names(inargs), usedProfile.args)
-    if (length(doubleargs))
-      stop("the  'plotProfiles' arguments ",paste0(doubleargs, collapse = ", "), 
-           " conflict with 'args4profile_plot' arguments")
-  }
-  pltProfile.args <- NULL
-  
-  options <- c("response", "AGR", "RGR", "all")
-  traits <- options[unlist(lapply(trait.types, check.arg.values, options=options))]
-  if ("all" %in% traits)
-    traits <- c("response", "AGR", "RGR")
-  
-  #Get the options for the profile plots options from the list
-  plots.by.pf <- profile.plot.args$plots.by
-  facet.x.pf <- profile.plot.args$facet.x
-  facet.y.pf <- profile.plot.args$facet.y 
-  include.raw.pf <- profile.plot.args$include.raw
-  collapse.facets.x.pf <- profile.plot.args$collapse.facets.x
-  collapse.facets.y.pf <- profile.plot.args$collapse.facets.y
-  facet.labeller <- profile.plot.args$facet.labeller
-  facet.scales.pf <- profile.plot.args$facet.scales
-  breaks.spacing.x <- profile.plot.args$breaks.spacing.x
-  angle.x <- profile.plot.args$angle.x
-  colour.pf <- profile.plot.args$colour
-  colour.column.pf <- profile.plot.args$colour.column
-  colour.values.pf <- profile.plot.args$colour.values
-  alpha.pf <- profile.plot.args$alpha
-  addMediansWhiskers.pf <- profile.plot.args$addMediansWhiskers
-  ggplotFuncsProfile <- profile.plot.args$ggplotFuncs
-  
-  #Check include.raw.pf value
-  incl.raw.opt <- c("no", "alone", "facet.x", "facet.y")
-  incl.raw.opt <- incl.raw.opt[check.arg.values(include.raw.pf, options=incl.raw.opt)]
-  incl.raw <- incl.raw.opt != "no"
-  
-  #Checking of the arguments that control the plots layout
-  checkLayoutArgs(data = data, plots.by.pf, plts.group = NULL, facet.x.pf, facet.y.pf)
-  plts.by <- plots.by.pf
-  
-  #Check have a valid smooths.frame
-  validsmoothsframe <- validSmoothsFrame(data)  
-  if (is.character(validsmoothsframe))
-    stop(validsmoothsframe)
-  checkPlotsArgs(data, plts.by = plts.by, facet.x = facet.x.pf, facet.y = facet.y.pf)
-  options <- c("none", "profiles", "absolute.boxplots", "relative.boxplots", "medians.deviations")
-  plots <- options[unlist(lapply(which.plots, check.arg.values, options=options))]
-  if ("none" %in% plots & length(plots) > 1)
-    plots <- "none"
-  
-  if (is.null(x.title))
-    x.title <- times
-  if (is.null(response.smoothed))
-    response.smoothed <- paste0("s", response)
-  response.smooth <- response.smoothed
-  #Check that responses, response.smoothed, individuals and times are in data
-  checkNamesInData(c(response, response.smoothed, individuals, times), data = data)
-  
-  addRates <- function(traits, response, sep = ".")
-  {
-    unlist(lapply(traits, 
-                  function(trait, response)
-                  {
-                    if (!("response" %in% trait))
-                      response <- paste(response, trait, sep = sep)
-                    return(response)
-                  }, response = response))
-  }
-  kresp <- addRates(traits, response = response)
-  if (!all(kresp %in% names(data)))
-    stop("The following traits are not in the smooths.frame: ",
-         paste0(kresp[!(kresp %in% names(data))], collapse = ", "), 
-         "; perhaps, trait.types needs to be set differently")
-  kresp.sm <- addRates(traits, response = response.smoothed)
-  names(kresp.sm) <- kresp
-  
-  if (is.null(y.titles))
-  {
-    y.titles <- addRates(traits, response = response, sep = " ")
-    names(y.titles) <- kresp
-  } else
-  {
-    if (length(y.titles) != length(kresp))
-      stop("y.titles should be the same length as trait.types")
-    else
+  plts <- NULL
+  #Check that plots are wanted
+  if (!is.allnull(profile.plot.args))
+  {      
+    #Find out if any plotProfiles arguments that args4profile_plot handles have been supplied in '...'
+    if (length(inargs))
+    {
+      usedProfile.args <- formalArgs(args4profile_plot)
+      doubleargs <- intersect(names(inargs), usedProfile.args)
+      if (length(doubleargs))
+        stop("the  'plotProfiles' arguments ",paste0(doubleargs, collapse = ", "), 
+             " conflict with 'args4profile_plot' arguments")
+    }
+    pltProfile.args <- NULL
+    
+    options <- c("response", "AGR", "RGR", "all")
+    traits <- options[unlist(lapply(trait.types, check.arg.values, options=options))]
+    if ("all" %in% traits)
+      traits <- c("response", "AGR", "RGR")
+    
+    #Get the options for the profile plots options from the list
+    plots.by.pf <- profile.plot.args$plots.by
+    facet.x.pf <- profile.plot.args$facet.x
+    facet.y.pf <- profile.plot.args$facet.y 
+    include.raw.pf <- profile.plot.args$include.raw
+    collapse.facets.x.pf <- profile.plot.args$collapse.facets.x
+    collapse.facets.y.pf <- profile.plot.args$collapse.facets.y
+    facet.labeller <- profile.plot.args$facet.labeller
+    facet.scales.pf <- profile.plot.args$facet.scales
+    breaks.spacing.x <- profile.plot.args$breaks.spacing.x
+    angle.x <- profile.plot.args$angle.x
+    colour.pf <- profile.plot.args$colour
+    colour.column.pf <- profile.plot.args$colour.column
+    colour.values.pf <- profile.plot.args$colour.values
+    alpha.pf <- profile.plot.args$alpha
+    addMediansWhiskers.pf <- profile.plot.args$addMediansWhiskers
+    ggplotFuncsProfile <- profile.plot.args$ggplotFuncs
+    
+    #Check include.raw.pf value
+    incl.raw.opt <- c("no", "alone", "facet.x", "facet.y")
+    incl.raw.opt <- incl.raw.opt[check.arg.values(include.raw.pf, options=incl.raw.opt)]
+    incl.raw <- incl.raw.opt != "no"
+    
+    #Checking of the arguments that control the plots layout
+    checkLayoutArgs(data = data, plots.by.pf, plts.group = NULL, facet.x.pf, facet.y.pf)
+    plts.by <- plots.by.pf
+    
+    #Check have a valid smooths.frame
+    validsmoothsframe <- validSmoothsFrame(data)  
+    if (is.character(validsmoothsframe))
+      stop(validsmoothsframe)
+    checkPlotsArgs(data, plts.by = plts.by, facet.x = facet.x.pf, facet.y = facet.y.pf)
+    
+    if (is.null(x.title))
+      x.title <- times
+    if (is.null(response.smoothed))
+      response.smoothed <- paste0("s", response)
+    response.smooth <- response.smoothed
+    #Check that responses, response.smoothed, individuals and times are in data
+    checkNamesInData(c(response, response.smoothed, individuals, times), data = data)
+    
+    addRates <- function(traits, response, sep = ".")
+    {
+      unlist(lapply(traits, 
+                    function(trait, response)
+                    {
+                      if (!("response" %in% trait))
+                        response <- paste(response, trait, sep = sep)
+                      return(response)
+                    }, response = response))
+    }
+    kresp <- addRates(traits, response = response)
+    if (!all(kresp %in% names(data)))
+      stop("The following traits are not in the smooths.frame: ",
+           paste0(kresp[!(kresp %in% names(data))], collapse = ", "), 
+           "; perhaps, trait.types needs to be set differently")
+    kresp.sm <- addRates(traits, response = response.smoothed)
+    names(kresp.sm) <- kresp
+    
+    if (is.null(y.titles))
+    {
+      y.titles <- addRates(traits, response = response, sep = " ")
       names(y.titles) <- kresp
-  }
-  
-  data[times] <- convertTimes2numeric(data[[times]])
-  times.factor <- ".Time.fac"
-  data[times.factor] <- data[times]
-  data[times.factor] <- with(data, eval(parse(text =times)))
-  data[times.factor] <- factor(unlist(data[times.factor]), 
-                               labels = unique(data[times.factor])[order(unique(data[[times.factor]])),])
-  
-  #Determine whether there are any smooth.cols on the facets - if not must be in plots.by.pf
-  smoothing.facets <- length(intersect(union(facet.x.pf, facet.y.pf), smooth.cols)) != 0
-  if (incl.raw.opt %in% c("facet.x", "facet.y") && all(c(facet.x.pf, facet.y.pf) == "."))
-    stop(paste0("The argument incl.raw is set to ", include.raw.pf, 
-                ", but ", include.raw.pf, " has not been set to include a variable"))
-  
-  #Set up the facets  
-  modfacet <- setupFacet(data = data, facet = facet.x.pf, collapse.facets = collapse.facets.x.pf, 
-                         combined.name = "Combined.x", smooth.cols = smooth.cols)
-  xfacet <- modfacet$newfacet
-  data <- modfacet$data
-  modfacet <- setupFacet(data = data, facet = facet.y.pf, collapse.facets = collapse.facets.y.pf, 
-                         combined.name = "Combined.y", smooth.cols = smooth.cols)
-  yfacet <- modfacet$newfacet
-  data <- modfacet$data
-  
-  #Do the plots
-  x.axis <- list(setScaleTime(data[[times]], breaks.spacing.x = breaks.spacing.x),
-                 theme(axis.text.x = element_text(size = 7.5, angle = angle.x)))
-  plts <- list()
-  for (k in kresp)
-  {
-    plts[[k]] <- list()
-    plts[[k]][["deviations"]] <- plts[[k]][["profiles"]] <- list()
-    if (("profiles" %in% plots) && #!smoothing.facets && 
-        incl.raw.opt == "alone")
-    { 
-      #Get a single instance of the unsmoothed data
-      tmp <- split(data, data[smooth.cols])[[1]]
-      #Removing smoothing factors from facets
-      xfacet.tmp <- setdiff(xfacet, smooth.cols)
-      if (length(xfacet.tmp) == 0)
-        xfacet.tmp <- "."
-      yfacet.tmp <- setdiff(yfacet, smooth.cols)
-      if (length(yfacet.tmp) == 0)
-        yfacet.tmp <- "."
-      plts[[k]][["profiles"]][["Unsmoothed"]] <- 
-        do.call(plotProfiles, 
-                c(list(data = tmp, times = times, response = k, 
-                       individuals = individuals, 
-                       facet.x=xfacet.tmp, facet.y=yfacet, 
-                       labeller = facet.labeller, scales = facet.scales.pf, 
-                       colour = colour.pf, 
-                       colour.column = colour.column.pf, 
-                       colour.values = colour.values.pf, 
-                       alpha = alpha.pf, 
-                       title="Plot of unsmoothed response", 
-                       x.title = x.title, y.title = y.titles[k], 
-                       addMediansWhiskers = addMediansWhiskers.pf, 
-                       printPlot=FALSE, 
-                       ggplotFuncs = c(x.axis, ggplotFuncsProfile)), 
-                  pltProfile.args))
-      if (printPlot)
-        print(plts[[k]][["profiles"]][["Unsmoothed"]])
+    } else
+    {
+      if (length(y.titles) != length(kresp))
+        stop("y.titles should be the same length as trait.types")
+      else
+        names(y.titles) <- kresp
     }
     
-    if (is.allnull(plts.by)) #all profiles in a single plot
-      levs.by <- "all"
-    else
+    data[times] <- convertTimes2numeric(data[[times]])
+    times.factor <- ".Time.fac"
+    data[times.factor] <- data[times]
+    data[times.factor] <- with(data, eval(parse(text =times)))
+    data[times.factor] <- factor(unlist(data[times.factor]), 
+                                 labels = unique(data[times.factor])[order(unique(data[[times.factor]])),])
+    
+    #Determine whether there are any smooth.cols on the facets - if not must be in plots.by.pf
+    smoothing.facets <- length(intersect(union(facet.x.pf, facet.y.pf), smooth.cols)) != 0
+    if (incl.raw.opt %in% c("facet.x", "facet.y") && all(c(facet.x.pf, facet.y.pf) == "."))
+      stop(paste0("The argument incl.raw is set to ", include.raw.pf, 
+                  ", but ", include.raw.pf, " has not been set to include a variable"))
+    
+    #Set up the facets  
+    modfacet <- setupFacet(data = data, facet = facet.x.pf, collapse.facets = collapse.facets.x.pf, 
+                           combined.name = "Combined.x", smooth.cols = smooth.cols)
+    xfacet <- modfacet$newfacet
+    data <- modfacet$data
+    modfacet <- setupFacet(data = data, facet = facet.y.pf, collapse.facets = collapse.facets.y.pf, 
+                           combined.name = "Combined.y", smooth.cols = smooth.cols)
+    yfacet <- modfacet$newfacet
+    data <- modfacet$data
+    
+    #Do the plots
+    x.axis <- list(setScaleTime(data[[times]], breaks.spacing.x = breaks.spacing.x),
+                   theme(axis.text.x = element_text(size = 7.5, angle = angle.x)))
+    plts <- list()
+    for (k in kresp)
     {
-      data$plots.by.pf <- fac.mixcombine(data, plts.by, smooth.cols = smooth.cols)
-      levs.by <- levels(data$plots.by.pf)
-    }
-    #Loop over plots.by.pf
-    for (by in levs.by)
-    {
-      if ("profiles" %in% plots)
+      plts[[k]] <- list()
+      if (incl.raw.opt == "alone")
       { 
-        if (is.allnull(plts.by))
-        { 
-          title <- NULL
-          tmp1 <- data
-        } else
-        {
-          title <- paste0("Plot for ", by)
-          tmp1 <- data[data$plots.by.pf==by,]
-          if ("Combined.x" %in% names(tmp1)) 
-            tmp1["Combined.x"] <- factor(tmp1[["Combined.x"]])
-          if ("Combined.y" %in% names(tmp1)) 
-            tmp1["Combined.y"] <- factor(tmp1[["Combined.y"]])
-        }
-        if (incl.raw.opt %in% c("facet.x", "facet.y"))
-        {
-          if (incl.raw.opt == "facet.x")  comb.name <- xfacet else comb.name <- yfacet
-          comb.name <- comb.name[length(comb.name)]
-          tmp2 <- tmp1
-          tmp2[kresp.sm[k]] <- tmp2[k]
-          tmp2[comb.name] <- "Raw"
-          levs <- c("Raw", levels(factor(tmp1[[comb.name]])))
-          tmp1 <- rbind(tmp2,tmp1)
-          tmp1[comb.name] <- factor(tmp1[[comb.name]], levels = levs) 
-        }
-        plts[[k]][["profiles"]][[by]] <- 
+        #Get a single instance of the unsmoothed data
+        tmp <- split(data, data[smooth.cols])[[1]]
+        #Removing smoothing factors from facets
+        xfacet.tmp <- setdiff(xfacet, smooth.cols)
+        if (length(xfacet.tmp) == 0)
+          xfacet.tmp <- "."
+        yfacet.tmp <- setdiff(yfacet, smooth.cols)
+        if (length(yfacet.tmp) == 0)
+          yfacet.tmp <- "."
+        plts[[k]][["profiles"]][["Unsmoothed"]] <- 
           do.call(plotProfiles, 
-                  c(list(data = tmp1, times = times, 
-                         response = kresp.sm[k], 
+                  c(list(data = tmp, times = times, response = k, 
                          individuals = individuals, 
-                         facet.x=xfacet, facet.y=yfacet, 
-                         labeller = facet.labeller, 
-                         scales = facet.scales.pf,
+                         facet.x=xfacet.tmp, facet.y=yfacet, 
+                         labeller = facet.labeller, scales = facet.scales.pf, 
                          colour = colour.pf, 
                          colour.column = colour.column.pf, 
                          colour.values = colour.values.pf, 
                          alpha = alpha.pf, 
-                         title = title, 
+                         title="Plot of unsmoothed response", 
                          x.title = x.title, y.title = y.titles[k], 
                          addMediansWhiskers = addMediansWhiskers.pf, 
                          printPlot=FALSE, 
                          ggplotFuncs = c(x.axis, ggplotFuncsProfile)), 
                     pltProfile.args))
         if (printPlot)
-          print(plts[[k]][["profiles"]][[by]])
+          print(plts[[k]][["profiles"]][["Unsmoothed"]])
       }
-      if (any(c("absolute.boxplots", "relative.boxplots") %in% plots))
+      
+      if (is.allnull(plts.by)) #all profiles in a single plot
+        levs.by <- "all"
+      else
       {
-        y.titles.devn <- c(paste("Absolute", k, "deviations", sep = " "),
-                           paste("Relative", k, "deviations", sep = " "))
-        names(y.titles.devn) <- c("absolute.boxplots", "relative.boxplots")
-        y.titles.devn <- y.titles.devn[c("absolute.boxplots", "relative.boxplots") %in% plots]
-        
-        #Plot deviation plots for current plots.by.pf
-        if (is.allnull(plts.by))
-          tmp1 <- data
-        else
-        { 
-          tmp1 <- data[data$plots.by.pf==by,]
-          ggplotFuncsDevnBoxes <- c(ggplotFuncsDevnBoxes, list(ggtitle(paste0("Plot for ", by))))
-        }
-        plt <- plotDeviationsBoxes(data = tmp1, x.factor = times.factor, 
-                                   observed = k, smoothed = kresp.sm[k], 
-                                   deviations.plots = plots, 
-                                   x.title = x.title, y.titles = y.titles.devn, 
-                                   facet.x=xfacet, facet.y=facet.y.pf, 
-                                   labeller = facet.labeller, 
-                                   df = degfree, ggplotFuncs = ggplotFuncsDevnBoxes,
-                                   printPlot = printPlot)
-        plts[[k]][["deviations"]][["absolute"]][[by]] <- plt[["absolute"]]
-        plts[[k]][["deviations"]][["relative"]][[by]] <- plt[["relative"]]
+        data$plots.by.pf <- fac.mixcombine(data, plts.by, smooth.cols = smooth.cols)
+        levs.by <- levels(data$plots.by.pf)
       }
-    }    
+      #Loop over plots.by.pf
+      for (by in levs.by)
+      {
+        { 
+          if (is.allnull(plts.by))
+          { 
+            title <- NULL
+            tmp1 <- data
+          } else
+          {
+            title <- paste0("Plot for ", by)
+            tmp1 <- data[data$plots.by.pf==by,]
+            if ("Combined.x" %in% names(tmp1)) 
+              tmp1["Combined.x"] <- factor(tmp1[["Combined.x"]])
+            if ("Combined.y" %in% names(tmp1)) 
+              tmp1["Combined.y"] <- factor(tmp1[["Combined.y"]])
+          }
+          if (incl.raw.opt %in% c("facet.x", "facet.y"))
+          {
+            if (incl.raw.opt == "facet.x")  comb.name <- xfacet else comb.name <- yfacet
+            comb.name <- comb.name[length(comb.name)]
+            tmp2 <- tmp1
+            tmp2[kresp.sm[k]] <- tmp2[k]
+            tmp2[comb.name] <- "Raw"
+            levs <- c("Raw", levels(factor(tmp1[[comb.name]])))
+            tmp1 <- rbind(tmp2,tmp1)
+            tmp1[comb.name] <- factor(tmp1[[comb.name]], levels = levs) 
+          }
+          plts[[k]][["profiles"]][[by]] <- 
+            do.call(plotProfiles, 
+                    c(list(data = tmp1, times = times, 
+                           response = kresp.sm[k], 
+                           individuals = individuals, 
+                           facet.x=xfacet, facet.y=yfacet, 
+                           labeller = facet.labeller, 
+                           scales = facet.scales.pf,
+                           colour = colour.pf, 
+                           colour.column = colour.column.pf, 
+                           colour.values = colour.values.pf, 
+                           alpha = alpha.pf, 
+                           title = title, 
+                           x.title = x.title, y.title = y.titles[k], 
+                           addMediansWhiskers = addMediansWhiskers.pf, 
+                           printPlot=FALSE, 
+                           ggplotFuncs = c(x.axis, ggplotFuncsProfile)), 
+                      pltProfile.args))
+          if (printPlot)
+            print(plts[[k]][["profiles"]][[by]])
+        }    
+      }
+    }
   }
   invisible(plts)
 }
@@ -1295,7 +1434,11 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
                                                facet.x = ".", facet.y = ".",
                                                propn.note = TRUE, 
                                                propn.types = c(0.1, 0.5, 0.75)), 
-                           ggplotFuncsDevnBoxes = NULL, ...)
+                           devnboxes.plot.args = 
+                             args4devnboxes_plot(plots.by = NULL, 
+                                                 facet.x = ".", facet.y = ".", 
+                                                 which.plots = "none"), 
+                           ...)
 { 
   smoothing.args <- smoothing.args
   profile.plot.args <- profile.plot.args
@@ -1342,16 +1485,13 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
   collapse.facets.y.pf <- profile.plot.args$collapse.facets.y
   facet.labeller <- profile.plot.args$facet.labeller
   scales.pf <- profile.plot.args$scales
-  breaks.spacing.x <- profile.plot.args$breaks.spacing.x
+  breaks.spacing.x.pf <- profile.plot.args$breaks.spacing.x
   colour.pf <- profile.plot.args$colour
   colour.column.pf <- profile.plot.args$colour.column
   colour.values.pf <- profile.plot.args$colour.values
   alpha.pf <- profile.plot.args$alpha
   addMediansWhiskers.pf <- profile.plot.args$addMediansWhiskers
   ggplotFuncsProfile <- profile.plot.args$ggplotFuncs
-  #Checking of the arguments that control the plots layout for boxplots
-  if (any(c("absolute.boxplots", "relative.boxplots") %in% plots))
-    checkLayoutArgs(data = NULL, plots.by.pf, plts.group = NULL, facet.x.pf, facet.y.pf)
   plts.by <- plots.by.pf
   
   #Get the options for the median deviations plots options from the list
@@ -1361,7 +1501,7 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
   facet.y.med <- meddevn.plot.args$facet.y
   facet.labeller = meddevn.plot.args$facet.labeller
   facet.scales.med <- meddevn.plot.args$facet.scales
-  breaks.spacing.x <- meddevn.plot.args$breaks.spacing.x
+  breaks.spacing.x.med <- meddevn.plot.args$breaks.spacing.x
   colour.values.med <- meddevn.plot.args$colour.values
   shape.values.med <- meddevn.plot.args$shape.values
   alpha.med <- meddevn.plot.args$alpha
@@ -1372,16 +1512,35 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
   plts.by.med <- plots.by.med
   plts.group.med <- plots.group.med
   
+  #Get the options for the deviations boxplots options from the list
+  plots.by.box <- devnboxes.plot.args$plots.by
+  facet.x.box <- devnboxes.plot.args$facet.x
+  facet.y.box <- devnboxes.plot.args$facet.y 
+  include.raw.box <- devnboxes.plot.args$include.raw
+  collapse.facets.x.box <- devnboxes.plot.args$collapse.facets.x
+  collapse.facets.y.box <- devnboxes.plot.args$collapse.facets.y
+  facet.labeller <- devnboxes.plot.args$facet.labeller
+  scales.box <- devnboxes.plot.args$scales
+  breaks.spacing.x <- devnboxes.plot.args$breaks.spacing.x
+  ggplotFuncsDevnBoxes <- devnboxes.plot.args$ggplotFuncs
+  #Checking of the arguments that control the plots layout for boxplots
+  if (any(c("absolute.boxplots", "relative.boxplots") %in% plots))
+    checkLayoutArgs(data = NULL, plots.by.box, plts.group = NULL, facet.x.box, facet.y.box)
+
   #Get columns need for facets
   id.cols <- colour.column.pf
   if (all(facet.x.pf != "."))
     id.cols <- c(id.cols, fac.getinFormula(facet.x.pf))
   if (all(facet.x.med != "."))
     id.cols <- c(id.cols, fac.getinFormula(facet.x.med))
+  if (all(facet.x.box != "."))
+    id.cols <- c(id.cols, fac.getinFormula(facet.x.box))
   if (all(facet.y.pf != "."))
     id.cols <- c(id.cols, fac.getinFormula(facet.y.pf))
   if (all(facet.y.med != "."))
     id.cols <- c(id.cols, fac.getinFormula(facet.y.med))
+  if (all(facet.y.box != "."))
+    id.cols <- c(id.cols, fac.getinFormula(facet.y.box))
   id.cols <- c(individuals, times, response, keep.columns, id.cols)
   
   #Set up name  for smoothed response
@@ -1665,21 +1824,17 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
   if (is.character(validsmoothsframe))
     stop(validsmoothsframe)
   
-  #Plot some combination of unsmoothed and smoothed response, AGR and RGR
-  if ("profiles" %in% plots)
-  { 
-    #Plot profiles
+  #Plot profiles of some combination of unsmoothed and smoothed response, AGR and RGR
+  if ("profiles" %in% plots && !is.allnull(profile.plot.args))
     plotSmoothsComparison(data = smth, 
                           response = response, response.smoothed = response.smooth, 
                           times = times, individuals = individuals, 
                           trait.types = traits, 
-                          which.plots = "profiles", 
                           x.title = x.title, y.titles = y.titles, 
                           profile.plot.args = profile.plot.args, ...)
-  }
   
-  if ("medians.deviations" %in% plots)
-  {
+  #Plot median deviations plots  
+  if ("medians.deviations" %in% plots && !is.allnull(meddevn.plot.args))
     plotSmoothsMedianDevns(data = smth, 
                            response = response, response.smoothed = response.smooth,
                            times = times, individuals = individuals,
@@ -1687,21 +1842,20 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
                            x.title = x.title, y.titles = y.titles, 
                            meddevn.plot.args = meddevn.plot.args, 
                            ...)
-  }
-  
-  #Plot some combination of unsmoothed and smoothed response, AGR and RGR
-  if (any(c("absolute.boxplots", "relative.boxplots") %in% plots))
+
+  #Plot deviations of unsmoothed and smoothed response, and possibly AGR and RGR
+  if (any(c("absolute.boxplots", "relative.boxplots") %in% plots) && !is.allnull(devnboxes.plot.args))
   { 
     boxp <- c("absolute.boxplots", "relative.boxplots")[c("absolute.boxplots", "relative.boxplots") %in% plots]
     #Plot boxplots
-    plotSmoothsComparison(data = smth, 
-                          response = response, response.smoothed = response.smooth, 
-                          times = times, individuals = individuals, 
-                          trait.types = traits, 
-                          which.plots = boxp, 
-                          x.title = x.title, y.titles = y.titles,  
-                          profile.plot.args = profile.plot.args, 
-                          ggplotFuncsDevnBoxes = ggplotFuncsDevnBoxes, ...)
+    plotSmoothsDevnBoxplots(data = smth, 
+                            response = response, response.smoothed = response.smooth, 
+                            times = times, individuals = individuals, 
+                            trait.types = traits, 
+                            which.plots = boxp, 
+                            x.title = x.title, y.titles = y.titles,  
+                            devnboxes.plot.args = devnboxes.plot.args, 
+                            ...)
   }
   invisible(smth)
 }
@@ -1858,11 +2012,11 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
                           smoothing.args = args4smoothing(), 
                           x.title = NULL, y.titles = NULL, 
                           which.plots = c("profiles", "medians.deviations"), 
-                          profile.plot.args = args4profile_plot(), 
-                          meddevn.plot.args = args4meddevn_plot(), 
-                          chosen.smooth.args = args4chosen_smooth(),
-                          chosen.plot.args = args4chosen_plot(), 
-                          ggplotFuncsDevnBoxes = NULL,
+                          profile.plot.args   = args4profile_plot(), 
+                          meddevn.plot.args   = args4meddevn_plot(), 
+                          devnboxes.plot.args = args4devnboxes_plot(),
+                          chosen.smooth.args  = args4chosen_smooth(),
+                          chosen.plot.args    = args4chosen_plot(), 
                           mergedata = NULL, 
                           ...)
 {
@@ -1872,6 +2026,7 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
   meddevn.plot.args <- meddevn.plot.args
   chosen.smooth.args <- chosen.smooth.args
   chosen.plot.args <- chosen.plot.args
+  devnboxes.plot.args = devnboxes.plot.args
   inargs <- list(...)
   checkEllipsisArgs(c("traitSmooth","plotProfiles"), inargs)
   
@@ -1891,7 +2046,7 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
                                      smoothing.args = smoothing.args, 
                                      profile.plot.args = profile.plot.args, 
                                      meddevn.plot.args = meddevn.plot.args, 
-                                     ggplotFuncsDevnBoxes = ggplotFuncsDevnBoxes, 
+                                     devnboxes.plot.args = devnboxes.plot.args, 
                                      ...))
   
   #Process chosen model

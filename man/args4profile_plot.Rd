@@ -1,7 +1,7 @@
 \name{args4profile_plot}
 \alias{args4profile_plot}
 \title{Creates a \code{list} of the values for the options of profile plots for comparing smooths}
-\description{Creates a \code{list} of the values for the options of profile plots (and boxplots facets) for comparing smooths.
+\description{Creates a \code{list} of the values for the options of profile plots for comparing smooths.
              Note that \code{plots.by}, \code{facet.x}, \code{facet.y} and \code{include.raw} jointly 
              define the organization of the plots. The default settings are optimized for \code{\link{traitSmooth}} so that, 
              if you want to change any of these from their default settings when using \code{args4profile_plot} with a function 
