@@ -1,10 +1,14 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.1-14 (2022-10-31)}{
+  \itemize{
+  \item{Fix bug in the return of the chosen smooth. If there is more than one smooth specified by \code{smoothing.args}, then the chosen.smooth will only be returned if \code{mergedata} is not \code{NULL}.}
+  }}
 \section{growthPheno Version 2.1-13 (2022-10-16)}{
   \itemize{
   \item{Reorganized the plotting of deviation boxplots in probeSmooths and TraitSmooth, in the process creating new funcrtions args4devnboxed_plot and plotSmoothsDevnBoxes. 
   \enumerate{
-     \item{In plotDeiationsBoxes, renamed \code{labeller} to \code{facet.labeller}, added \code{facet.scales} and \code{angle.x}, and removed \code{df}.}
+     \item{In plotDeviationsBoxes, renamed \code{labeller} to \code{facet.labeller}, added \code{facet.scales} and \code{angle.x}, and removed \code{df}.}
      \item{Transferred deviations plotting from plotSmoothsComparison to the new function plotSmoothsDevnBoxplots. Removed \code{which.plot} and \code{ggplotFuncsDevnBoxes} arguments from plotSmoothComparisons}
      \item{Added \code{devnboxes.plot.args} to probeSmooths and traitSmooth and removed \code{ggplotFuncsDevnBoxes} argument.}
      \item{Added function args4devnboxes_plot to set \code{devnboxes.plot.args}.}

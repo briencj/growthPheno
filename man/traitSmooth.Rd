@@ -3,7 +3,7 @@
 \title{Obtain smooths for a trait by fitting spline functions and, having compared 
        several smooths, allows one of them to be chosen and returned in a \code{data.frame}.}
 \description{Takes a \code{response} that has been observed for a set of 
-             \code{individuals} over a number \code{times} and carries out the following steps:
+             \code{individuals} over a number \code{times} and carries out one or more of the following steps:
              \describe{
                 \item{Smooth:}{Produces \code{response.smoothed} using splines for a set of 
                       smoothing parameter settings and, optionally, computes growth 
@@ -235,13 +235,14 @@ traitSmooth(data, response, response.smoothed, individuals, times,
        the unsmoothed and smoothed data in long format. That is, all the values for 
        either an unsmoothed or a smoothed trait are in a single column. 
        
-       A \code{\link{smooths.frame}} will be returned when \code{chosen.smooth.args} is 
-       \code{NULL} and there is more than one smooth specified by the smoothing 
-       parameter arguments. It will contain the smooths for a trait for the different 
-       combinatons of the smoothing parameters, the values for the different smooths 
-       being placed in rows one below the other. The columns that are included in the 
-       \code{\link{smooths.frame}} are \code{Type}, \code{TunePar}, \code{TuneVal}, 
-       \code{Tuning} and \code{Method}, as well as those specified by 
+       A \code{\link{smooths.frame}} will be returned when (i) \code{chosen.smooth.args} 
+       is \code{NULL} and there is more than one smooth specified by the smoothing 
+       parameter arguments, or (ii) \code{chosen.smooth.args} is not \code{NULL} but 
+       \code{mergedata} is \code{NULL}. It will contain the smooths for a trait for the 
+       different combinatons of the smoothing parameters, the values for the different 
+       smooths being placed in rows one below the other. The columns that are included 
+       in the \code{\link{smooths.frame}} are \code{Type}, \code{TunePar}, 
+       \code{TuneVal}, \code{Tuning} and \code{Method}, as well as those specified by 
        \code{individuals}, \code{times}, \code{response}, and \code{response.smoothed}, 
        and any included in the \code{keep.columns}, \code{plots} and \code{facet} 
        arguments when the smooths were produced. The \code{AGR} or \code{RGR} for the 
@@ -249,16 +250,18 @@ traitSmooth(data, response, response.smoothed, individuals, times,
        included. A \code{\link{smooths.frame}} has the attributes described in 
        \code{\link{smooths.frame}}. 
 
-       A \code{\link{data.frame}} will be returned when \code{chosen.smooth.args} is 
-       not \code{NULL} or it and \code{mergedata} are \code{NULL}, \code{data} is not a 
-       \code{smooths.frame} and there is only one smooth specified by 
-       the smoothing parameter arguments. It will include the columns \code{individuals}, 
-       \code{times}, \code{response}, and \code{response.smoothed}, and any included in 
-       the \code{keep.columns}, \code{plots} and \code{facet} arguments, as well as any 
-       growth rates calculated as a result of \code{get.rates} and \code{trait.type}. If 
-       \code{mergedata} is not \code{NULL}, the \code{\link{data.frame}} containing the 
-       \code{chosen.smooth} or a single smooth, when that is all that is produced, 
-       will be merged with the \code{\link{data.frame}} specified by \code{mergedata}.
+       A \code{\link{data.frame}} will be returned when (i) \code{chosen.smooth.args} 
+       and \code{mergedata} are not \code{NULL} or (ii) \code{chosen.smooth.args} is 
+       \code{NULL}, \code{data} is not a \code{smooths.frame} and there is only one 
+       smooth specified by the smoothing parameter arguments. In either case, if 
+       \code{mergedata} is not \code{NULL}, the chosen smooth or the single smooth 
+       will be merged with the \code{\link{data.frame}} specified by \code{mergedata}. 
+       When there is a single smooth and both \code{mergedata} and 
+       \code{chosen.smooth.args} are \code{NULL}, the \code{\link{data.frame}} will 
+       include the columns \code{individuals}, \code{times}, \code{response}, and 
+       \code{response.smoothed}, and any included in the \code{keep.columns}, 
+       \code{plots} and \code{facet} arguments, as well as any growth rates calculated 
+       as a result of \code{get.rates} and \code{trait.type}.
 
        The \code{\link{smooths.frame}}/\code{\link{data.frame}} is returned invisibly.}
 \details{This function is a wrapper function for \code{\link{probeSmooths}}, 

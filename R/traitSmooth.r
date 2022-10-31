@@ -2070,16 +2070,19 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
     else
       pltProfile.args <- NULL
     
-    smth <- do.call(traitChooseSmooth, 
-                    c(list(smooths = smth, response.smoothed = response.smoothed, 
-                           individuals = individuals, times = times, 
-                           keep.columns = keep.columns, 
-                           x.title = x.title, y.titles = y.titles, 
-                           trait.types = traits, 
-                           chosen.smooth = chosen.smooth.args, 
-                           chosen.plot.args = chosen.plot.args, 
-                           mergedata = mergedata), 
-                      pltProfile.args))
+    ch.smth <- do.call(traitChooseSmooth, 
+                       c(list(smooths = smth, response.smoothed = response.smoothed, 
+                              individuals = individuals, times = times, 
+                              keep.columns = keep.columns, 
+                              x.title = x.title, y.titles = y.titles, 
+                              trait.types = traits, 
+                              chosen.smooth = chosen.smooth.args, 
+                              chosen.plot.args = chosen.plot.args, 
+                              mergedata = mergedata), 
+                         pltProfile.args))
+    #The chosen smooth is to be returned
+    if (!is.null(mergedata))
+      smth <- ch.smth
     
   } else # merge with the original data if there is only one smooth
   {
