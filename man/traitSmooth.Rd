@@ -73,8 +73,8 @@ traitSmooth(data, response, response.smoothed, individuals, times,
              as is produced by \code{probeSmooths}. if \code{data} is not a 
              \code{\link{smooths.frame}}, then smoothing will be performed. If \code{data} 
              is a \code{\link{smooths.frame}}, then the plotting and selection of smooths 
-             will be performed as specified by \code{smoothing.args}, \code{which.plots} 
-             and \code{chosen.smooth.args}.}
+             will be performed as specified by \code{smoothing.args} , \code{which.plots}, 
+             \code{chosen.smooth.args} and \code{chosen.plot.args}.}
  \item{response}{A \code{\link{character}} specifying the response variable to be 
               smoothed.}
  \item{response.smoothed}{A \code{\link{character}} specifying the name of the column 
@@ -144,9 +144,14 @@ traitSmooth(data, response, response.smoothed, individuals, times,
              to be used in smoothing the \code{response} or in selecting a subset 
              of the smooths in \code{data}, depending on whether \code{data} is a 
              \code{\link{data.frame}} or a \code{\link{smooths.frame}}, respectively. 
-             Set \code{smoothing.args} to \code{NULL} if \code{data} is a 
-             \code{\link{smooths.frame}} and only plotting or extraction of a chosen 
-             smooth is required.}
+             If \code{data} is a \code{\link{data.frame}}, then smoothing will be 
+             performed. If \code{data} is a \code{\link{smooths.frame}}, no 
+             smoothing will be carried out. If \code{smoothing.args} is \code{NULL} 
+             then a \code{\link{smooths.frame}} will only be used for plotting. 
+             Otherwise, the setting of \code{smoothing.args} will specifying the 
+             smooths that are to be extracted from the \code{\link{smooths.frame}}, 
+             in which case \code{smoothing.args} must specify a subset of the smooths 
+             in \code{data}.}
  \item{x.title}{Title for the x-axis, used for all plots. If \code{NULL} then set 
              to \code{times}.}
  \item{y.titles}{A \code{\link{character}} giving the titles for the y-axis, one 

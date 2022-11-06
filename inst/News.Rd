@@ -1,5 +1,9 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.1-15 (2022-11-6)}{
+  \itemize{
+  \item{Revise documentation of traitSmooth to clarify how to specify \code{smoothing.args} when \code{data} is set to a \code{smooths.frame}.}
+  }}
 \section{growthPheno Version 2.1-14 (2022-10-31)}{
   \itemize{
   \item{Fix bug in the return of the chosen smooth. If there is more than one smooth specified by \code{smoothing.args}, then the chosen.smooth will only be returned if \code{mergedata} is not \code{NULL}.}

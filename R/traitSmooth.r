@@ -2048,7 +2048,7 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
                                      meddevn.plot.args = meddevn.plot.args, 
                                      devnboxes.plot.args = devnboxes.plot.args, 
                                      ...))
-  
+
   #Process chosen model
   if (!is.allnull(chosen.smooth.args))
   { 
