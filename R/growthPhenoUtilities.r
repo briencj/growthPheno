@@ -6,9 +6,15 @@ smooth.cols <- c("Type","TunePar","TuneVal","Tuning","Method")
 checkNamesInData <- function(Names, data)
 {
   if (!all(Names %in% names(data)))
-    stop(paste0("The following required columns are not in data: ", #deparse(substitute(data)))
-         paste0(Names[!(Names %in% names(data))], collapse = ", "), "\n"))
-         invisible()
+  { 
+    mess <- paste0("The following required columns are not in data: ", #deparse(substitute(data)))
+                   paste0(Names[!(Names %in% names(data))], collapse = ", "), ".\n")
+    callingFuncs = as.list(sys.call(-1))
+    if (any(callingFuncs %in% c("traitSmooth", "probeSmooths")))
+      mess <- paste0(mess, "Perhaps add the column names to the keep.columns argument\n")
+    stop(mess)
+  }
+  invisible()
 }
 
 #Function to allow testing for NULL when objects of length > 1 are possible

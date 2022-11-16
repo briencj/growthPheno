@@ -439,7 +439,7 @@ test_that("exampleData_growthPheno", {
   
   data(exampleData)
   
-  vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1))
+  vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", linewidth=1))
   
   plotDeviationsBoxes(longi.dat, observed = "PSA", smoothed = "sPSA",
                       x.factor="DAP", df =5)
@@ -1182,7 +1182,7 @@ test_that("tomato_growthPheno", {
   x.axis <- list(theme(axis.text.x = element_text(angle = 90),
                        panel.grid.minor.x = element_blank()))
   vline.DAP.endpts <- list(geom_vline(xintercept=DAP.starts, linetype="longdash", 
-                                      alpha = 0.5, size=0.75))
+                                      alpha = 0.5, linewidth=0.75))
   theme.profile <- list(vline.DAP.endpts,x.axis)
   tom.H2O <- probeSmooths(data = tomato.dat, response = "WU", 
                           response.smoothed = "sWU", 

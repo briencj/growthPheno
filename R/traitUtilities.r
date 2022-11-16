@@ -177,7 +177,8 @@ fac.mixcombine <- function(dat, factors, smooth.cols)
                 " because it does not contain the following smoothing-parameters columns: ", 
                 paste0(smooth.cols[!(smooth.cols %in% names(data))],collapse=", ")))
   #Set attributes of data
-  class(data) <- c("smooths.frame", class(data))
+  if (!is.smooths.frame(data))
+    class(data) <- c("smooths.frame", class(data))
   attr(data, which = "individuals") <- individuals
   attr(data, which = "n") <- length(unique(data[[individuals]]))
   attr(data, which = "times") <- times

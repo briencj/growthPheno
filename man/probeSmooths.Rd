@@ -302,7 +302,7 @@ probeSmooths(data, response = "PSA", response.smoothed = NULL,
          \code{\link{plotSmoothsMedianDevns}}, \code{\link{ggplot}}.}
 \examples{
 data(exampleData)
-vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1))
+vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", linewidth=1))
 probeSmooths(data = longi.dat, response = "PSA", response.smoothed = "sPSA", 
              times = "DAP", 
              smoothing.args = args4smoothing(df = c(4,7)), 

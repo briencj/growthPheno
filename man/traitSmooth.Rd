@@ -362,7 +362,7 @@ traitSmooth(data, response, response.smoothed, individuals, times,
         \code{\link{plotSmoothsMedianDevns}}, \code{\link{ggplot}}.}
 \examples{
 data(exampleData)
-vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1))
+vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", linewidth=1))
 yfacets <- c("Smarthouse", "Treatment.1")
 smth.dat <- traitSmooth(data = longi.dat, 
                         response = "PSA", response.smoothed = "sPSA",

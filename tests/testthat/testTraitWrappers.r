@@ -10,7 +10,7 @@ test_that("exampleData_traitSmooth", {
   testthat::expect_true(all(abs(longi.dat$sPSA[1:3] - c(51.18456,  87.67343, 107.68232)) < 1e-03))
   testthat::expect_true(all(abs(longi.dat$sPSA.AGR[2:4] - c(18.24443, 20.00889, 22.13115)) < 1e-03))
 
-  vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1))
+  vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", linewidth=1))
   trt.facets <- c("Smarthouse", "Treatment.1")
   #Get a chosen smooth - can set an option without worrying about the other option in traitSmooth
   testthat::expect_warning(
@@ -93,7 +93,7 @@ test_that("exampleData_traitSmooth", {
                          smoothing.args =  
                            args4smoothing(spline.types = "PS", 
                                           df = NULL, lambdas = 3.162), 
-                         which.plots = "none", 
+                         which.plots = "none", chosen.smooth.args = NULL, 
                          chosen.plot.args = NULL)
   testthat::expect_equal(nrow(tmp.dat), 280)
   testthat::expect_equal(ncol(tmp.dat), 11)

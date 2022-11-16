@@ -1,5 +1,10 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.1-16 (2022-11-13)}{
+  \itemize{
+  \item{Build for R 4.2.2 and for CRAN submission.}
+  \item{Add check that the factors names included in \code{chosen.plots.args} are available in \code{data}.}
+  }}
 \section{growthPheno Version 2.1-15 (2022-11-6)}{
   \itemize{
   \item{Revise documentation of traitSmooth to clarify how to specify \code{smoothing.args} when \code{data} is set to a \code{smooths.frame}.}
@@ -10,7 +15,7 @@
   }}
 \section{growthPheno Version 2.1-13 (2022-10-16)}{
   \itemize{
-  \item{Reorganized the plotting of deviation boxplots in probeSmooths and TraitSmooth, in the process creating new funcrtions args4devnboxed_plot and plotSmoothsDevnBoxes. 
+  \item{Reorganized the plotting of deviation boxplots in probeSmooths and TraitSmooth, in the process creating new functions args4devnboxed_plot and plotSmoothsDevnBoxes. 
   \enumerate{
      \item{In plotDeviationsBoxes, renamed \code{labeller} to \code{facet.labeller}, added \code{facet.scales} and \code{angle.x}, and removed \code{df}.}
      \item{Transferred deviations plotting from plotSmoothsComparison to the new function plotSmoothsDevnBoxplots. Removed \code{which.plot} and \code{ggplotFuncsDevnBoxes} arguments from plotSmoothComparisons}

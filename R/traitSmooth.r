@@ -2052,10 +2052,15 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
   #Process chosen model
   if (!is.allnull(chosen.smooth.args))
   { 
+    #Check of chosen.plot factors
+    chosen.plotfacs <- unique(c(chosen.plot.args$plots.by, chosen.plot.args$facet.x, chosen.plot.args$facet.y))
+    chosen.plotfacs <- setdiff(chosen.plotfacs, ".")
+    #Check that required cols are in data
+    checkNamesInData(c(chosen.plotfacs, chosen.plot.args$colour.column), data = smth)
     #Check that no smoothing parameter factors have been supplied in plots.by, facet.x and facet.y for the chosen plot
-    plotfacs <- unique(c(chosen.plot.args$plts.by, chosen.plot.args$facet.x, chosen.plot.args$facet.y))
-    if (any(smooth.cols %in% plotfacs))
-      stop("The smoothing parameter factor(s) ", paste(smooth.cols[smooth.cols %in% plotfacs], collapse = ", "), 
+    if (any(smooth.cols %in% chosen.plotfacs))
+      stop("The smoothing parameter factor(s) ", 
+           paste(smooth.cols[smooth.cols %in% chosen.plotfacs], collapse = ", "), 
            " occur(s) in chosen.plots.args - only a single smooth is to be plotted and they are unnecessary")
     
     traits <- c("response.smoothed", "AGR", "RGR", "all")
@@ -2086,21 +2091,13 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
     
   } else # merge with the original data if there is only one smooth
   {
-    if (all(sapply(smth[smooth.cols], function(x) nlevels(x) == 1)))
+    if (all(sapply(smth[smooth.cols], function(x) nlevels(factor(x)) == 1)))
     {
-      if (!is.smooths.frame(data) && is.null(mergedata))
+      if (is.smooths.frame(data))
       {
-        smth <- smth[setdiff(names(smth), c("Type","TunePar","TuneVal","Method","Tuning"))]
-        if (!is.null(keep.columns))
-          smth <- smth[setdiff(names(smth), keep.columns)]
-        class(smth) <- "data.frame"
-        tmp <- tmp[c(individuals, times, setdiff(names(tmp), names(smth)))]
-        smth <- merge(tmp, smth, sort = FALSE)
-        #Order the columns
-        smth <- smth[c(names(tmp),setdiff(names(smth), names(tmp)))]
-      } else
-      {  
-        if (!is.null(mergedata))
+        if (is.null(mergedata))
+          smth <- smth[setdiff(names(smth), c("Type","TunePar","TuneVal","Method","Tuning"))]
+        else
         { 
           checkNamesInData(c(individuals, times), mergedata)
           if (!is.null(keep.columns))
@@ -2110,6 +2107,16 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
           #Order the columns
           smth <- smth[c(names(mergedata),setdiff(names(smth), names(mergedata)))]
         }
+      } else
+      {  
+        smth <- smth[setdiff(names(smth), c("Type","TunePar","TuneVal","Method","Tuning"))]
+        if (!is.null(keep.columns))
+          smth <- smth[setdiff(names(smth), keep.columns)]
+        class(smth) <- "data.frame"
+        tmp <- tmp[c(individuals, times, setdiff(names(tmp), names(smth)))]
+        smth <- merge(tmp, smth, sort = FALSE)
+        #Order the columns
+        smth <- smth[c(names(tmp),setdiff(names(smth), names(tmp)))]
       }
     }
   }
