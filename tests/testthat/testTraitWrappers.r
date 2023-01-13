@@ -99,23 +99,68 @@ test_that("exampleData_traitSmooth", {
   testthat::expect_equal(ncol(tmp.dat), 11)
   
   #Produce a single smooth
-  smth.dat <- traitSmooth(data = longi.dat, 
-                          response = "PSA", response.smoothed = "sPSA",
-                          individuals = "Snapshot.ID.Tag",times = "DAP", 
-                          keep.columns = trt.facets, 
-                          smoothing.args =  
-                            args4smoothing(spline.types = "PS", 
-                                           df = NULL, lambdas = 3.162), 
-                          chosen.smooth.args = NULL, 
-                          which.plots = "profile",
-                          profile.plot.args = 
-                            args4profile_plot(plots.by = "Type", 
-                                              facet.x = trt.facets, facet.y = "Tuning", 
-                                              include.raw = "facet.y", 
-                                              collapse.facets.x = FALSE,
-                                              facet.scales = "free_y", 
-                                              breaks.spacing.x = -2, angle.x = 90, 
-                                              ggplotFuncs = vline))
+  testthat::expect_silent(
+    smth.dat <- traitSmooth(data = longi.dat, 
+                            response = "PSA", response.smoothed = "sPSA",
+                            individuals = "Snapshot.ID.Tag",times = "DAP", 
+                            keep.columns = trt.facets, 
+                            smoothing.args =  
+                              args4smoothing(spline.types = "PS", 
+                                             df = NULL, lambdas = 3.162), 
+                            chosen.smooth.args = NULL, 
+                            which.plots = "profile",
+                            profile.plot.args = 
+                              args4profile_plot(plots.by = "Type", 
+                                                facet.x = trt.facets, facet.y = "Tuning", 
+                                                include.raw = "facet.y", 
+                                                collapse.facets.x = FALSE,
+                                                facet.scales = "free_y", 
+                                                breaks.spacing.x = -2, angle.x = 90, 
+                                                ggplotFuncs = vline)))
+  testthat::expect_equal(nrow(smth.dat), 280)
+  testthat::expect_equal(ncol(smth.dat), 37)
+  
+  #Test plotting raw in yfacet when yfacet is "."
+  testthat::expect_silent(
+    smth.dat <- traitSmooth(data = longi.dat, 
+                            response = "PSA", response.smoothed = "sPSA",
+                            individuals = "Snapshot.ID.Tag",times = "DAP", 
+                            keep.columns = trt.facets, 
+                            smoothing.args =  
+                              args4smoothing(spline.types = "PS", 
+                                             df = NULL, lambdas = 3.162), 
+                            chosen.smooth.args = NULL, 
+                            which.plots = "profile",
+                            profile.plot.args = 
+                              args4profile_plot(plots.by = c("Type","Method","Tuning"), 
+                                                facet.x = trt.facets, facet.y = ".", 
+                                                include.raw = "facet.y", 
+                                                collapse.facets.x = FALSE,
+                                                facet.scales = "free_y", 
+                                                breaks.spacing.x = -2, angle.x = 90, 
+                                                ggplotFuncs = vline)))
+  testthat::expect_equal(nrow(smth.dat), 280)
+  testthat::expect_equal(ncol(smth.dat), 37)
+  
+  #Test plotting raw in xfacet when xfacet is "."
+  testthat::expect_silent(
+    smth.dat <- traitSmooth(data = longi.dat, 
+                            response = "PSA", response.smoothed = "sPSA",
+                            individuals = "Snapshot.ID.Tag",times = "DAP", 
+                            keep.columns = trt.facets, 
+                            smoothing.args =  
+                              args4smoothing(spline.types = "PS", 
+                                             df = NULL, lambdas = 3.162), 
+                            chosen.smooth.args = NULL, 
+                            which.plots = "profile",
+                            profile.plot.args = 
+                              args4profile_plot(plots.by = c("Type","Method","Tuning"), 
+                                                facet.x = ".", facet.y = trt.facets, 
+                                                include.raw = "facet.x", 
+                                                collapse.facets.x = FALSE,
+                                                facet.scales = "free_y", 
+                                                breaks.spacing.x = -2, angle.x = 90, 
+                                                ggplotFuncs = vline)))
   testthat::expect_equal(nrow(smth.dat), 280)
   testthat::expect_equal(ncol(smth.dat), 37)
   

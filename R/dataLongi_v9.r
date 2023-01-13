@@ -555,8 +555,8 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
     
   longi.plot <- ggplot(data=data, aes_string(x = x, y = response)) +
     theme_bw() +
-    theme(panel.grid.major = element_line(colour = "grey60", size = 0.5), 
-          panel.grid.minor = element_line(colour = "grey80", size = 0.5)) +
+    theme(panel.grid.major = element_line(colour = "grey60", linewidth = 0.5), 
+          panel.grid.minor = element_line(colour = "grey80", linewidth = 0.5)) +
     xlab(x.title) + ylab(y.title) + ggtitle(title)
   
   #Do facet if have any
@@ -662,8 +662,8 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
   data <- data[!is.na(data[response]),]
   longi.plot <- ggplot(data=data, aes_string(x = x, y = response)) +
     theme_bw() +
-    theme(panel.grid.major = element_line(colour = "grey60", size = 0.5), 
-          panel.grid.minor = element_line(colour = "grey80", size = 0.5)) +
+    theme(panel.grid.major = element_line(colour = "grey60", linewidth = 0.5), 
+          panel.grid.minor = element_line(colour = "grey80", linewidth = 0.5)) +
     xlab(x.title) + ylab(y.title) + ggtitle(title)
   
   #Do facet if have any
@@ -936,7 +936,7 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
                               printPlot=FALSE, ...)
     innerPlot <- innerPlot + scale_x_continuous(breaks=breaks)
     if (!is.null(vertical.line))
-      innerPlot <- innerPlot + geom_vline(xintercept=vertical.line, linetype="longdash", size=1)
+      innerPlot <- innerPlot + geom_vline(xintercept=vertical.line, linetype="longdash", linewidth=1)
     if ("innerPlot" %in% opt)
       print(innerPlot)
   } else
@@ -965,7 +965,7 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
     outerPlot <- outerPlot + scale_x_continuous(breaks=breaks)
     
     if (!is.null(vertical.line))
-      outerPlot <- outerPlot + geom_vline(xintercept=vertical.line, linetype="longdash", size=1)
+      outerPlot <- outerPlot + geom_vline(xintercept=vertical.line, linetype="longdash", linewidth=1)
     
     if ("outerPlot" %in% opt)
       print(outerPlot)
@@ -1180,15 +1180,15 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
   {
     plts[[k]] <- ggplot(med.devn.dat, aes_string(x = xname, kresp.devn[k]), ...) +
       ggfacet +
-      geom_line (aes(colour=Scheme), size=0.4, alpha=alpha.med.devn,) +
+      geom_line (aes(colour=Scheme), linewidth=0.4, alpha=alpha.med.devn,) +
       geom_point(aes(colour=Scheme, shape=DF), alpha=alpha.med.devn, size=1.5) +
-      geom_hline(yintercept=0, linetype="solid", size=0.4, alpha=0.3) +
+      geom_hline(yintercept=0, linetype="solid", linewidth=0.4, alpha=0.3) +
       xlab(x.title) + ylab(y.titles[k]) + 
       theme_bw() +
       theme(strip.text = element_text(size=strip.text.size, face="bold"),
             axis.title = element_text(face="bold"),
-            panel.grid.major = element_line(colour = "grey60", size = 0.5), 
-            panel.grid.minor = element_line(colour = "grey80", size = 0.5))
+            panel.grid.major = element_line(colour = "grey60", linewidth = 0.5), 
+            panel.grid.minor = element_line(colour = "grey80", linewidth = 0.5))
     
     if (length(levels(med.devn.dat$Method)) == 1 ||length(levels(med.devn.dat$DF)) == 1)
       plts[[k]] <- plts[[k]] + guides(shape = "none")

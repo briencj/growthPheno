@@ -223,6 +223,16 @@ test_that("chickpea_growthPheno", {
                                               facet.x = ".", 
                                               facet.y = c("Method", "Treatment.1", "Tuning"), 
                                               collapse.facets.y = FALSE, include.raw = "facet.y")))
+  #Inclusion of raw in facet.y = "."
+  testthat::expect_silent(
+    plotSmoothsComparison(data = t, response="ShootArea1000", 
+                          times = "TimeAfterPlanting", 
+                          trait.types = ("response"), 
+                          profile.plot.args = 
+                            args4profile_plot(plots.by = "Smarthouse", 
+                                              facet.x = c("Method", "Treatment.1", "Tuning"), 
+                                              facet.y = ".", 
+                                              collapse.facets.x = FALSE, include.raw = "facet.y")))
   #Inclusion of raw with other factors in facet.x and  facet.y
   testthat::expect_silent(
     plotSmoothsComparison(data = t, response="ShootArea1000", 

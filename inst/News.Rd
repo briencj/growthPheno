@@ -1,5 +1,11 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.1-17 (2023-01-13)}{
+  \itemize{
+  \item{Fix bug in plotting of Method in a propn.type envelope.}
+  \item{Fix bug in plotComparison when \code{include.raw} is set to include the raw data plot in a facet of the plot and the facet is set to \code{"."}.}
+  \item{Replace \code{size} with \code{linewidth} in ggplot line function calls to comply with changes made to ggplot2.}
+  }}
 \section{growthPheno Version 2.1-16 (2022-11-13)}{
   \itemize{
   \item{Build for R 4.2.2 and for CRAN submission.}

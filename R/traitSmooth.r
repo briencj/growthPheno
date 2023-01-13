@@ -61,8 +61,8 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
     {
       plt <- ggplot(data = dat, aes_string(x = x.factor, y = "deviations"), ...) +
         theme_bw() + 
-        theme(panel.grid.major = element_line(colour = "grey60", size = 0.5), 
-              panel.grid.minor = element_line(colour = "grey80", size = 0.5),
+        theme(panel.grid.major = element_line(colour = "grey60", linewidth = 0.5), 
+              panel.grid.minor = element_line(colour = "grey80", linewidth = 0.5),
               axis.title = element_text(face="bold"),
               axis.text.x = element_text(angle = angle.x)) +
         geom_boxplot() + 
@@ -475,20 +475,20 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                                                   newlevels = substring(levels(Method),1,3)))
         plts[[k]][[p]] <- ggplot(tmp, aes_string(x = times, kresp.devn[k]), ...) +
           ggfacet +
-          geom_hline(yintercept=0, linetype="solid", size=0.5, colour = "maroon", alpha=0.7) +
+          geom_hline(yintercept=0, linetype="solid", linewidth=0.5, colour = "maroon", alpha=0.7) +
           setScaleTime(tmp[[times]], breaks.spacing.x = breaks.spacing.x) +
           xlab(x.title) + ylab(y.titles[k]) + theme_bw() +
           theme(strip.text = element_text(size=strip.text.size, face="bold"),
                 axis.title = element_text(face="bold"), 
                 axis.text.x = element_text(angle = angle.x), 
-                panel.grid.major = element_line(colour = "grey60", size = 0.5), 
-                panel.grid.minor = element_line(colour = "grey80", size = 0.5))
+                panel.grid.major = element_line(colour = "grey60", linewidth = 0.5), 
+                panel.grid.minor = element_line(colour = "grey80", linewidth = 0.5))
         
         if (is.null(fac.group))
         { 
           if (is.allnull(colour.values.med))
           { 
-            plts[[k]][[p]] <- plts[[k]][[p]] + geom_line (size=0.4, alpha=alpha.med)
+            plts[[k]][[p]] <- plts[[k]][[p]] + geom_line (linewidth=0.4, alpha=alpha.med)
             if (is.allnull(shape.values.med))
               plts[[k]][[p]] <- plts[[k]][[p]] + geom_point(alpha=alpha.med, size=1.5)
             else
@@ -498,7 +498,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
           else
           { 
             plts[[k]][[p]] <- plts[[k]][[p]] + 
-              geom_line (colour=colour.values.med[1], size=0.4, alpha=alpha.med)
+              geom_line (colour=colour.values.med[1], linewidth=0.4, alpha=alpha.med)
             if (is.allnull(shape.values.med))
               plts[[k]][[p]] <- plts[[k]][[p]] + 
                 geom_point(colour=colour.values.med[1], 
@@ -511,7 +511,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
         }
         else
           plts[[k]][[p]] <- plts[[k]][[p]] + 
-          geom_line (aes_string(colour=fac.group), size=0.4, alpha=alpha.med) +
+          geom_line (aes_string(colour=fac.group), linewidth=0.4, alpha=alpha.med) +
           geom_point(aes_string(colour=fac.group, shape=fac.group, fill=fac.group), 
                      alpha=alpha.med, size=1.5)
         
@@ -538,6 +538,11 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
             med.resp.tmp <- med.resp.dat
           else
             med.resp.tmp <- med.resp.dat[med.resp.dat$fac.by == p, ]
+          if ("Method" %in% names(med.resp.tmp))
+            med.resp.tmp$Method <- with(med.resp.tmp, 
+                                        dae::fac.recast(Method, 
+                                                        newlevels = substring(levels(Method),1,3)))
+
           #Construct message to be plotted
           if (propn.note.med)
           {
@@ -794,9 +799,17 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
             if ("Combined.y" %in% names(tmp1)) 
               tmp1["Combined.y"] <- factor(tmp1[["Combined.y"]])
           }
+          xfacet.tmp <- xfacet
+          yfacet.tmp <- yfacet
           if (incl.raw.opt %in% c("facet.x", "facet.y"))
           {
             if (incl.raw.opt == "facet.x")  comb.name <- xfacet else comb.name <- yfacet
+            if (any(comb.name == "."))
+            {
+              comb.name <- ".Response"
+              tmp1[comb.name] <- factor("Smoothed")
+              if (incl.raw.opt == "facet.x")  xfacet.tmp <- comb.name else yfacet.tmp <- comb.name
+            }
             comb.name <- comb.name[length(comb.name)]
             tmp2 <- tmp1
             tmp2[kresp.sm[k]] <- tmp2[k]
@@ -810,7 +823,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                     c(list(data = tmp1, times = times, 
                            response = kresp.sm[k], 
                            individuals = individuals, 
-                           facet.x=xfacet, facet.y=yfacet, 
+                           facet.x = xfacet.tmp, facet.y = yfacet.tmp, 
                            labeller = facet.labeller, 
                            scales = facet.scales.pf,
                            colour = colour.pf, 

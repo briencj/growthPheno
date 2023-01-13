@@ -1,6 +1,6 @@
 Package: growthPheno
-Version: 2.1.16
-Date: 2022-11-13
+Version: 2.1.17
+Date: 2023-01-13
 Title: Functional Analysis of Phenotypic Growth Data to Smooth and Extract Traits
 Authors@R: person("Chris","Brien", role = c("aut","cre"),
          comment = c(ORCID = "0000-0003-0581-1817"),
@@ -21,7 +21,7 @@ Imports:
     stats,
     stringi,
     utils
-Suggests: testthat, nlme, R.rsp, scales, WriteXLS
+Suggests: testthat, nlme, R.rsp, scales
 VignetteBuilder: R.rsp
 Description: Assists in the plotting and functional smoothing of traits 
     measured over time and the extraction of features from these traits, 
@@ -42,5 +42,5 @@ Description: Assists in the plotting and functional smoothing of traits
     for more information). The package 'growthPheno' can also be 
     installed from <http://chris.brien.name/rpackages/>.
 License: GPL (>=2)
-URL: http://chris.brien.name
+URL: http://chris.brien.name/
 RoxygenNote: 5.0.1
