@@ -1,6 +1,6 @@
 \name{news}
 \title{News for Package growthPheno}
-\section{growthPheno Version 2.1-17 (2023-01-13)}{
+\section{growthPheno Version 2.1.17 (2023-01-14)}{
   \itemize{
   \item{Fix bug in plotting of Method in a propn.type envelope.}
   \item{Fix bug in plotComparison when \code{include.raw} is set to include the raw data plot in a facet of the plot and the facet is set to \code{"."}.}

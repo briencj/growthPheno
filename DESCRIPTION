@@ -1,26 +1,14 @@
 Package: growthPheno
 Version: 2.1.17
-Date: 2023-01-13
-Title: Functional Analysis of Phenotypic Growth Data to Smooth and Extract Traits
+Date: 2023-01-14
+Title: Functional Analysis of Phenotypic Growth Data to Smooth and
+        Extract Traits
 Authors@R: person("Chris","Brien", role = c("aut","cre"),
          comment = c(ORCID = "0000-0003-0581-1817"),
          email = "chris.brien@adelaide.edu.au")
-Depends:
-    R (>= 3.5.0)
-Imports:
-    dae,
-    GGally,
-    ggplot2,
-    grDevices,
-    Hmisc,
-    JOPS,
-    methods, 
-    RColorBrewer,
-    readxl,
-    reshape,
-    stats,
-    stringi,
-    utils
+Depends: R (>= 3.5.0)
+Imports: dae, GGally, ggplot2, grDevices, Hmisc, JOPS, methods,
+        RColorBrewer, readxl, reshape, stats, stringi, utils
 Suggests: testthat, nlme, R.rsp, scales
 VignetteBuilder: R.rsp
 Description: Assists in the plotting and functional smoothing of traits 
