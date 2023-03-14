@@ -362,12 +362,16 @@ traitSmooth(data, response, response.smoothed, individuals, times,
         \code{\link{plotSmoothsMedianDevns}}, \code{\link{ggplot}}.}
 \examples{
 data(exampleData)
+longi.dat <- longi.dat[1:140,] #reduce to a smaller data set
 vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", linewidth=1))
 yfacets <- c("Smarthouse", "Treatment.1")
 smth.dat <- traitSmooth(data = longi.dat, 
                         response = "PSA", response.smoothed = "sPSA",
                         individuals = "Snapshot.ID.Tag",times = "DAP", 
                         keep.columns = yfacets, 
+                        smoothing.args = 
+                          args4smoothing(df = c(5,7), 
+                                         lambda = list(PS = c(0.316,10))),
                         profile.plot.args = 
                           args4profile_plot(facet.y = yfacets, 
                                             ggplotFuncs = vline),

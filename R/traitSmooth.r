@@ -59,7 +59,8 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
 
     plotDevnBox <- function(dat, y.ytitle, ggplotFuncs = NULL, printPlot = TRUE)
     {
-      plt <- ggplot(data = dat, aes_string(x = x.factor, y = "deviations"), ...) +
+      plt <- ggplot(data = dat, 
+                    aes(x = .data[[!!x.factor]], y = .data[["deviations"]]), ...) +
         theme_bw() + 
         theme(panel.grid.major = element_line(colour = "grey60", linewidth = 0.5), 
               panel.grid.minor = element_line(colour = "grey80", linewidth = 0.5),
@@ -473,7 +474,8 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
         if ("Method" %in% names(tmp))
           tmp$Method <- with(tmp, dae::fac.recast(Method, 
                                                   newlevels = substring(levels(Method),1,3)))
-        plts[[k]][[p]] <- ggplot(tmp, aes_string(x = times, kresp.devn[k]), ...) +
+        plts[[k]][[p]] <- ggplot(tmp, aes(x = .data[[!!times]], .data[[!!kresp.devn[k]]]), 
+                                  ...) +
           ggfacet +
           geom_hline(yintercept=0, linetype="solid", linewidth=0.5, colour = "maroon", alpha=0.7) +
           setScaleTime(tmp[[times]], breaks.spacing.x = breaks.spacing.x) +
@@ -511,8 +513,10 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
         }
         else
           plts[[k]][[p]] <- plts[[k]][[p]] + 
-          geom_line (aes_string(colour=fac.group), linewidth=0.4, alpha=alpha.med) +
-          geom_point(aes_string(colour=fac.group, shape=fac.group, fill=fac.group), 
+          geom_line (aes(colour = .data[[!!fac.group]]), linewidth=0.4, alpha=alpha.med) +
+          geom_point(aes(colour = .data[[!!fac.group]], 
+                         shape = .data[[!!fac.group]], 
+                         fill = .data[[!!fac.group]]), 
                      alpha=alpha.med, size=1.5)
         
         if (!(is.null(colour.values.med)))
@@ -586,13 +590,15 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
           }
           
           #Plot the envelope
-          plts[[k]][[p]] <- plts[[k]][[p]] + geom_line(data = med.resp.tmp, aes_string(y=k, group="sign"), 
+          plts[[k]][[p]] <- plts[[k]][[p]] + geom_line(data = med.resp.tmp, 
+                                                       aes(y = .data[[!!k]], 
+                                                           group = .data[["sign"]]), 
                                                        linetype="dashed")
           if (propn.note.med)
             plts[[k]][[p]] <- plts[[k]][[p]] + 
             geom_text(data = envel, 
-                      mapping = aes_string(x = times, y = kresp.devn[k], 
-                                           label = "lab"), 
+                      mapping = aes(x = .data[[!!times]], y = .data[[!!kresp.devn[k]]], 
+                                    label = .data[["lab"]]), 
                       hjust = 0, vjust=-Inf, 
                       fontface = "plain", size = 3)
         }

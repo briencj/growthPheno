@@ -1,5 +1,9 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.1.18 (2023-03-10)}{
+  \itemize{
+  \item{Update ggplot2 functions to use tidy evaluation.}
+  }}
 \section{growthPheno Version 2.1.17 (2023-01-14)}{
   \itemize{
   \item{Fix bug in plotting of Method in a propn.type envelope.}
