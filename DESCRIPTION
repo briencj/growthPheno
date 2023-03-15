@@ -1,11 +1,6 @@
 Package: growthPheno
-<<<<<<< HEAD
 Version: 2.1.19
 Date: 2023-03-15
-=======
-Version: 2.1.18
-Date: 2023-03-10
->>>>>>> origin
 Title: Functional Analysis of Phenotypic Growth Data to Smooth and
         Extract Traits
 Authors@R: person("Chris","Brien", role = c("aut","cre"),
@@ -37,3 +32,7 @@ Description: Assists in the plotting and functional smoothing of traits
 License: GPL (>=2)
 URL: http://chris.brien.name/
 RoxygenNote: 5.0.1
+NeedsCompilation: no
+Packaged: 2023-03-15 01:14:18 UTC; briencj
+Author: Chris Brien [aut, cre] (<https://orcid.org/0000-0003-0581-1817>)
+Maintainer: Chris Brien <chris.brien@adelaide.edu.au>
