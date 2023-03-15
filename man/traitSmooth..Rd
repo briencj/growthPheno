@@ -50,6 +50,11 @@
              (iv) saving a single smooth in a \code{\link{data.frame}}, which can be merged 
              with a pre-existing \code{\link{data.frame}} such as the \code{\link{data.frame}} 
              that contains the unsmoothed data.  
+             
+             The \code{Tomato} vignette illustrates the use of \code{traitSmooth} and 
+             \code{\link{traitExtractFeatures}} to carry out the SET procedure for the example 
+             presented in Brien et al. (2020). 
+             Use \code{vignette("Tomato", package = "growthPheno")} to access it.
 }
 \usage{
 traitSmooth(data, response, response.smoothed, individuals, times, 
@@ -354,6 +359,9 @@ traitSmooth(data, response, response.smoothed, individuals, times,
              returned in a \code{\link{smooths.frame}}, and plots for the single 
              combination of the smoothing parameters will not be produced. 
 }
+\references{
+Brien, C., Jewell, N., Garnett, T., Watts-Williams, S. J., & Berger, B. (2020). Smoothing and extraction of traits in the growth analysis of noninvasive phenotypic data. \emph{Plant Methods}, \bold{16}, 36. \doi{10.1186/s13007-020-00577-6}.
+}
 \author{Chris Brien}
 \seealso{\code{\link{args4smoothing}}, \code{\link{args4meddevn_plot}}, \code{\link{args4profile_plot}}, 
         \code{\link{args4chosen_smooth}}, \cr 
@@ -362,12 +370,16 @@ traitSmooth(data, response, response.smoothed, individuals, times,
         \code{\link{plotSmoothsMedianDevns}}, \code{\link{ggplot}}.}
 \examples{
 data(exampleData)
+longi.dat <- longi.dat[1:140,] #reduce to a smaller data set
 vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", linewidth=1))
 yfacets <- c("Smarthouse", "Treatment.1")
 smth.dat <- traitSmooth(data = longi.dat, 
                         response = "PSA", response.smoothed = "sPSA",
                         individuals = "Snapshot.ID.Tag",times = "DAP", 
                         keep.columns = yfacets, 
+                        smoothing.args = 
+                          args4smoothing(df = c(5,7), 
+                                         lambda = list(PS = c(0.316,10))),
                         profile.plot.args = 
                           args4profile_plot(facet.y = yfacets, 
                                             ggplotFuncs = vline),

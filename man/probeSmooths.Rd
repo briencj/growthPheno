@@ -302,10 +302,15 @@ probeSmooths(data, response = "PSA", response.smoothed = NULL,
          \code{\link{plotSmoothsMedianDevns}}, \code{\link{ggplot}}.}
 \examples{
 data(exampleData)
+longi.dat <- longi.dat[1:140,] #reduce to a smaller data set
 vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", linewidth=1))
-probeSmooths(data = longi.dat, response = "PSA", response.smoothed = "sPSA", 
-             times = "DAP", 
-             smoothing.args = args4smoothing(df = c(4,7)), 
+yfacets <- c("Smarthouse", "Treatment.1")
+probeSmooths(data = longi.dat, 
+             response = "PSA", response.smoothed = "sPSA",
+             individuals = "Snapshot.ID.Tag",times = "DAP", 
+             smoothing.args = 
+               args4smoothing(df = c(4,7), 
+                              lambda = list(PS = c(0.316,10))),
              profile.plot.args = 
                args4profile_plot(plots.by = NULL, 
                                  facet.x = "Tuning", 
@@ -315,52 +320,6 @@ probeSmooths(data = longi.dat, response = "PSA", response.smoothed = "sPSA",
                                  colour.column = "Method", 
                                  colour.values = c("orange", "olivedrab"), 
                                  ggplotFuncs = vline))
-
-#An example that includes comparisons with logistic model fits
-
-if (requireNamespace("nlme", quietly = TRUE))
-{
-  extra.dat <- longi.dat[, -grep("sPSA", names(longi.dat), fixed = TRUE)]  
-  logist.grp <- nlme::groupedData(PSA ~ xDAP | Snapshot.ID.Tag, data = longi.dat)
-  #Fit the simple logistic model  
-  logist.lis <- nlme::nlsList(SSlogis, logist.grp, na.action = na.pass)
-  logist.dat <- within(extra.dat, sPSA <- fitted(logist.lis))
-  logist.dat <- byIndv4Times_GRsDiff(data = logist.dat, 
-                                     response = "sPSA", 
-                                     individuals="Snapshot.ID.Tag",
-                                     times="DAP", 
-                                     which.rates = c("AGR", "RGR"))
-  logist.dat <- cbind(Tuning = factor("Logistic"), logist.dat)
-  #Fit the four-parameter logistic model - generates warnings
-  logis4.lis <- suppressWarnings(nlme::nlsList(SSfpl, logist.grp, na.action = na.pass))
-  logis4.dat <- within(extra.dat, sPSA <- fitted(logis4.lis))
-  logis4.dat <- byIndv4Times_GRsDiff(data = logis4.dat, 
-                                     response = "sPSA", 
-                                     individuals="Snapshot.ID.Tag",
-                                     times="DAP", 
-                                     which.rates = c("AGR", "RGR"))
-  logis4.dat <- cbind(Tuning = factor("Logis-4par"), logis4.dat)
-  #Combine the logistic fits
-  extra.dat <- rbind(logist.dat,logis4.dat)
-  extra.dat <- cbind(Type = factor("NonLinear"), extra.dat)
-
-  #Compare spline and logistic fits
-  probeSmooths(data = longi.dat, 
-               response = "PSA", response.smoothed = "sPSA", 
-               times = "DAP", 
-               smoothing.args = 
-                 args4smoothing(smoothing.methods = "direct", 
-                                spline.types = "NCSS", 
-                                df = c(4,7), lambdas = NULL, 
-                                external.smooths = extra.dat), 
-               which.plots = "median", 
-               meddevn.plot.args = 
-                 args4meddevn_plot(plots.by = "Type", 
-                                   plots.group = "Tuning",  
-                                   facet.x = ".", facet.y = ".", 
-                                   propn.types = c(0.02,0.1, 0.2),
-                                   ggplotFuncs = vline))
-}
 
 #An example that supplies three smoothing schemes to be compared
 data(tomato.dat)

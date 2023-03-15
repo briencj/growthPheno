@@ -386,8 +386,8 @@
                                       colour = "black", 
                                       fill = NA)) +
     labs(x = NULL, y = NULL)
-  new_mapping <- aes_string(x = xP * diff(xrange) + min(xrange, na.rm = TRUE), 
-                            y = yP * diff(yrange) + min(yrange, na.rm = TRUE))
+  new_mapping <- aes(x = xP * diff(xrange) + min(xrange, na.rm = TRUE), 
+                     y = yP * diff(yrange) + min(yrange, na.rm = TRUE))
   if (is.null(mapping)) {
     mapping <- new_mapping
   }

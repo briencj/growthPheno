@@ -1,6 +1,6 @@
 Package: growthPheno
-Version: 2.1.17
-Date: 2023-01-14
+Version: 2.1.19
+Date: 2023-03-15
 Title: Functional Analysis of Phenotypic Growth Data to Smooth and
         Extract Traits
 Authors@R: person("Chris","Brien", role = c("aut","cre"),

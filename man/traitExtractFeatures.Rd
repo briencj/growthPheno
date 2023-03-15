@@ -24,6 +24,10 @@
                      imaging period, and the time at which it occurred, for each individual. 
                      (uses \code{byIndv4Intvl_ValueCalc})}
              }
+             The \code{Tomato} vignette illustrates the use of \code{\link{traitSmooth}} and 
+             \code{traitExtractFeatures} to carry out the SET procedure for the example 
+             presented in Brien et al. (2020). 
+             Use \code{vignette("Tomato", package = "growthPheno")} to access it.
 }
 \usage{
 traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP", 
@@ -274,6 +278,9 @@ traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP",
              }
 
        The \code{\link{data.frame}} is returned invisibly.
+}
+\references{
+Brien, C., Jewell, N., Garnett, T., Watts-Williams, S. J., & Berger, B. (2020). Smoothing and extraction of traits in the growth analysis of noninvasive phenotypic data. \emph{Plant Methods}, \bold{16}, 36. \doi{10.1186/s13007-020-00577-6}.
 }
 \author{Chris Brien}
 \seealso{\code{\link{getTimesSubset}}, \code{\link{byIndv4Intvl_GRsAvg}}, 
