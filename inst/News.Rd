@@ -1,9 +1,12 @@
 \name{news}
 \title{News for Package growthPheno}
+<<<<<<< HEAD
 \section{growthPheno Version 2.1.19 (2023-03-15)}{
   \itemize{
   \item{Reduce the run time of the examples for probeSmooths and traitSmooth to pass CRAN tests.}
   }}
+=======
+>>>>>>> origin
 \section{growthPheno Version 2.1.18 (2023-03-10)}{
   \itemize{
   \item{Update ggplot2 functions to use tidy evaluation.}
