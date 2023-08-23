@@ -1,7 +1,7 @@
 \newcommand{\packageVer}{\Sexpr[results=rd,stage=build]{utils::packageDescription("#1", fields="Version")}}
 \newcommand{\packageDate}{\Sexpr[results=rd,stage=build]{utils::packageDescription("#1", fields="Date")}}
-\name{growthPheno-pkg}
-\alias{growthPheno-pkg}
+\name{growthPheno-package}
+\alias{growthPheno-package}
 \alias{growthPheno}
 \docType{package}
 \title{

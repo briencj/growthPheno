@@ -1043,7 +1043,7 @@ pSpline <- function(vars, npspline.segments, lambda = NULL, ...)
   return(fit.spline)
 }
 
-predict.pSpline <- function(object, x, npspline.segments, deriv = 0)
+predict.pSpline <- function(object, x, npspline.segments, deriv = 0, ...)
 {
   fit.obj <- object$uncorrected.fit
   bdeg <- fit.obj$bdeg

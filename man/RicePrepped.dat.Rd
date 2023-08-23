@@ -3,7 +3,7 @@
 \alias{RicePrepped.dat}
 \title{Prepped data from an experiment to investigate a rice germplasm panel.}
 \description{
-The data is the full set of Lanes and Positions from an experiment in a Smarthouse at the Plant Accelerator in Adelaide. It is used in the \code{\link{growthPheno-pkg}} as an executable example to illustrate the use of \code{growthPheno}. The experiment and data collection are described in Al-Tamimi et al. (2016) and the data is derived from the \code{\link{data.frame}} in the file \code{00-raw.0254.dat.rda} that is available from Al-Tamimi et al. (2017); halpf od the unprred data is in \code{\link{RiceRaw.dat}}. 
+The data is the full set of Lanes and Positions from an experiment in a Smarthouse at the Plant Accelerator in Adelaide. It is used in the \code{\link{growthPheno-package}} as an executable example to illustrate the use of \code{growthPheno}. The experiment and data collection are described in Al-Tamimi et al. (2016) and the data is derived from the \code{\link{data.frame}} in the file \code{00-raw.0254.dat.rda} that is available from Al-Tamimi et al. (2017); halpf od the unprred data is in \code{\link{RiceRaw.dat}}. 
 
 }
 \usage{data(RicePrepped.dat)}

@@ -3,7 +3,7 @@
 \alias{RiceRaw.dat}
 \title{Data for an experiment to investigate a rice germplasm panel}
 \description{
-The data is half (the first 12 of 24 Lanes) of that from an experiment in a Smarthouse at the Plant Accelerator in Adelaide. It is used in the \code{\link{growthPheno-pkg}} as an executable example to illustrate the use of \code{growthPheno}. The experiment and data collection are described in Al-Tamimi et al. (2016) and the data is derived from the \code{\link{data.frame}} in the file \code{00-raw.0255.dat.rda} that is available from Al-Tamimi et al. (2017). 
+The data is half (the first 12 of 24 Lanes) of that from an experiment in a Smarthouse at the Plant Accelerator in Adelaide. It is used in the \code{\link{growthPheno-package}} as an executable example to illustrate the use of \code{growthPheno}. The experiment and data collection are described in Al-Tamimi et al. (2016) and the data is derived from the \code{\link{data.frame}} in the file \code{00-raw.0255.dat.rda} that is available from Al-Tamimi et al. (2017). 
 
 }
 \usage{data(RiceRaw.dat)}

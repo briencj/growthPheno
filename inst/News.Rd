@@ -1,5 +1,13 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.1.21 (2023-08-22)}{
+  \itemize{
+  \item{Correct package overview help file.}
+  }}
+\section{growthPheno Version 2.1.20 (2023-08-21)}{
+  \itemize{
+  \item{Correct package overview help file.}
+  }}
 \section{growthPheno Version 2.1.19 (2023-03-15)}{
   \itemize{
   \item{Reduce the run time of the examples for probeSmooths and traitSmooth to pass CRAN tests.}
