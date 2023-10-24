@@ -136,7 +136,7 @@ smoothSpline(data, response, response.smoothed = NULL, x,
        and the fitted smooth. The names of the columns will be the value of 
        \code{x} and the value of \code{response.smoothed}. The number of rows in 
        the \code{data.frame} will be equal to the number of pairs that have neither 
-       a missing \code{x} or \code{response} and the order of code{x} will be the 
+       a missing \code{x} or \code{response} and the order of \code{x} will be the 
        same as the order in \code{data}. If \code{deriv} is not \code{NULL}, 
        columns containing the values of the derivative(s) will be added to the 
        \code{data.frame}; the name each of these columns will be the value of 

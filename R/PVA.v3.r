@@ -362,13 +362,13 @@
     if (is.null(pairs.sets))
       print(my_ggpairs(data=data, responses = responses, 
                        labels=labels,  labelSize= labelSize, title = title),
-            ggplotFuncs = ggplotFuncs)
+            ggplotFuncs = ggplotFuncs, ...)
     else
       for(k in 1:length(pairs.sets))
         my_ggpairs(data=data, responses = responses[pairs.sets[[k]]], 
                    labels=labels[pairs.sets[[k]]],  
                    labelSize= labelSize, title = title,
-                   ggplotFuncs = ggplotFuncs)
+                   ggplotFuncs = ggplotFuncs, ...)
   }
   invisible(plt)
 }
@@ -409,12 +409,12 @@
       p <- p + f
   }
   
-  p
+  return(p)
 }
 
 my_ggpairs <- function(data, responses = NULL, labels = NULL, 
                        labelSize = 4, title = "",
-                       ggplotFuncs = NULL)
+                       ggplotFuncs = NULL, ...)
 { 
   
   if (is.null(responses))
@@ -428,7 +428,8 @@ my_ggpairs <- function(data, responses = NULL, labels = NULL,
   theme_set(theme_bw())
   gg1 <- ggpairs(data, title =title,
                  axisLabels="show",  columnLabels= labels, 
-                 diag=list(continuous="blankDiag")) 
+                 diag=list(continuous="blankDiag"), 
+                 ...) 
   for (i in 1:nvars)
   { 
     gtx <- my_ggally_text(labels[i], mapping = aes(col = "grey50"), labelSize= labelSize,

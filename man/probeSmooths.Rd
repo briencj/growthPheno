@@ -78,14 +78,14 @@
 
              The \code{probeSmooths} arguments are grouped according to function in the following order:
              \enumerate{
-                \item{\bold{Data description arguments:} data, response, response.smoothed, 
+                \item \bold{Data description arguments:} data, response, response.smoothed, 
                       individuals, times, keep.columns, trait.types, get.rates, 
-                      rates.method, ntimes2span.}
-                \item{\bold{Smoothing arguments:} smoothing.args (see \code{\link{args4smoothing}}).}
-                \item{\bold{General plot control:} x.title, y.titles, facet.labeller, which.plots.} 
-                \item{\bold{Profile plots (pf) features:} profile.plot.args (see \code{\link{args4profile_plot}})} 
-                \item{\bold{Median-deviations (med) plots features:} meddevn.plot.args (see \code{\link{args4meddevn_plot}})} 
-                \item{\bold{Deviations boxplots (box) features:} devnboxes.plot.args (see \code{\link{args4devnboxes_plot}})} 
+                      rates.method, ntimes2span.
+                \item\bold{Smoothing arguments:} smoothing.args (see \code{\link{args4smoothing}}).
+                \item  \bold{General plot control:} x.title, y.titles, facet.labeller, which.plots.
+                \item \bold{Profile plots (pf) features:} profile.plot.args (see \code{\link{args4profile_plot}})
+                \item \bold{Median-deviations (med) plots features:} meddevn.plot.args (see \code{\link{args4meddevn_plot}}) 
+                \item \bold{Deviations boxplots (box) features:} devnboxes.plot.args (see \code{\link{args4devnboxes_plot}}) 
              }
 }
 \usage{

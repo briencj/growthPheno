@@ -122,7 +122,7 @@
       \code{df} and \code{lambdas} that are valid; the other smoothing.args 
       will be the same for all smooths.  
 
-      The option {parallel} specifies that, if set, each of four 
+      The option \code{parallel} specifies that, if set, each of four 
       smoothing parameters, \code{smoothing.methods}, \code{spline.types}, 
       \code{df} and \code{lambdas}, must have the same number of values and that this 
       number is the number of different smooths to be produced. The values of the 

@@ -4,25 +4,25 @@
 \description{Extract one or more sets of features from traits observed over time, the result being 
              traits that have a single value for each individual. The sets of features are:
              \enumerate{
-               \item{\bold{single times} -- the value for each individual for a single time. 
-                     (uses \code{getTimesSubset})}
-               \item{\bold{growth rates for a time interval} -- the average growth rate (AGR 
+               \item \bold{single times} -- the value for each individual for a single time. 
+                     (uses \code{getTimesSubset})
+               \item \bold{growth rates for a time interval} -- the average growth rate (AGR 
                      and/or RGR) over a time interval for each individual. 
-                     (uses \code{byIndv4Intvl_GRsDiff} or \code{byIndv4Intvl_GRsAvg})}
-               \item{\bold{water use traits for a time interval} -- the total water use (WU), 
+                     (uses \code{byIndv4Intvl_GRsDiff} or \code{byIndv4Intvl_GRsAvg})
+               \item \bold{water use traits for a time interval} -- the total water use (WU), 
                      the water use rate (WUR) and the water use index (WUI) over a time 
-                     interval for each individual. (uses \code{byIndv4Intvl_WaterUse})}
-               \item{\bold{growth rates for the imaging period overall} -- the average growth rate (AGR 
+                     interval for each individual. (uses \code{byIndv4Intvl_WaterUse})
+               \item \bold{growth rates for the imaging period overall} -- the average growth rate (AGR 
                      and/or RGR) over the whole imaging period for each individual. 
-                     (uses \code{byIndv4Intvl_GRsDiff} or \code{byIndv4Intvl_GRsAvg})}
-               \item{\bold{water use traits for the imaging period overall} -- the total water use (WU), 
+                     (uses \code{byIndv4Intvl_GRsDiff} or \code{byIndv4Intvl_GRsAvg})
+               \item \bold{water use traits for the imaging period overall} -- the total water use (WU), 
                      the water use rate (WUR) and the water use index (WUI) for the whole imaging 
-                     period for each individual. (uses \code{byIndv4Intvl_WaterUse})}
-               \item{\bold{totals for the imaging period overall} -- the total over the whole imaging 
-                     period of a trait for each individual. (uses \code{byIndv4Intvl_ValueCalc})}
-               \item{\bold{maximum for the imaging period overall} -- the maximum value over the whole 
+                     period for each individual. (uses \code{byIndv4Intvl_WaterUse})
+               \item \bold{totals for the imaging period overall} -- the total over the whole imaging 
+                     period of a trait for each individual. (uses \code{byIndv4Intvl_ValueCalc})
+               \item \bold{maximum for the imaging period overall} -- the maximum value over the whole 
                      imaging period, and the time at which it occurred, for each individual. 
-                     (uses \code{byIndv4Intvl_ValueCalc})}
+                     (uses \code{byIndv4Intvl_ValueCalc})
              }
              The \code{Tomato} vignette illustrates the use of \code{\link{traitSmooth}} and 
              \code{traitExtractFeatures} to carry out the SET procedure for the example 
@@ -238,19 +238,19 @@ traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP",
        
        The names of the columns produced by the function are constructed as follows: 
              \enumerate{
-               \item{\bold{single times} -- A name for a single-time trait is formed by appending 
+               \item \bold{single times} -- A name for a single-time trait is formed by appending 
                   a full stop to an element of \code{responses4singletimes}, followed by the value of 
-                  \code{times} at which the values were observed.}
-               \item{\bold{growth rates for a time interval} --  The name for an interval growth 
+                  \code{times} at which the values were observed.
+               \item \bold{growth rates for a time interval} --  The name for an interval growth 
                   rate is constructed by concatenating the relevant element of \code{responses4intvl.rates}, 
                   \code{growth.rates} and a suffix for the time interval, each separated by a full 
                   stop. The interval suffix is formed by joining its \code{starts.intvl} and 
-                  \code{stops.intvl} values, separating them by the value of \code{sep.times.intvl}.}
-               \item{\bold{growth rates for the whole imaging period} --  The name for an interval growth 
+                  \code{stops.intvl} values, separating them by the value of \code{sep.times.intvl}.
+               \item \bold{growth rates for the whole imaging period} --  The name for an interval growth 
                   rate is constructed by concatenating the relevant element of \code{responses4intvl.rates}, 
                   \code{growth.rates} and \code{suffix.overall}, each separated by a full 
-                  stop.}
-               \item{\bold{water use traits for a time interval} -- Construction of the names for 
+                  stop.
+               \item \bold{water use traits for a time interval} -- Construction of the names for 
                   the three water traits begins with the value of \code{water.use4intvl.traits}. The rate (WUR) 
                   has either \code{R} or the value of \code{suffix.water.rate} added to the value of 
                   \code{water.use4intvl.traits}. Similarly the index (WUI) has either \code{I} or the value of 
@@ -258,23 +258,23 @@ traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP",
                   \code{responses4water} used in calculating the WUI prefixed to its name. 
                   All three water use traits have a suffix for the interval appended to their names. 
                   This suffix is contructed by joining its \code{starts.intvl} and \code{stops.intvl}, 
-                  separated by the value of \code{sep.times.intvl}.}
-               \item{\bold{water use traits for the whole imaging period} -- Construction of the names for 
+                  separated by the value of \code{sep.times.intvl}.
+               \item \bold{water use traits for the whole imaging period} -- Construction of the names for 
                   the three water traits begins with the value of \code{water.use4intvl.traits}. The rate (WUR) 
                   has either \code{R} or the value of \code{suffix.water.rate} added to the value of 
                   \code{water.use4intvl.traits}. Similarly the index (WUI) has either \code{I} or the value of 
                   \code{suffix.water.index} added to it. The WUI also has the element of 
                   \code{responses4water} used in calculating the WUI prefixed to its name. 
-                  All three water use traits have \code{suffix.overall} appended to their names.}
-               \item{\bold{the total for the whole of imaging period} -- The name for whole-of-imaging 
+                  All three water use traits have \code{suffix.overall} appended to their names.
+               \item \bold{the total for the whole of imaging period} -- The name for whole-of-imaging 
                   total is formed by combining an element of\code{responses4overall.totals}  with \code{suffix.overall}, 
-                  separating them by a full stop.}
-               \item{\bold{maximum for the whole of imaging period} -- The name of the column with the 
+                  separating them by a full stop.
+               \item \bold{maximum for the whole of imaging period} -- The name of the column with the 
                   maximum values will be the result of concatenating the \code{responses4overall.max}, \code{"max"} 
                   and \code{suffix.overall}, each separated by a full stop. The name of the column with 
                   the value of \code{times} at which the maximum occurred will be the result of 
                   concatenating the \code{responses4overall.max}, \code{"max"} and the value of \code{times},  
-                  each separated by a full stop.}
+                  each separated by a full stop.
              }
 
        The \code{\link{data.frame}} is returned invisibly.

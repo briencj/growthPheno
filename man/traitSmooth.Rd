@@ -236,7 +236,7 @@ traitSmooth(data, response, response.smoothed, individuals, times,
              number of unique combinations of the values in the columns of the 
              \code{chosen.smooth.args} whose names are given by \code{individuals} and 
              \code{times}, but this is not mandatory. If only one smooth has been 
-             produced, then it will be merged with \code{data} provided {mergedata} is 
+             produced, then it will be merged with \code{data} provided \code{mergedata} is 
              \code{NULL} and \code{data} is not  a \code{\link{smooths.frame}}. Othewrwise, 
              a single smooth will be be merged with \code{mergedata}.}
  \item{...}{allows arguments to be passed to \code{\link{plotProfiles}}.}

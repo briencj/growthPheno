@@ -343,6 +343,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
     if (!is.allnull(plts.by))
     {
       dat$fac.by <- fac.mixcombine(dat, plts.by, smooth.cols = smooth.cols)
+      dat$fac.by <- factor(dat$fac.by)
       id.cols <- c("fac.by", id.cols)
     }
     if (all(xfacet != "."))
@@ -786,6 +787,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
       else
       {
         data$plots.by.pf <- fac.mixcombine(data, plts.by, smooth.cols = smooth.cols)
+        data$plots.by.pf <- factor(data$plots.by.pf)
         levs.by <- levels(data$plots.by.pf)
       }
       #Loop over plots.by.pf
