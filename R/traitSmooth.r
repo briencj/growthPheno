@@ -115,12 +115,12 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
   
   options <- c("none", "absolute.boxplots", "relative.boxplots")
   plots <- options[unlist(lapply(which.plots, check.arg.values, options=options))]
-  if ("none" %in% plots & length(plots) > 1)
+  if ("none" %in% plots && length(plots) > 1)
     plots <- "none"
 
   plts <- med.devn.dat <- NULL
   #Check that plots are wanted
-  if (plots !=  "none" && !is.allnull(devnboxes.plot.args))
+  if (!("none" %in% plots) && !is.allnull(devnboxes.plot.args))
   {
     options <- c("response", "AGR", "RGR", "all")
     traits <- options[unlist(lapply(trait.types, check.arg.values, options=options))]
@@ -745,8 +745,6 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
     data <- modfacet$data
     
     #Do the plots
-    x.axis <- list(setScaleTime(data[[times]], breaks.spacing.x = breaks.spacing.x),
-                   theme(axis.text.x = element_text(size = 7.5, angle = angle.x)))
     plts <- list()
     for (k in kresp)
     {
@@ -768,6 +766,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                          individuals = individuals, 
                          facet.x=xfacet.tmp, facet.y=yfacet, 
                          labeller = facet.labeller, scales = facet.scales.pf, 
+                         breaks.spacing.x = breaks.spacing.x, 
                          colour = colour.pf, 
                          colour.column = colour.column.pf, 
                          colour.values = colour.values.pf, 
@@ -776,7 +775,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                          x.title = x.title, y.title = y.titles[k], 
                          addMediansWhiskers = addMediansWhiskers.pf, 
                          printPlot=FALSE, 
-                         ggplotFuncs = c(x.axis, ggplotFuncsProfile)), 
+                         ggplotFuncs = ggplotFuncsProfile), 
                     pltProfile.args))
         if (printPlot)
           print(plts[[k]][["profiles"]][["Unsmoothed"]])
@@ -834,6 +833,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                            facet.x = xfacet.tmp, facet.y = yfacet.tmp, 
                            labeller = facet.labeller, 
                            scales = facet.scales.pf,
+                           breaks.spacing.x = breaks.spacing.x,
                            colour = colour.pf, 
                            colour.column = colour.column.pf, 
                            colour.values = colour.values.pf, 
@@ -842,7 +842,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                            x.title = x.title, y.title = y.titles[k], 
                            addMediansWhiskers = addMediansWhiskers.pf, 
                            printPlot=FALSE, 
-                           ggplotFuncs = c(x.axis, ggplotFuncsProfile)), 
+                           ggplotFuncs = ggplotFuncsProfile), 
                       pltProfile.args))
           if (printPlot)
             print(plts[[k]][["profiles"]][[by]])
@@ -1994,15 +1994,14 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0, ...)
                                                        tunepar,tuneval), collapse = "-"))
     
     #Call plot longitudinal with just the plotProfile args from inargs
-    x.axis <- list(setScaleTime(smth[[times]], 
-                                breaks.spacing.x = chosen.plot.args$breaks.spacing.x)) 
-    for (kresp in responses.plot)
+     for (kresp in responses.plot)
       do.call(plotProfiles, list(data = smth, times = times, response = kresp,
                                  individuals = individuals,
                                  facet.x = chosen.plot.args$facet.x,
                                  facet.y = chosen.plot.args$facet.y,
                                  labeller = chosen.plot.args$facet.labeller,
                                  scales = chosen.plot.args$facet.scales,
+                                 breaks.spacing.x = chosen.plot.args$breaks.spacing.x,
                                  colour = chosen.plot.args$colour,
                                  colour.column = chosen.plot.args$colour.column,
                                  colour.values = chosen.plot.args$colour.values,
@@ -2011,8 +2010,7 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0, ...)
                                  x.title = x.title,
                                  y.title = y.titles[kresp],
                                  printPlot = TRUE,
-                                 ggplotFuncs = c(x.axis, 
-                                                 list(theme(axis.text.x = 
+                                 ggplotFuncs = c(list(theme(axis.text.x = 
                                                          element_text(angle = chosen.plot.args$angle.x))), 
                                                  chosen.plot.args$ggplotFuncs), 
                                  ...))
@@ -2095,7 +2093,7 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0, ...)
       pltProfile.args <- inargs[pltProfile.args]
     else
       pltProfile.args <- NULL
-    
+
     ch.smth <- do.call(traitChooseSmooth, 
                        c(list(smooths = smth, response.smoothed = response.smoothed, 
                               individuals = individuals, times = times, 

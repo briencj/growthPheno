@@ -1,0 +1,222 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\usepackage{svg}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={growthPheno},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{growthPheno}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+\href{http://www.repostatus.org/\#active}{\includesvg{http://www.repostatus.org/badges/latest/active.svg}}
+\href{https://cran.r-project.org/}{\includesvg{https://img.shields.io/badge/R\%3E\%3D-3.5.0-6666ff.svg}}
+\href{https://cran.r-project.org/package=growthPheno}{\includegraphics{https://www.r-pkg.org/badges/version/growthPheno}}
+\href{/commits/master}{\includegraphics{https://img.shields.io/badge/Package\%20version-2.1.24-orange.svg?style=flat-square}}
+\href{/commits/master}{\includesvg{https://img.shields.io/badge/last\%20change-2024--02--29-yellowgreen.svg}}
+\href{http://choosealicense.com/licenses/gpl-2.0/}{\includesvg{https://img.shields.io/badge/license-GPL\%20(\%3E\%3D2)-green.svg}}
+\href{commits/master}{\includegraphics{https://cranlogs.r-pkg.org/badges/last-week/growthPheno}}
+
+\texttt{growthPheno} is an R package that collects together functions
+that can be used to perform functional analyses of phenotypic growth
+data to smooth and extract traits, as described by Brien et al.~(2020).
+Many of the functions can be applied to longitudinal data in general.
+
+An overview can be obtained using \texttt{?growthPheno}. .
+
+\hypertarget{more-information}{%
+\subsection{More information}\label{more-information}}
+
+Two vignettes, \texttt{Tomato} and \texttt{Rice}, illustrate the process
+for smoothing and extraction of traits (SET), the former being the
+example presented in Brien et al.~(2020). Use
+\texttt{vignette("Tomato",\ package\ =\ "growthPheno")} or
+\texttt{vignette("Rice",\ package\ =\ "growthPheno")} to access either
+of the vignettes.
+
+\hypertarget{installing-the-package}{%
+\subsection{Installing the package}\label{installing-the-package}}
+
+\hypertarget{from-a-repository-using-drat}{%
+\subsubsection{\texorpdfstring{From a repository using
+\texttt{drat}}{From a repository using drat}}\label{from-a-repository-using-drat}}
+
+Windows binaries and source tarballs of the latest version of
+\texttt{growthPheno} are available for installation from my
+\href{http://chris.brien.name/rpackages}{repository}. Installation
+instructions are available there.
+
+\hypertarget{directly-from-github}{%
+\subsubsection{Directly from GitHub}\label{directly-from-github}}
+
+\texttt{growthPheno} is an R package available on GitHub, so it can be
+installed from the RStudio console or an R command line session using
+the \texttt{devtools} command \texttt{install\_github}. First, make sure
+\texttt{devtools} is installed, which, if you do not have it, can be
+done as follows:
+
+\texttt{install.packages("devtools")}
+
+Next, install \texttt{growthPheno} from GitHub by entering:
+
+\texttt{devtools::install\_github("briencj/growthPheno")}.
+
+The version of the package on CRAN (see CRAN badge above) and its
+dependencies can be installed using:
+
+\texttt{install.packages("growthPheno")}
+
+If you have not previously installed \texttt{growthPheno} then you may
+need to install it dependencies:
+
+\texttt{install.packages(c("dae","GGally","ggplot2","grDevices","Hmisc","JOPS","methods","RColorBrewer","readxl","reshape","stringi"))}
+
+\hypertarget{what-is-does}{%
+\subsection{What is does}\label{what-is-does}}
+
+This package can be used to perform a functional analysis of growth data
+using splines to smooth the trend of individual plant traces over time
+and then to extract traits for further analysis. This process is called
+smoothing and extraction of traits (SET) by Brien et al.~(2020), who
+detail the use of \texttt{growthPheno} for carrying out the method.
+However, \texttt{growthPheno} now has the two wrapper, or primary,
+functions \texttt{traitSmooth} and \texttt{traitExtractFeatures} that
+implement the SET approach. These may be the only functions that are
+used in that the complete SET process can be carried out using only
+them. The \texttt{Tomato} vignette illustrates their use for the example
+presented in Brien et al.~(2020).
+
+The function \texttt{traitSmooth} utilizes the secondary functions
+\texttt{probeSmooths}, \texttt{plotSmoothsComparison} and
+\texttt{plotSmoothsMedianDevns} and accepts the arguments of the
+secondary functions. The function \texttt{probeSmooths} utilizes the
+tertiary functions \texttt{byIndv4Times\_SplinesGRs} and
+\texttt{byIndv4Times\_GRsDiff}, which in turn call the function
+\texttt{smoothSpline}. The function \texttt{plotSmoothsComparison} calls
+\texttt{plotDeviationsBoxes}. All of these functions play a role in
+choosing the smoothing method and parameters.
+
+The primary function \texttt{traitExtractFeatures} uses the secondary
+functions \texttt{getTimesSubset} and the set of \texttt{byIndv4Intvl\_}
+functions. These functions are concerned with the extraction of traits
+that have a single value for each individual in the data.
+
+Data suitable for use with this package consists of columns of data
+obtained from a set of individuals (e.g.~plants, pots, carts, plots or
+units) over time. There should be a unique identifier for each
+individual and a time variable, such as Days after Planting (DAP), that
+contain no repeats for an individual. The combination of the identifier
+and a time for an individual should be unique to that individual. For
+imaging data, the individuals may be arranged in a grid of Lanes
+\(\times\) Positions. That is, the minimum set of columns is an
+individuals, a times and one or more primary trait columns.
+
+The full set of functions falls into the following natural groupings:
+
+\begin{enumerate}
+\def\labelenumi{(\roman{enumi})}
+\item
+  Wrapper functions
+\item
+  Data
+\item
+  Plots
+\item
+  Smoothing and calculation of growth rates and water use traits for
+  each individual
+\item
+  Data frame manipulation
+\item
+  General calculations
+\item
+  Principal variates analysis (PVA)
+\end{enumerate}
+
+\hypertarget{what-it-needs}{%
+\subsection{What it needs}\label{what-it-needs}}
+
+It imports \href{https://CRAN.R-project.org/package=dae}{dae},
+\href{https://CRAN.R-project.org/package=GGally}{GGally},
+\href{https://CRAN.R-project.org/package=ggplot2}{ggplot2},
+\texttt{grDevices},
+\href{https://CRAN.R-project.org/package=Hmisc}{Hmisc},
+\href{https://CRAN.R-project.org/package=JOPS}{JOPS}, \texttt{methods},
+\href{https://CRAN.R-project.org/package=RColorBrewer}{RColorBrewer},
+\href{https://CRAN.R-project.org/package=readxl}{readxl},
+\href{https://CRAN.R-project.org/package=reshape}{reshape},
+\texttt{stats},
+\href{https://CRAN.R-project.org/package=stringi}{stringi},
+\texttt{utils}.
+
+\hypertarget{license}{%
+\subsection{License}\label{license}}
+
+The \texttt{growthPheno} package is distributed under the
+\href{https://opensource.org/licenses/GPL-2.0}{GPL (\textgreater= 2)
+licence}.
+
+\end{document}

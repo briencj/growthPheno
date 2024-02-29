@@ -52,10 +52,10 @@ args4chosen_plot(plots.by = NULL,
              across all facets of a plot ("fixed"), or do they vary across rows (the 
              default, "free_x"), columns ("free_y"), or both rows and columns ("free")?}
  \item{breaks.spacing.x}{A \code{\link{numeric}} whose absolute values specifies the 
-             distance between breaks for the x-axis in a sequence beginning with the 
+             distance between major breaks for the x-axis in a sequence beginning with the 
              minimum x value and continuing up to the maximum x value. If it is negative, 
              the breaks that do not have x values in \code{data} will be omitted. 
-             Minor breaks will be at half this value or, if these do not correspond to 
+             Minor breaks will be at half major break value or, if these do not correspond to 
              x-values in \code{data} when \code{breaks.spacing.x} is negative, have 
              a spacing of one. Thus, when \code{breaks.spacing.x} is negative,  
              grid lines will only be included for x-values that occur in \code{data}.  

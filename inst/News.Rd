@@ -1,5 +1,10 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.1.24 (2024-02-29)}{
+  \itemize{
+  \item Add link to GitHub issues page for BugReports in DESCRIPTION file.
+  \item Add arguments \code{breaks.spacing.x} and \code{angle.x} to plotProfiles and plotAnom.
+  }}
 \section{growthPheno Version 2.1.23 (2023-10-24)}{
   \itemize{
   \item Updated the syntax of News so that \code{\\item} is followed by a space rather than braces.

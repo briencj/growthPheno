@@ -54,8 +54,8 @@ test_that("exampleData_growthPheno", {
                         y.title = "sPSA (kpixels)", 
                         facet.x = "Treatment.1", facet.y = "Smarthouse", 
                         printPlot=FALSE))
-  testthat::expect_silent(  
-    plt <- plt + ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1) +
+  testthat::expect_message(  
+    plt <- plt + ggplot2::geom_vline(xintercept=29, linetype="longdash", linewidth=1) +
       ggplot2::scale_x_continuous(breaks=seq(28, 42, by=2)) + 
       ggplot2::scale_y_continuous(limits=c(0,750)))
   testthat::expect_silent(  
@@ -63,21 +63,21 @@ test_that("exampleData_growthPheno", {
     
   testthat::expect_silent(  
     plotProfiles(data = longi.dat, response = "sPSA", times = "DAP", 
-                     y.title = "sPSA (kpixels)",  
+                     y.title = "sPSA (kpixels)",breaks.spacing.x = 2, 
                      facet.x = "Treatment.1", facet.y = "Smarthouse", 
                      ggplotFuncs = list(ggplot2::geom_vline(xintercept=29, linetype="longdash", 
                                                             size=1), 
-                                        ggplot2::scale_x_continuous(breaks=seq(28, 42, by=2)), 
                                         ggplot2::scale_y_continuous(limits=c(0,750)))))
     
   #plotAnom
-  testthat::expect_silent(  
+  testthat::expect_warning(  
     anomalous <- plotAnom(longi.dat, response="sPSA.AGR", times = "DAP", 
                           lower=2.5, start.time=40, 
                           vertical.line=29, 
-                          breaks=seq(28, 42, by=2), 
+                          breaks.spacing.x = 2,
                           whichPrint=c("innerPlot"), 
-                          y.title="sPSA AGR (kpixels)"))
+                          y.title="sPSA AGR (kpixels)"),
+    regexp = "Removed 1 rows containing missing values \\(\\`geom_vline\\(\\)\\`\\)")
   
   #plotDeviationsBoxes
   testthat::expect_silent(  
@@ -86,16 +86,18 @@ test_that("exampleData_growthPheno", {
 
   #probeSmooths
   vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1))
-  testthat::expect_silent(tmp <- probeSmooths(data = longi.dat, 
-                                              response = "PSA", times = "DAP", 
-                                              smoothing.args = 
-                                                args4smoothing(smoothing.methods = "direct", 
-                                                               spline.types = "N", 
-                                                               df = c(4,7), lambdas = NULL),
-                                              profile.plot.args = 
-                                                args4profile_plot(facet.x = "Tuning", 
-                                                                  facet.y = "Treatment.1",
-                                                                  ggplotFuncs = vline)))
+  testthat::expect_warning(
+    tmp <- probeSmooths(data = longi.dat, 
+                        response = "PSA", times = "DAP", 
+                        smoothing.args = 
+                          args4smoothing(smoothing.methods = "direct", 
+                                         spline.types = "N", 
+                                         df = c(4,7), lambdas = NULL),
+                        profile.plot.args = 
+                          args4profile_plot(facet.x = "Tuning", 
+                                            facet.y = "Treatment.1",
+                                            ggplotFuncs = vline)),
+    regexp = "Removed 6 rows containing missing values \\(\\`geom_vline\\(\\)\\`\\)")
   testthat::expect_equal(nrow(tmp), 560)
   testthat::expect_equal(ncol(tmp), 15)
   testthat::expect_silent(  

@@ -27,7 +27,7 @@ test_that("exampleData_traitSmooth", {
                             chosen.plot.args = 
                               args4chosen_plot(facet.y = trt.facets), 
                             mergedata = longi.dat), 
-    regexp = "containing missing values")
+    regexp = "containing missing values \\(\\`geom_vline\\(\\)\\`\\)")
   testthat::expect_equal(nrow(smth.dat), 280)
   testthat::expect_equal(ncol(smth.dat), 37)
   testthat::expect_true(all(names(longi.dat) %in% names(smth.dat)))
@@ -99,7 +99,7 @@ test_that("exampleData_traitSmooth", {
   testthat::expect_equal(ncol(tmp.dat), 11)
   
   #Produce a single smooth
-  testthat::expect_silent(
+  testthat::expect_warning(
     smth.dat <- traitSmooth(data = longi.dat, 
                             response = "PSA", response.smoothed = "sPSA",
                             individuals = "Snapshot.ID.Tag",times = "DAP", 
@@ -116,12 +116,13 @@ test_that("exampleData_traitSmooth", {
                                                 collapse.facets.x = FALSE,
                                                 facet.scales = "free_y", 
                                                 breaks.spacing.x = -2, angle.x = 90, 
-                                                ggplotFuncs = vline)))
+                                                ggplotFuncs = vline)),
+    regexp = "Removed 4 rows containing missing values \\(\\`geom_vline\\(\\)\\`\\)")
   testthat::expect_equal(nrow(smth.dat), 280)
   testthat::expect_equal(ncol(smth.dat), 37)
   
   #Test plotting raw in yfacet when yfacet is "."
-  testthat::expect_silent(
+  testthat::expect_warning(
     smth.dat <- traitSmooth(data = longi.dat, 
                             response = "PSA", response.smoothed = "sPSA",
                             individuals = "Snapshot.ID.Tag",times = "DAP", 
@@ -138,12 +139,13 @@ test_that("exampleData_traitSmooth", {
                                                 collapse.facets.x = FALSE,
                                                 facet.scales = "free_y", 
                                                 breaks.spacing.x = -2, angle.x = 90, 
-                                                ggplotFuncs = vline)))
+                                                ggplotFuncs = vline)),
+    regexp = "Removed 4 rows containing missing values \\(\\`geom_vline\\(\\)\\`\\)")
   testthat::expect_equal(nrow(smth.dat), 280)
   testthat::expect_equal(ncol(smth.dat), 37)
   
   #Test plotting raw in xfacet when xfacet is "."
-  testthat::expect_silent(
+  testthat::expect_warning(
     smth.dat <- traitSmooth(data = longi.dat, 
                             response = "PSA", response.smoothed = "sPSA",
                             individuals = "Snapshot.ID.Tag",times = "DAP", 
@@ -160,7 +162,8 @@ test_that("exampleData_traitSmooth", {
                                                 collapse.facets.x = FALSE,
                                                 facet.scales = "free_y", 
                                                 breaks.spacing.x = -2, angle.x = 90, 
-                                                ggplotFuncs = vline)))
+                                                ggplotFuncs = vline)),
+    regexp = "Removed 4 rows containing missing values \\(\\`geom_vline\\(\\)\\`\\)")
   testthat::expect_equal(nrow(smth.dat), 280)
   testthat::expect_equal(ncol(smth.dat), 37)
   

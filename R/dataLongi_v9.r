@@ -538,6 +538,7 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
                            x.title = "DAP", y.title = "PSA (kpixels)", 
                            facet.x = ".", facet.y =   ".", 
                            labeller = NULL, scales = "fixed", 
+                           breaks.spacing.x = -2, angle.x = 0, 
                            colour = "black", 
                            colour.column=NULL, colour.values=NULL, 
                            alpha = 0.1, addMediansWhiskers = FALSE, 
@@ -549,14 +550,16 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
   checkNamesInData(c(response,individuals,times),data)
 
   data <- data[!is.na(data[response]),]
+  data[times] <- convertTimes2numeric(data[[times]])
   if (is.null(x))
     x <- times
-  data[times] <- convertTimes2numeric(data[[times]])
-    
-  longi.plot <- ggplot(data=data, aes_string(x = x, y = response)) +
+
+  longi.plot <- ggplot(data=data, aes(x = .data[[!!x]], y = .data[[!!response]])) +
     theme_bw() +
+    setScaleTime(data[[x]], breaks.spacing.x = breaks.spacing.x) +
     theme(panel.grid.major = element_line(colour = "grey60", linewidth = 0.5), 
-          panel.grid.minor = element_line(colour = "grey80", linewidth = 0.5)) +
+          panel.grid.minor = element_line(colour = "grey80", linewidth = 0.5),
+          axis.text.x = element_text(size = 7.5, angle = angle.x)) +
     xlab(x.title) + ylab(y.title) + ggtitle(title)
   
   #Do facet if have any
@@ -571,10 +574,11 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
                                      axis.title = element_text(face="bold"), legend.position="none")
   }
   if (is.null(colour.column))
-    longi.plot <- longi.plot + geom_line(aes_string(group=individuals),  
+    longi.plot <- longi.plot + geom_line(aes(group=.data[[!!individuals]]),  
                                          colour=colour, alpha=alpha)
   else
-    longi.plot <- longi.plot + geom_line(aes_string(group=individuals, colour=colour.column), 
+    longi.plot <- longi.plot + geom_line(aes(group=.data[[!!individuals]], 
+                                             colour=.data[[!!colour.column]]), 
                                          alpha=alpha)
   if (!(is.null(colour.values)))
     longi.plot <- longi.plot + scale_colour_manual(values = colour.values)
@@ -625,10 +629,11 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
     summ$Statistic <- factor(summ$Statistic, labels = stats)
     longi.plot <- longi.plot + 
       geom_line(data = summ[summ$Statistic == "median", ], 
-                aes_string(x=x, y=response, alpha = 0.75),
+                aes(x=.data[[x]], y=.data[[response]], alpha = 0.75),
                 show.legend = FALSE, linetype="solid", colour = "black") +
       geom_line(data = summ[summ$Statistic != "median", ], 
-                aes_string(x=x, y=response, group="Statistic", alpha = 0.75),
+                aes(x=.data[[x]], y=.data[[response]], group=.data[["Statistic"]], 
+                    alpha = 0.75),
                 show.legend = FALSE, linetype="dashed", colour = "black")
   }
   
@@ -838,7 +843,8 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
 "plotAnom" <- function(data, response = "sPSA", 
                        individuals="Snapshot.ID.Tag", 
                        times = "DAP", x = NULL, 
-                       breaks=seq(12, 36, by=2), vertical.line=NULL, 
+                       breaks.spacing.x = -2, angle.x = 0, 
+                       vertical.line=NULL, 
                        groupsFactor=NULL, lower=NULL, upper=NULL, 
                        start.time=NULL, end.time=NULL,  
                        suffix.interval=NULL, 
@@ -846,6 +852,10 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
                                           "Treatment.1", "Genotype.ID"),
                        whichPrint=c("anomalous","innerPlot","outerPlot"), na.rm=TRUE, ...)
 { 
+  inargs <- list(...)
+  if ("breaks" %in% names(inargs))
+    stop("The argument breaks has been replaced by breaks.spacing.x")
+
   if (!all(individuals %in% columns.retained))
     stop("The individuals column(s) is (are) not in the columns.retained")
   if (is.null(lower) & is.null(upper))
@@ -933,8 +943,8 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
   { 
     innerPlot <- plotProfiles(data = subset(data, !na.omit(data[[response.anom]])), 
                               response = response, times = times, x=x, 
+                              breaks.spacing.x = breaks.spacing.x, 
                               printPlot=FALSE, ...)
-    innerPlot <- innerPlot + scale_x_continuous(breaks=breaks)
     if (!is.null(vertical.line))
       innerPlot <- innerPlot + geom_vline(xintercept=vertical.line, linetype="longdash", linewidth=1)
     if ("innerPlot" %in% opt)
@@ -961,8 +971,8 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
   { 
     outerPlot <- plotProfiles(data = subset(data, data[[response.anom]]), 
                               times = times, x=x, response = response, alpha=0.5, colour="purple", 
+                              breaks.spacing.x = breaks.spacing.x, 
                               printPlot=FALSE, ...)
-    outerPlot <- outerPlot + scale_x_continuous(breaks=breaks)
     
     if (!is.null(vertical.line))
       outerPlot <- outerPlot + geom_vline(xintercept=vertical.line, linetype="longdash", linewidth=1)

@@ -13,7 +13,8 @@
 plotAnom(data, response="sPSA", 
          individuals="Snapshot.ID.Tag", 
          times = "DAP", x = NULL, 
-         breaks=seq(12, 36, by=2), vertical.line=NULL, 
+         breaks.spacing.x = -2, angle.x = 0, 
+         vertical.line=NULL, 
          groupsFactor=NULL, lower=NULL, upper=NULL, 
          start.time=NULL, end.time=NULL, 
          suffix.interval=NULL, 
@@ -41,8 +42,19 @@ plotAnom(data, response="sPSA",
              variables, to be plotted on the x-axis. If \code{NULL}, it will be 
              set to the value of \code{times}, which it can be assumed will be 
              converted to a \code{\link{numeric}}.}
- \item{breaks}{A \code{\link{numeric}} vector giving the breaks to be plotted on 
-               the x-axis scale.}
+ \item{breaks.spacing.x}{A \code{\link{numeric}} whose absolute values specifies the 
+             distance between major breaks for the x-axis in a sequence beginning with the 
+             minimum x value and continuing up to the maximum x value. If it is negative, 
+             the breaks that do not have x values in \code{data} will be omitted. 
+             Minor breaks will be at half major break value or, if these do not correspond to 
+             x-values in \code{data} when \code{breaks.spacing.x} is negative, have 
+             a spacing of one. Thus, when \code{breaks.spacing.x} is negative,  
+             grid lines will only be included for x-values that occur in \code{data}.  
+             These settings can be overwritten by supplying, in \code{ggplotFuncs}, 
+             a \code{scale_x_continuous} function from \code{ggplot2}.}
+ \item{angle.x}{A \code{\link{numeric}} between 0 and 360 that gives the angle of the 
+             x-axis text to the x-axis. It can also be set by supplying, in 
+             \code{ggplotFuncs}, a \code{theme} function from \code{ggplot2}.}
  \item{vertical.line}{A \code{\link{numeric}} giving position on the x-axis 
                       at which a vertical line is to be drawn. If \code{NULL}, 
                       no line is drawn.}
@@ -107,7 +119,7 @@ anomalous <- plotAnom(longi.dat, response="sPSA.AGR",
                       times = "xDAP", 
                       lower=2.5, start.time=40, 
                       vertical.line=29, 
-                      breaks=seq(28, 42, by=2), 
+                      breaks.spacing.x = 2, 
                       whichPrint=c("innerPlot"), 
                       y.title="sPSA AGR")
 }

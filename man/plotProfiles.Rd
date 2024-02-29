@@ -14,6 +14,7 @@ plotProfiles(data, response = "PSA",
              x.title = "DAP", y.title = "PSA (kpixels)", 
              facet.x = ".", facet.y = ".", 
              labeller = NULL, scales = "fixed", 
+             breaks.spacing.x = -2, angle.x = 0, 
              colour = "black", 
              colour.column = NULL, colour.values = NULL, 
              alpha = 0.1, addMediansWhiskers = FALSE, 
@@ -55,6 +56,19 @@ plotProfiles(data, response = "PSA",
  \item{scales}{A \code{\link{character}} specifying whether the scales are shared 
               across all facets of a plot (the default, "fixed"), or do they vary across 
               rows ("free_x"), columns ("free_y"), or both rows and columns ("free")?}
+ \item{breaks.spacing.x}{A \code{\link{numeric}} whose absolute values specifies the 
+             distance between major breaks for the x-axis in a sequence beginning with the 
+             minimum x value and continuing up to the maximum x value. If it is negative, 
+             the breaks that do not have x values in \code{data} will be omitted. 
+             Minor breaks will be at half major break value or, if these do not correspond to 
+             x-values in \code{data} when \code{breaks.spacing.x} is negative, have 
+             a spacing of one. Thus, when \code{breaks.spacing.x} is negative,  
+             grid lines will only be included for x-values that occur in \code{data}.  
+             These settings can be overwritten by supplying, in \code{ggplotFuncs}, 
+             a \code{scale_x_continuous} function from \code{ggplot2}.}
+ \item{angle.x}{A \code{\link{numeric}} between 0 and 360 that gives the angle of the 
+             x-axis text to the x-axis. It can also be set by supplying, in 
+             \code{ggplotFuncs}, a \code{theme} function from \code{ggplot2}.}
  \item{colour}{A \code{\link{character}} specifying a single colour to use in 
                drawing the lines for the profiles. If colouring according to the 
                values of a variable is required then use \code{colour.column}.}
@@ -95,9 +109,9 @@ plotProfiles(data = longi.dat, response = "sPSA", times = "DAP")
 plt <- plotProfiles(data = longi.dat, response = "sPSA", 
                     y.title = "sPSA (kpixels)", 
                     facet.x = "Treatment.1", facet.y = "Smarthouse", 
+                    breaks.spacing.x = 2,
                     printPlot=FALSE)
-plt <- plt + ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1) +
-             ggplot2::scale_x_continuous(breaks=seq(28, 42, by=2)) + 
+plt <- plt + ggplot2::geom_vline(xintercept=29, linetype="longdash", linewidth=1) +
              ggplot2::scale_y_continuous(limits=c(0,750))
 print(plt)
 
