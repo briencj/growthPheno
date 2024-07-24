@@ -22,6 +22,13 @@
       vars <- c(vars, times.diffs)
     else
       stop("The column ", times.diffs, ", expected to contain the times differences, is not in data")
+  } else #Check that all DAPs available for all plants
+  {
+    DAP.reps <- table(data[times])
+   if (all(length(unique(data[individuals][[1]])) != DAP.reps[1]))
+     warning("Not all individuals have an entry for the first of the times, as is assumed in calculating \ntime differences; ",
+             "either add the absent times with NA for the observed response values or \n",
+             "add your own column of differences to the data and use the avail.time.diffs argument.")
   }
   
   tmp <- data[vars]

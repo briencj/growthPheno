@@ -112,7 +112,7 @@ plotAnom(data, response="sPSA",
        modified by adding \code{ggplot} functions before printing. If there are 
        no observations to plot, \code{NULL} will be returned for the plot.}
 \author{Chris Brien}
-\seealso{\code{\link{anom}}, \code{\link{byIndv4Intvl_ValueCalc}}, \code{\link{ggplot}}.}
+\seealso{\code{\link{anom}}, \code{\link{byIndv4Intvl_ValueCalc}}, \code{ggplot2}.}
 \examples{
 data(exampleData)
 anomalous <- plotAnom(longi.dat, response="sPSA.AGR", 

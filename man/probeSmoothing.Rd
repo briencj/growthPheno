@@ -112,9 +112,9 @@ probeSmoothing(data, response = "Area", response.smoothed = NULL,
  \item{facet.y}{A \code{\link{data.frame}} giving the variable to be used to 
                 form subsets to be plotted in separate rows of plots.
                 Use \code{"."} if a split into columns is not wanted.}
- \item{labeller}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
-                 facets of a plot produced using the \code{\link{ggplot}} function. 
-                 For more information see \code{\link{ggplot}}.}
+ \item{labeller}{A \code{ggplot} \code{function} for labelling the 
+                 facets of a plot produced using the \code{ggplot} function. 
+                 For more information see \code{ggplot}.}
  \item{x.title}{Title for the x-axis. If \code{NULL} then set to \code{times.factor}.}
  \item{colour}{A \code{\link{character}} specifying a single colour to use in 
                drawing the lines for the profiles. If colouring according to the 
@@ -171,15 +171,15 @@ probeSmoothing(data, response = "Area", response.smoothed = NULL,
               transparency to be used in plotting a median deviations plot. 
               It is a ratio in which the denominator specifies the number of 
               points (or lines) that must be overplotted to give a solid cover.}
- \item{ggplotFuncs}{A \code{\link{list}}, each element of which contains the 
-                results of evaluating a \code{\link{ggplot}} function. 
-                It is created by calling the \code{\link{list}} function with 
-                a \code{\link{ggplot}} function call for each element. Note that 
-                these functions are applied to all three plots produced.}
+ \item{ggplotFuncs}{A \code{list}, each element of which contains the 
+                results of evaluating a \code{ggplot} function. 
+                It is created by calling the \code{list} function with 
+                a \code{ggplot} function call for each element.
+                These functions are applied to all three plots produced.}
  \item{ggplotFuncsMedDevn}{A \code{\link{list}}, each element of which contains the 
-                results of evaluating a \code{\link{ggplot}} function. 
+                results of evaluating a \code{ggplot} function. 
                 It is created by calling the \code{\link{list}} function with 
-                a \code{\link{ggplot}} function call for each element. Note that 
+                a \code{ggplot} function call for each element. Note that 
                 these functions are applied to the \code{compare.median} deviations plots only.}
 \item{...}{allows passing of arguments to \code{\link{plotLongitudinal}}.}
 }
@@ -194,7 +194,7 @@ probeSmoothing(data, response = "Area", response.smoothed = NULL,
        are the name of the smoothed response and either \code{"AGR"} or 
        \code{"RGR"}.}
 \author{Chris Brien}
-\seealso{\code{\link{splitSplines}}, \code{\link{splitContGRdiff}}, \code{\link{smooth.spline}}, \code{\link{ggplot}}.}
+\seealso{\code{\link{splitSplines}}, \code{\link{splitContGRdiff}}, \code{\link{smooth.spline}}, \code{ggplot}.}
 \examples{
 data(exampleData)
 vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1),

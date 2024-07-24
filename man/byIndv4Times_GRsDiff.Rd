@@ -9,6 +9,11 @@
              of \code{response} values  and 
              stores the results in \code{data}. The subsets are those values 
              with the same levels combinations of the \code{\link{factor}}s listed in 
+             \code{individuals}. 
+             
+             If \code{avail.time.diffs} is \code{FALSE}, the differences between 
+             consecutive time values are  calculated. For this, it is assumed that  
+             the same first \code{times} value is present in \code{data} for all 
              \code{individuals}.}
 \usage{
 byIndv4Times_GRsDiff(data, responses, 

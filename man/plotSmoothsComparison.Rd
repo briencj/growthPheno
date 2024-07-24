@@ -122,18 +122,18 @@ plotSmoothsComparison(data, response, response.smoothed = NULL,
              plots.}
  \item{...}{allows passing of arguments to \code{\link{plotProfiles}}.}
 }
-\value{A multilevel \code{\link{list}} that contains the \code{\link{ggplot}} 
-        objects for the plots produced. The first-level \code{\link{list}} 
+\value{A multilevel \code{\link{list}} that contains the \code{ggplot} 
+        objects for the plots produced. The first-level \code{list} 
         has a component for each \code{trait.types} and each of these is a 
-        second-level \code{\link{list}} that contains the trait 
+        second-level \code{list} that contains the trait 
         profile plots and for a \code{trait}. It may contain components labelled 
         \code{Unsmoothed}, \code{all} or for one of the levels of the 
-        \code{\link{factor}}s in \code{plots.by}; each of these third-level 
-        \code{\link{list}}s contains a \code{\link{ggplot}} object that can 
+        \code{factor}s in \code{plots.by}; each of these third-level 
+        \code{ist}s contains a \code{ggplot} object that can 
         be plotted using \code{print}. 
 }
 \author{Chris Brien}
-\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{args4profile_plot}}, \code{\link{plotDeviationsBoxes}}, \code{\link{plotSmoothsMedianDevns}}, \code{\link{ggplot}}.}
+\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{args4profile_plot}}, \code{\link{plotDeviationsBoxes}}, \code{\link{plotSmoothsMedianDevns}}, \code{ggplot2}.}
 \examples{
 data(exampleData)
 vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1))

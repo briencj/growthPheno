@@ -27,7 +27,7 @@ test_that("exampleData_traitSmooth", {
                             chosen.plot.args = 
                               args4chosen_plot(facet.y = trt.facets), 
                             mergedata = longi.dat), 
-    regexp = "containing missing values \\(\\`geom_vline\\(\\)\\`\\)")
+    regexp = "containing missing values or values outside the scale range \\(\\`geom_vline\\(\\)\\`\\)")
   testthat::expect_equal(nrow(smth.dat), 280)
   testthat::expect_equal(ncol(smth.dat), 37)
   testthat::expect_true(all(names(longi.dat) %in% names(smth.dat)))
@@ -117,7 +117,7 @@ test_that("exampleData_traitSmooth", {
                                                 facet.scales = "free_y", 
                                                 breaks.spacing.x = -2, angle.x = 90, 
                                                 ggplotFuncs = vline)),
-    regexp = "Removed 4 rows containing missing values \\(\\`geom_vline\\(\\)\\`\\)")
+    regexp = "Removed 4 rows containing missing values or values outside the scale range \\(\\`geom_vline\\(\\)\\`\\)")
   testthat::expect_equal(nrow(smth.dat), 280)
   testthat::expect_equal(ncol(smth.dat), 37)
   
@@ -140,7 +140,7 @@ test_that("exampleData_traitSmooth", {
                                                 facet.scales = "free_y", 
                                                 breaks.spacing.x = -2, angle.x = 90, 
                                                 ggplotFuncs = vline)),
-    regexp = "Removed 4 rows containing missing values \\(\\`geom_vline\\(\\)\\`\\)")
+    regexp = "Removed 4 rows containing missing values or values outside the scale range \\(\\`geom_vline\\(\\)\\`\\)")
   testthat::expect_equal(nrow(smth.dat), 280)
   testthat::expect_equal(ncol(smth.dat), 37)
   
@@ -163,7 +163,7 @@ test_that("exampleData_traitSmooth", {
                                                 facet.scales = "free_y", 
                                                 breaks.spacing.x = -2, angle.x = 90, 
                                                 ggplotFuncs = vline)),
-    regexp = "Removed 4 rows containing missing values \\(\\`geom_vline\\(\\)\\`\\)")
+    regexp = "Removed 4 rows containing missing values or values outside the scale range \\(\\`geom_vline\\(\\)\\`\\)")
   testthat::expect_equal(nrow(smth.dat), 280)
   testthat::expect_equal(ncol(smth.dat), 37)
   

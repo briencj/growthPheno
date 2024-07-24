@@ -78,9 +78,9 @@ plotMedianDeviations(data, response, response.smoothed,
  \item{facet.y}{A \code{\link{data.frame}} giving the variable to be used to 
                 form subsets to be plotted in separate rows of plots.
                 Use \code{"."} if a split into columns is not wanted.}
- \item{labeller}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
-                 facets of a plot produced using the \code{\link{ggplot}} function. 
-                 For more information see \code{\link{ggplot}}.}
+ \item{labeller}{A \code{ggplot} \code{function} for labelling the 
+                 facets of a plot produced using the \code{ggplot} function. 
+                 For more information see \code{ggplot}.}
  \item{trait.types}{A \code{\link{character}} giving the traits types that are to be 
              plotted. While \code{AGR} and \code{RGR} are commonly used, the names 
              can be arbitrary, except that \code{response} is a special case that 
@@ -109,11 +109,12 @@ plotMedianDeviations(data, response, response.smoothed,
             \code{trait.types}, the smoothed values of related trait types must also be 
             supplied, with names constructed according to the convention described under 
             \code{data}.}
- \item{ggplotFuncsMedDevn}{A \code{\link{list}}, each element of which contains the 
-                results of evaluating a \code{\link{ggplot}} function. 
-                It is created by calling the \code{\link{list}} function with 
-                a \code{\link{ggplot}} function call for each element.
-                These functions are applied in creating the \code{ggplot} object.}
+ \item{ggplotFuncsMedDevn}{A \code{list}, each element of which contains the 
+                results of evaluating a \code{ggplot} function. 
+                It is created by calling the \code{list} function with 
+                a \code{ggplot} function call for each element.
+                These functions are applied in creating the \code{ggplot} 
+                object.}
  \item{printPlot}{A \code{\link{logical}} indicating whether or not to print any 
                   plots.}
  \item{...}{allows passing of arguments to \code{\link{plotLongitudinal}}.}
@@ -123,9 +124,9 @@ plotMedianDeviations(data, response, response.smoothed,
        one for each \code{trait.types}; (ii) a component named \code{med.dev.dat} that stores the 
        \code{\link{data.frame}} containing the median deviations that have been plotted.  
        Each plot in the \code{plots} \code{\link{list}} is in an object of class 
-       "\code{\link{ggplot}}", which can be plotted using \code{print}.}
+       "\code{ggplot}", which can be plotted using \code{print}.}
 \author{Chris Brien}
-\seealso{\code{\link{plotDeviationsBoxes}}, \code{\link{probeSmoothing}}, \code{\link{ggplot}}.}
+\seealso{\code{\link{plotDeviationsBoxes}}, \code{\link{probeSmoothing}}, \code{ggplot}.}
 \examples{
 data(exampleData)
 vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1),

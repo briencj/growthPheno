@@ -1,5 +1,10 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 2.1.25 (2024-07-24)}{
+  \itemize{
+  \item Fix bug that meant profile plots from traitsSmooth was ignoring the setting of the \code{angle.x} argument.
+  \item Add warning to byIndv4Times_GRsDiff when the the asumption all observatiions have the same first time is unmet. 
+  }}
 \section{growthPheno Version 2.1.24 (2024-02-29)}{
   \itemize{
   \item Add link to GitHub issues page for BugReports in DESCRIPTION file.

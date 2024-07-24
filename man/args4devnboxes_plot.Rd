@@ -40,9 +40,9 @@ args4devnboxes_plot(plots.by = "Type",
  \item{collapse.facets.y}{A \code{\link{logical}} to indicate whether all variables 
              specified by \code{facets.y} are to be collapsed to a single variable. 
              Note that the smoothing-parameters factors, if present, are always collapsed.}
- \item{facet.labeller}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
-             facets of a plot produced using the \code{\link{ggplot}} function. 
-             For more information see \code{\link{ggplot}}.}
+ \item{facet.labeller}{A \code{ggplot} \code{function} for labelling the 
+             facets of a plot produced using the \code{ggplot} function. 
+             For more information see \code{ggplot}.}
  \item{facet.scales}{A \code{\link{character}} specifying whether the scales are shared 
              across all facets of a plot ("fixed"), or do they vary across rows (the 
              default, "free_x"), columns ("free_y"), or both rows and columns ("free")?}
@@ -57,12 +57,12 @@ args4devnboxes_plot(plots.by = "Type",
              Boxplots of the relative deviations are specified by \code{relative.boxplots}, 
              the relative deviations being the absolute deviations divided by the 
              smoothed values of the trait.}
- \item{ggplotFuncs}{A \code{\link{list}}, each element of which contains the 
-                results of evaluating a \code{\link{ggplot}} function. 
-                It is created by calling the \code{\link{list}} function with 
-                a \code{\link{ggplot}} function call for each element.
+ \item{ggplotFuncs}{A \code{list}, each element of which contains the 
+                results of evaluating a \code{ggplot} function. 
+                It is created by calling the \code{list} function with 
+                a \code{ggplot} function call for each element.
                 These functions are applied in creating the \code{ggplot} 
-                object for a boxplots.}
+                object for a boxplot.}
  \item{...}{allows arguments to be passed to other functions; not used at present.}
 } 
 \value{A named \code{\link{list}}.}

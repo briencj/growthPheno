@@ -298,8 +298,8 @@ probeSmooths(data, response = "PSA", response.smoothed = NULL,
 \seealso{\code{\link{args4smoothing}}, , \code{\link{args4meddevn_plot}}, \code{\link{args4profile_plot}}, 
          \code{\link{traitSmooth}}, \cr 
          \code{\link{smoothSpline}}, \code{\link{byIndv4Times_SplinesGRs}}, \code{\link{byIndv4Times_GRsDiff}},  
-         \code{\link{smooth.spline}}, \code{\link{psNormal}}, \code{\link{plotSmoothsComparison}}, \cr
-         \code{\link{plotSmoothsMedianDevns}}, \code{\link{ggplot}}.}
+         \code{\link{smooth.spline}}, \code{psNormal}, \code{\link{plotSmoothsComparison}}, \cr
+         \code{\link{plotSmoothsMedianDevns}}, \code{ggplot}.}
 \examples{
 data(exampleData)
 longi.dat <- longi.dat[1:140,] #reduce to a smaller data set

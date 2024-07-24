@@ -111,10 +111,10 @@ plotSmoothsMedianDevns(data, response, response.smoothed = NULL,
        (if \code{plots.by} is \code{NULL}, a single plot is stored); (ii) a component named 
        \code{med.dev.dat} that stores the \code{\link{data.frame}} containing the 
        median deviations that have been plotted.  Each plot in the \code{plots} 
-       \code{\link{list}} is in an object of class \code{\link{ggplot}}, which can be 
+       \code{\link{list}} is in an object of class \code{ggplot}, which can be 
        plotted using \code{print}.}
 \author{Chris Brien}
-\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{args4meddevn_plot}}, \code{\link{plotSmoothsComparison}}, \code{\link{plotDeviationsBoxes}}, \code{\link{ggplot}}.}
+\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{args4meddevn_plot}}, \code{\link{plotSmoothsComparison}}, \code{\link{plotDeviationsBoxes}}, \code{ggplot}.}
 \examples{
 data(exampleData)
 vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1))

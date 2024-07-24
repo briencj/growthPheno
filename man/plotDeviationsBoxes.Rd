@@ -32,9 +32,9 @@ plotDeviationsBoxes(data, observed, smoothed, x.factor,
  \item{facet.y}{A \code{\link{data.frame}} giving the variable to be used to 
                 form subsets to be plotted in separate rows of plots.
                 Use \code{"."} if a split into columns is not wanted.}
- \item{facet.labeller}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
-                 facets of a plot produced using the \code{\link{ggplot}} function. 
-                 For more information see \code{\link{ggplot}}.}
+ \item{facet.labeller}{A \code{ggplot} \code{function} for labelling the 
+             facets of a plot produced using the \code{ggplot} function. 
+             For more information see \code{ggplot}.}
  \item{facet.scales}{A \code{\link{character}} specifying whether the scales are shared 
              across all facets of a plot ("fixed"), or do they vary across rows (the 
              default, "free_x"), columns ("free_y"), or both rows and columns ("free")?}
@@ -43,21 +43,22 @@ plotDeviationsBoxes(data, observed, smoothed, x.factor,
              \code{ggplotFuncs}, a \code{theme} function from \code{ggplot2}.}
  \item{deviations.plots}{A \code{\link{character}} specifying whether 
               \code{absolute} and/or \code{relative} deviations are to be plotted.}
- \item{ggplotFuncs}{A \code{\link{list}}, each element of which contains the 
-                results of evaluating a \code{\link{ggplot}} function. 
-                It is created by calling the \code{\link{list}} function with 
-                a \code{\link{ggplot}} function call for each element.
-                These functions are applied in creating the \code{ggplot} object for plotting.}
+ \item{ggplotFuncs}{A \code{list}, each element of which contains the 
+                results of evaluating a \code{ggplot} function. 
+                It is created by calling the \code{list} function with 
+                a \code{ggplot} function call for each element.
+                These functions are applied in creating the \code{ggplot} 
+                object for plotting.}
  \item{printPlot}{A \code{\link{logical}} indicating whether or not to print the 
                   plots.}
-\item{...}{allows passing of arguments to \code{\link{ggplot}}.}
+\item{...}{allows passing of arguments to \code{ggplot}.}
 }
 \value{A list whose components are named \code{absolute} and \code{relative}; a 
        component will contain an object of class "\code{ggplot}" when the plot has been 
        requested using the \code{deviations.plots} argument and a \code{NULL} otherwise. 
        The objects can be plotted using \code{print}.}
 \author{Chris Brien}
-\seealso{\code{\link{plotMedianDeviations}}, \code{\link{probeSmoothing}}, \code{\link{ggplot}}.}
+\seealso{\code{\link{plotMedianDeviations}}, \code{\link{probeSmoothing}}, \code{ggplot}.}
 \examples{
 data(exampleData)
 

@@ -367,7 +367,7 @@ Brien, C., Jewell, N., Garnett, T., Watts-Williams, S. J., & Berger, B. (2020). 
         \code{\link{args4chosen_smooth}}, \cr 
         \code{\link{args4chosen_plot}}, \code{\link{probeSmooths}} 
         \code{\link{plotSmoothsComparison}} and \cr 
-        \code{\link{plotSmoothsMedianDevns}}, \code{\link{ggplot}}.}
+        \code{\link{plotSmoothsMedianDevns}}, \code{ggplot}.}
 \examples{
 data(exampleData)
 longi.dat <- longi.dat[1:140,] #reduce to a smaller data set

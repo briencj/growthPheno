@@ -36,9 +36,9 @@ plotLongitudinal(data, x = "xDays+44.5", response = "Area",
  \item{facet.y}{A \code{\link{data.frame}} giving the variable to be used to 
                 form subsets to be plotted in separate rows of plots.
                 Use \code{"."} if a split into rows is not wanted.}
- \item{labeller}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
-                 facets of a plot produced using the \code{\link{ggplot}} function. 
-                 For more information see \code{\link{ggplot}}.}
+ \item{labeller}{A \code{ggplot} \code{function} for labelling the 
+                 facets of a plot produced using the \code{ggplot} function. 
+                 For more information see \code{ggplot}.}
  \item{colour}{A \code{\link{character}} specifying a single colour to use in 
                drawing the lines for the profiles. If colouring according to the 
                values of a variable is required then use \code{colour.column}.}
@@ -64,18 +64,19 @@ plotLongitudinal(data, x = "xDays+44.5", response = "Area",
              \code{\link{numeric}} that contains the values of the predictor 
               variable from which \code{x} is derived, it being that \code{x} 
              may incorporate an expression.}
- \item{ggplotFuncs}{A \code{\link{list}}, each element of which contains the 
-                results of evaluating a \code{\link{ggplot}} function. 
-                It is created by calling the \code{\link{list}} function with 
-                a \code{\link{ggplot}} function call for each element.
-                These functions are applied in creating the \code{ggplot} object.}
+ \item{ggplotFuncs}{A \code{list}, each element of which contains the 
+                results of evaluating a \code{ggplot} function. 
+                It is created by calling the \code{list} function with 
+                a \code{ggplot} function call for each element.
+                These functions are applied in creating the \code{ggplot} 
+                object.}
  \item{printPlot}{A \code{\link{logical}} indicating whether or not to print the 
                   plot.}
 }
-\value{An object of class "\code{\link{ggplot}}", which can be plotted using 
+\value{An object of class "\code{ggplot}", which can be plotted using 
        \code{print}.}
 \author{Chris Brien}
-\seealso{\code{\link{ggplot}}, \code{\link{labeller}}.}
+\seealso{\code{ggplot}, \code{labeller}.}
 \examples{
 data(exampleData)
 plotLongitudinal(data = longi.dat, x = "xDAP", response = "sPSA")

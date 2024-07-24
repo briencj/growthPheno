@@ -77,7 +77,7 @@ test_that("exampleData_growthPheno", {
                           breaks.spacing.x = 2,
                           whichPrint=c("innerPlot"), 
                           y.title="sPSA AGR (kpixels)"),
-    regexp = "Removed 1 rows containing missing values \\(\\`geom_vline\\(\\)\\`\\)")
+    regexp = "Removed 1 row containing missing values or values outside the scale range \\(\\`geom_vline\\(\\)\\`\\)")
   
   #plotDeviationsBoxes
   testthat::expect_silent(  
@@ -97,7 +97,7 @@ test_that("exampleData_growthPheno", {
                           args4profile_plot(facet.x = "Tuning", 
                                             facet.y = "Treatment.1",
                                             ggplotFuncs = vline)),
-    regexp = "Removed 6 rows containing missing values \\(\\`geom_vline\\(\\)\\`\\)")
+    regexp = "Removed 6 rows containing missing values or values outside the scale range \\(\\`geom_vline\\(\\)\\`\\)")
   testthat::expect_equal(nrow(tmp), 560)
   testthat::expect_equal(ncol(tmp), 15)
   testthat::expect_silent(  

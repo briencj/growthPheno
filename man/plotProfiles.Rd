@@ -50,9 +50,9 @@ plotProfiles(data, response = "PSA",
  \item{facet.y}{A \code{\link{data.frame}} giving the variable to be used to 
                 form subsets to be plotted in separate rows of plots.
                 Use \code{"."} if a split into rows is not wanted.}
- \item{labeller}{A \code{\link{ggplot}} \code{\link{function}} for labelling the 
-                 facets of a plot produced using the \code{\link{ggplot}} function. 
-                 For more information see \code{\link{ggplot}}.}
+ \item{labeller}{A \code{ggplot} \code{function} for labelling the 
+                 facets of a plot produced using the \code{ggplot} function. 
+                 For more information see \code{ggplot}.}
  \item{scales}{A \code{\link{character}} specifying whether the scales are shared 
               across all facets of a plot (the default, "fixed"), or do they vary across 
               rows ("free_x"), columns ("free_y"), or both rows and columns ("free")?}
@@ -90,18 +90,19 @@ plotProfiles(data, response = "PSA",
              and are defined as the median plus (and minus) 1.5 times the 
              interquartile range (IQR). Points lying outside the whiskers are 
              considered to be potential outliers.}
- \item{ggplotFuncs}{A \code{\link{list}}, each element of which contains the 
-                results of evaluating a \code{\link{ggplot}} function. 
-                It is created by calling the \code{\link{list}} function with 
-                a \code{\link{ggplot}} function call for each element.
-                These functions are applied in creating the \code{ggplot} object.}
+ \item{ggplotFuncs}{A \code{list}, each element of which contains the 
+                results of evaluating a \code{ggplot} function. 
+                It is created by calling the \code{list} function with 
+                a \code{ggplot} function call for each element.
+                These functions are applied in creating the \code{ggplot} 
+                object.}
  \item{printPlot}{A \code{\link{logical}} indicating whether or not to print the 
                   plot.}
 }
-\value{An object of class "\code{\link{ggplot}}", which can be plotted using 
+\value{An object of class "\code{ggplot}", which can be plotted using 
        \code{print}.}
 \author{Chris Brien}
-\seealso{\code{\link{ggplot}}, \code{\link{labeller}}.}
+\seealso{\code{ggplot}, \code{labeller}.}
 \examples{
 data(exampleData)
 plotProfiles(data = longi.dat, response = "sPSA", times = "DAP")

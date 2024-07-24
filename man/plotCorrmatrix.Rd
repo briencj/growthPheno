@@ -36,23 +36,24 @@ plotCorrmatrix(data, responses, which.plots = c("heatmap","matrixplot"),
                  \code{heatmap} indicating the correlations are significantly different from zero.}
  \item{axis.text.size}{A \code{\link{numeric}} giving the size of the \code{labels} on the axes   
                   of the \code{heatmap}.}
- \item{ggplotFuncs}{A \code{\link{list}}, each element of which contains the 
-                results of evaluating a \code{\link{ggplot}} function. 
-                It is created by calling the \code{\link{list}} function with 
-                a \code{\link{ggplot}} function call for each element.
-                These functions are applied in creating the \code{ggplot} object.}
+ \item{ggplotFuncs}{A \code{list}, each element of which contains the 
+                results of evaluating a \code{ggplot} function. 
+                It is created by calling the \code{list} function with 
+                a \code{ggplot} function call for each element.
+                These functions are applied in creating the \code{ggplot} 
+                object.}
  \item{printPlot}{A \code{\link{logical}} indicating whether or not to print the 
                   plot.}
  \item{...}{allows passing of arguments to other functions; not used at present.}
 }
 \value{The \code{heatmap} plot, if produced, as an object of class "\code{ggplot}", which 
        can be plotted using \code{print}; otherwise \code{NULL} is returned.}
-\details{The correlations and their p-values are producced using \code{\link{rcorr}} 
+\details{The correlations and their p-values are producced using \code{rcorr} 
          from the \code{Hmisc} package. The \code{heatmap} is produced using 
-         \code{\link{ggplot}} and the matrixplot is produced using \code{\link{GGally}}.
+         \code{ggplot} and the matrixplot is produced using \code{GGally}.
 }
 \author{Chris Brien}
-\seealso{\code{\link{rcorr}}, \code{\link{GGally}}, \code{\link{ggplot}}.}
+\seealso{\code{rcorr}, \code{GGally}, \code{ggplot}.}
 \examples{\donttest{
 data(exampleData)
 longi.dat <- prepImageData(data=raw.dat, smarthouse.lev=1)

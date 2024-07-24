@@ -102,15 +102,15 @@ plotSmoothsDevnBoxplots(data, response, response.smoothed = NULL,
              plots.}
  \item{...}{allows passing of arguments to \code{\link{plotProfiles}}.}
 }
-\value{A multilevel \code{\link{list}} that contains the \code{\link{ggplot}} 
-        objects for the plots produced. The first-level \code{\link{list}} 
+\value{A multilevel \code{\link{list}} that contains the \code{ggplot} 
+        objects for the plots produced. The first-level \code{list} 
         has a component for each \code{trait.types} and each of these is a 
-        second-level \code{\link{list}} with contains the deviations boxplots 
+        second-level \code{list} with contains the deviations boxplots 
         for a \code{response}. Each plot is in an object of class 
-        \code{\link{ggplot}}, which can be plotted using \code{print}. 
+        \code{ggplot}, which can be plotted using \code{print}. 
 }
 \author{Chris Brien}
-\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{args4profile_plot}}, \code{\link{plotDeviationsBoxes}}, \code{\link{plotSmoothsMedianDevns}}, \code{\link{ggplot}}.}
+\seealso{\code{\link{traitSmooth}}, \code{\link{probeSmooths}}, \code{\link{args4profile_plot}}, \code{\link{plotDeviationsBoxes}}, \code{\link{plotSmoothsMedianDevns}}, \code{ggplot}.}
 \examples{
 data(exampleData)
 traits <- probeSmooths(data = longi.dat, 

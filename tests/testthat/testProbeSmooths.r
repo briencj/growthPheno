@@ -484,7 +484,7 @@ test_that("exampleData_growthPheno", {
                                             facet.x = "Tuning", 
                                             facet.y = "Treatment.1", 
                                             ggplotFuncs = vline)), 
-    regexp = "Removed 6 rows containing missing values \\(\\`geom_vline\\(\\)\\`\\)")
+    regexp = "Removed 6 rows containing missing values or values outside the scale range \\(\\`geom_vline\\(\\)\\`\\)")
   testthat::expect_equal(nrow(tmp), 560)
   testthat::expect_equal(ncol(tmp), 15)
   
@@ -552,7 +552,7 @@ test_that("exampleData_growthPheno", {
                                             facet.y = ".", 
                                             alpha = 0.5, 
                                             ggplotFuncs = vline)),
-    regexp = "Removed 3 rows containing missing values \\(\\`geom_vline\\(\\)\\`\\)")
+    regexp = "Removed 3 rows containing missing values or values outside the scale range \\(\\`geom_vline\\(\\)\\`\\)")
   testthat::expect_equal(nrow(tmp), 560)
   testthat::expect_equal(ncol(tmp), 12)
   
@@ -606,7 +606,7 @@ test_that("exampleData_growthPheno", {
                                             facet.x = "Tuning", 
                                             facet.y = "Treatment.1", 
                                             ggplotFuncs = vline)),
-    regexp = "Removed 6 rows containing missing values \\(\\`geom_vline\\(\\)\\`\\)")
+    regexp = "Removed 6 rows containing missing values or values outside the scale range \\(\\`geom_vline\\(\\)\\`\\)")
   
   #Test for a single line per plot - caused by plots.by.med
   testthat::expect_silent(
