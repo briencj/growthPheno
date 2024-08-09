@@ -58,7 +58,7 @@
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
@@ -76,8 +76,8 @@
 \href{http://www.repostatus.org/\#active}{\includesvg{http://www.repostatus.org/badges/latest/active.svg}}
 \href{https://cran.r-project.org/}{\includesvg{https://img.shields.io/badge/R\%3E\%3D-3.5.0-6666ff.svg}}
 \href{https://cran.r-project.org/package=growthPheno}{\includegraphics{https://www.r-pkg.org/badges/version/growthPheno}}
-\href{/commits/master}{\includegraphics{https://img.shields.io/badge/Package\%20version-2.1.24-orange.svg?style=flat-square}}
-\href{/commits/master}{\includesvg{https://img.shields.io/badge/last\%20change-2024--02--29-yellowgreen.svg}}
+\href{/commits/master}{\includegraphics{https://img.shields.io/badge/Package\%20version-2.1.26-orange.svg?style=flat-square}}
+\href{/commits/master}{\includesvg{https://img.shields.io/badge/last\%20change-2024--08--08-yellowgreen.svg}}
 \href{http://choosealicense.com/licenses/gpl-2.0/}{\includesvg{https://img.shields.io/badge/license-GPL\%20(\%3E\%3D2)-green.svg}}
 \href{commits/master}{\includegraphics{https://cranlogs.r-pkg.org/badges/last-week/growthPheno}}
 
@@ -88,8 +88,7 @@ Many of the functions can be applied to longitudinal data in general.
 
 An overview can be obtained using \texttt{?growthPheno}. .
 
-\hypertarget{more-information}{%
-\subsection{More information}\label{more-information}}
+\subsection{More information}\label{more-information}
 
 Two vignettes, \texttt{Tomato} and \texttt{Rice}, illustrate the process
 for smoothing and extraction of traits (SET), the former being the
@@ -98,20 +97,17 @@ example presented in Brien et al.~(2020). Use
 \texttt{vignette("Rice",\ package\ =\ "growthPheno")} to access either
 of the vignettes.
 
-\hypertarget{installing-the-package}{%
-\subsection{Installing the package}\label{installing-the-package}}
+\subsection{Installing the package}\label{installing-the-package}
 
-\hypertarget{from-a-repository-using-drat}{%
 \subsubsection{\texorpdfstring{From a repository using
-\texttt{drat}}{From a repository using drat}}\label{from-a-repository-using-drat}}
+\texttt{drat}}{From a repository using drat}}\label{from-a-repository-using-drat}
 
 Windows binaries and source tarballs of the latest version of
 \texttt{growthPheno} are available for installation from my
 \href{http://chris.brien.name/rpackages}{repository}. Installation
 instructions are available there.
 
-\hypertarget{directly-from-github}{%
-\subsubsection{Directly from GitHub}\label{directly-from-github}}
+\subsubsection{Directly from GitHub}\label{directly-from-github}
 
 \texttt{growthPheno} is an R package available on GitHub, so it can be
 installed from the RStudio console or an R command line session using
@@ -135,8 +131,7 @@ need to install it dependencies:
 
 \texttt{install.packages(c("dae","GGally","ggplot2","grDevices","Hmisc","JOPS","methods","RColorBrewer","readxl","reshape","stringi"))}
 
-\hypertarget{what-is-does}{%
-\subsection{What is does}\label{what-is-does}}
+\subsection{What is does}\label{what-is-does}
 
 This package can be used to perform a functional analysis of growth data
 using splines to smooth the trend of individual plant traces over time
@@ -196,8 +191,7 @@ The full set of functions falls into the following natural groupings:
   Principal variates analysis (PVA)
 \end{enumerate}
 
-\hypertarget{what-it-needs}{%
-\subsection{What it needs}\label{what-it-needs}}
+\subsection{What it needs}\label{what-it-needs}
 
 It imports \href{https://CRAN.R-project.org/package=dae}{dae},
 \href{https://CRAN.R-project.org/package=GGally}{GGally},
@@ -212,8 +206,7 @@ It imports \href{https://CRAN.R-project.org/package=dae}{dae},
 \href{https://CRAN.R-project.org/package=stringi}{stringi},
 \texttt{utils}.
 
-\hypertarget{license}{%
-\subsection{License}\label{license}}
+\subsection{License}\label{license}
 
 The \texttt{growthPheno} package is distributed under the
 \href{https://opensource.org/licenses/GPL-2.0}{GPL (\textgreater= 2)
