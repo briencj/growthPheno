@@ -118,7 +118,7 @@ byIndv4Intvl_ValueCalc(data, response,
 }
 \author{Chris Brien}
 \seealso{\code{\link{byIndv4Intvl_GRsAvg}}, \code{\link{byIndv4Intvl_GRsDiff}}, 
-         \code{\link{byIndv4Intvl_WaterUse}}, \code{\link{splitValueCalculate}}, \cr 
+         \code{\link{byIndv4Intvl_WaterUse}}, \cr 
          \code{\link{getTimesSubset}}}
 \examples{
 data(exampleData)

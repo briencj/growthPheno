@@ -80,7 +80,7 @@ between \code{end.time}  and \code{start.time}.
 }
 \author{Chris Brien}
 \seealso{\code{\link{byIndv4Intvl_GRsAvg}}, \code{\link{byIndv4Intvl_WaterUse}},  \code{\link{getTimesSubset}}, \code{\link{GrowthRates}}, \cr
-         \code{\link{byIndv4Times_SplinesGRs}}, \code{\link{splitContGRdiff}}}
+         \code{\link{byIndv4Times_SplinesGRs}}}
 \examples{
 data(exampleData)
 sPSA.GR <- byIndv4Intvl_GRsDiff(data = longi.dat, 

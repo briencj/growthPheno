@@ -75,9 +75,6 @@
     \tab For example, the hour of the day carts are imaged\cr
     \tab against the days after planting (or some other\cr
     \tab number of days after an event).\cr
-    \code{\link{plotMedianDeviations}} 
-    \tab Calculates and plots the medians of the deviations \cr 
-    \tab of the smoothed values from the observed values. \cr
     \code{\link{plotProfiles}} 
     \tab Produces profile plots of longitudinal data for a set \cr
     \tab of individuals. \cr

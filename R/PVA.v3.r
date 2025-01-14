@@ -274,9 +274,9 @@
 }
 
 #Functions to calculate and plot correlation matrices for a set of responses,
-"plotCorrmatrix" <- function(data, responses, which.plots = c("heatmap","matrixplot"), 
+"plotCorrmatrix" <- function(data, responses, which.plots = c("heatmap","matrixplots"), 
                              title = NULL, labels = NULL, labelSize = 4, pairs.sets = NULL, 
-                             show.sig = FALSE, axis.text.size = 20, ggplotFuncs = NULL, 
+                             show.sig = TRUE, axis.text.size = 20, ggplotFuncs = NULL, 
                              printPlot = TRUE, ...)
 { 
   #Check responses in data
@@ -286,10 +286,11 @@
     labels <- responses
   
   #check options
-  options <- c("heatmap","matrixplot")
+  options <- c("heatmap","matrixplots")
   plots.opt <- options[unlist(lapply(which.plots, check.arg.values, 
                                      options=options))]
   
+  #Plot a heatmap
   plt <- NULL
   if ("heatmap" %in% plots.opt)
   {
@@ -357,20 +358,30 @@
     if (printPlot)
       print(plt)
   }
-  if ("matrixplot" %in% plots.opt)
+
+  #Plot any scatterplot matrices plots
+  mplts <- list()
+  if ("matrixplots" %in% plots.opt)
   {
     if (is.null(pairs.sets))
-      print(my_ggpairs(data=data, responses = responses, 
-                       labels=labels,  labelSize= labelSize, title = title),
-            ggplotFuncs = ggplotFuncs, ...)
-    else
+    { 
+      mplts <- c(mplts, 
+                 list(my_ggpairs(data=data, responses = responses, 
+                                 labels=labels,  labelSize= labelSize, title = title,
+                                 show.sig = show.sig, ggplotFuncs = ggplotFuncs, 
+                                 printPlot = printPlot, ...)))
+    } else
       for(k in 1:length(pairs.sets))
-        my_ggpairs(data=data, responses = responses[pairs.sets[[k]]], 
-                   labels=labels[pairs.sets[[k]]],  
-                   labelSize= labelSize, title = title,
-                   ggplotFuncs = ggplotFuncs, ...)
-  }
-  invisible(plt)
+        mplts <- c(mplts, 
+                   list(my_ggpairs(data=data, responses = responses[pairs.sets[[k]]], 
+                                   labels=labels[pairs.sets[[k]]],  
+                                   labelSize= labelSize, title = title,
+                                   show.sig = show.sig, ggplotFuncs = ggplotFuncs, 
+                                   printPlot = printPlot, ...)))
+  } else
+    mplts <- NULL
+  
+  invisible(list(heatmap = plt, matrixplots = mplts))
 }
 
   my_ggally_text <- function (label, mapping = ggplot2::aes(color = "black"), labelSize = 4, 
@@ -413,8 +424,8 @@
 }
 
 my_ggpairs <- function(data, responses = NULL, labels = NULL, 
-                       labelSize = 4, title = "",
-                       ggplotFuncs = NULL, ...)
+                       labelSize = 4, show.sig = TRUE, title = "",
+                       ggplotFuncs = NULL, printPlot = TRUE, ...)
 { 
   
   if (is.null(responses))
@@ -426,8 +437,14 @@ my_ggpairs <- function(data, responses = NULL, labels = NULL,
   if (nvars != length(labels))
     stop("Number of responses and labels must be the same")
   theme_set(theme_bw())
+  # gg1 <- ggpairs(data, title =title,
+  #                axisLabels="show",  columnLabels= labels, 
+  #                diag=list(continuous="blankDiag"), 
+  #                ...) 
   gg1 <- ggpairs(data, title =title,
                  axisLabels="show",  columnLabels= labels, 
+                 upper = list(continuous = GGally::wrap(GGally::ggally_cor, 
+                                                        stars = show.sig)), 
                  diag=list(continuous="blankDiag"), 
                  ...) 
   for (i in 1:nvars)
@@ -436,7 +453,9 @@ my_ggpairs <- function(data, responses = NULL, labels = NULL,
                           ggplotFuncs = ggplotFuncs)
     gg1 <- putPlot(gg1, gtx, i, i)
   }
-  print(gg1)
-  invisible()
+  if (printPlot)
+    print(gg1)
+  
+  invisible(gg1)
 }
 

@@ -122,11 +122,12 @@ test_that("exampleData_growthPheno", {
                                                       propn.types = 0.05,
                                                       ggplotFuncs = vline)))
   
-  #fitSpline
+  #smoothSpline
   testthat::expect_silent(  
-    fit <- fitSpline(longi.dat, response = "PSA", response.smoothed = "sPSA", 
-                     x="xDAP", df = 4,
-                     deriv=c(1,2), suffices.deriv=c("AGRdv","Acc")))
+    fit <- smoothSpline(longi.dat, response = "PSA", response.smoothed = "sPSA", 
+                        x="xDAP", df = 4,
+                        rates = "AGR", suffices.rates = "AGRdv", 
+                        extra.derivs = 2, suffices.extra.derivs = "Acc"))
   testthat::expect_equal(nrow(fit$predictions), 280)
   testthat::expect_equal(ncol(fit$predictions), 4)
   testthat::expect_true(all(c("xDAP","sPSA","sPSA.AGRdv","sPSA.Acc") 

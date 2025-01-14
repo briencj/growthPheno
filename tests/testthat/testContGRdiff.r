@@ -7,9 +7,8 @@ test_that("exampleData_splitContGRdiff", {
   data(exampleData)
   
   #ntimes2span == 2, avail.times.diffs = TRUE
-  t <- splitContGRdiff(longi.dat, response="PSA", 
-                       times.factor = "DAP", 
-                       which.rates=c("AGR", "RGR"), avail.times.diffs = TRUE) 
+  t <- byIndv4Times_GRsDiff(longi.dat, response="PSA", times = "DAP", 
+                            which.rates=c("AGR", "RGR"), avail.times.diffs = TRUE) 
   testthat::expect_equal(nrow(t), 280)
   testthat::expect_equal(ncol(t), 37)
   testthat::expect_true(all(unique(t$DAP) == c(28, 30:42)))
@@ -20,8 +19,8 @@ test_that("exampleData_splitContGRdiff", {
   testthat::expect_true(all(abs(t$sPSA-longi.dat$sPSA) < 1e-04))
 
   #ntimes2span == 2, avail.times.diffs = FALSE
-  t <- splitContGRdiff(longi.dat, response="PSA", times.factor = "DAP", 
-                       which.rates=c("AGR", "RGR")) 
+  t <- byIndv4Times_GRsDiff(longi.dat, response="PSA", times = "DAP", 
+                            which.rates=c("AGR", "RGR")) 
   testthat::expect_equal(nrow(t), 280)
   testthat::expect_equal(ncol(t), 37)
   testthat::expect_true(all(unique(t$Day) == c(28, 30:42)))
@@ -32,9 +31,9 @@ test_that("exampleData_splitContGRdiff", {
   testthat::expect_true(all(abs(t$sPSA-longi.dat$sPSA) < 1e-04))
 
   #ntimes2span = 3  
-  t <- splitContGRdiff(longi.dat, response="PSA", times.factor = "DAP", 
-                       which.rates=c("AGR", "RGR"), 
-                       ntimes2span = 3, avail.times.diffs = FALSE) 
+  t <- byIndv4Times_GRsDiff(longi.dat, response="PSA", times = "DAP", 
+                            which.rates=c("AGR", "RGR"), 
+                            ntimes2span = 3, avail.times.diffs = FALSE) 
   testthat::expect_equal(nrow(t), 280)
   testthat::expect_equal(ncol(t), 37)
   testthat::expect_true(all(unique(t$Day) == c(28, 30:42)))
@@ -46,9 +45,9 @@ test_that("exampleData_splitContGRdiff", {
   testthat::expect_true(all(abs(t$sPSA-longi.dat$sPSA) < 1e-04))
   
   #ntimes2span = 4
-  t <- splitContGRdiff(longi.dat, response="PSA", times.factor = "DAP", 
-                       which.rates=c("AGR", "RGR"), 
-                       ntimes2span = 4, avail.times.diffs = FALSE) 
+  t <- byIndv4Times_GRsDiff(longi.dat, response="PSA", times = "DAP", 
+                            which.rates=c("AGR", "RGR"), 
+                            ntimes2span = 4, avail.times.diffs = FALSE) 
   testthat::expect_equal(nrow(t), 280)
   testthat::expect_equal(ncol(t), 37)
   testthat::expect_true(all(unique(t$Day) == c(28, 30:42)))
@@ -60,9 +59,9 @@ test_that("exampleData_splitContGRdiff", {
   testthat::expect_true(all(abs(t$sPSA-longi.dat$sPSA) < 1e-04))
   
   #ntimes2span = 5
-  t <- splitContGRdiff(longi.dat, response="PSA", times.factor = "DAP", 
-                       which.rates=c("AGR", "RGR"), 
-                       ntimes2span = 5, avail.times.diffs = FALSE) 
+  t <- byIndv4Times_GRsDiff(longi.dat, response="PSA", times = "DAP", 
+                            which.rates=c("AGR", "RGR"), 
+                            ntimes2span = 5, avail.times.diffs = FALSE) 
   testthat::expect_equal(nrow(t), 280)
   testthat::expect_equal(ncol(t), 37)
   testthat::expect_true(all(unique(t$Day) == c(28, 30:42)))
@@ -75,10 +74,10 @@ test_that("exampleData_splitContGRdiff", {
   
   #  smoothing.segments = list(c(28,34), c(35,42)), df = 5)
   #ntimes2span = 3, DAP = 30:34
-  t <- splitContGRdiff(subset(longi.dat, DAP %in% as.character((30:34))), 
-                       response="PSA", times.factor = "DAP", 
-                       which.rates=c("AGR", "RGR"), 
-                       ntimes2span = 3, avail.times.diffs = FALSE) 
+  t <- byIndv4Times_GRsDiff(subset(longi.dat, DAP %in% as.character((30:34))), 
+                            response="PSA", times = "DAP", 
+                            which.rates=c("AGR", "RGR"), 
+                            ntimes2span = 3, avail.times.diffs = FALSE) 
   testthat::expect_equal(nrow(t), 100)
   testthat::expect_equal(ncol(t), 37)
   testthat::expect_true(all(unique(t$Day) == c(30:34)))

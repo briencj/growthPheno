@@ -58,7 +58,7 @@ plotDeviationsBoxes(data, observed, smoothed, x.factor,
        requested using the \code{deviations.plots} argument and a \code{NULL} otherwise. 
        The objects can be plotted using \code{print}.}
 \author{Chris Brien}
-\seealso{\code{\link{plotMedianDeviations}}, \code{\link{probeSmoothing}}, \code{ggplot}.}
+\seealso{\code{\link{plotSmoothsMedianDevns}}, \code{\link{probeSmooths}}, \code{ggplot}.}
 \examples{
 data(exampleData)
 

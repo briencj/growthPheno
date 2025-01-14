@@ -94,7 +94,7 @@ plotAnom(data, response="sPSA",
                    are printed for the anomalous individuals.}
  \item{na.rm}{A \code{\link{logical}} indicating whether \code{NA} values should 
               be stripped before the testing proceeds.}
- \item{... }{allows for arguments to be passed to \code{\link{plotLongitudinal}}.}
+ \item{... }{allows for arguments to be passed to \code{\link{plotProfiles}}.}
 }
 \value{A \code{\link{list}} with three components: 
        \enumerate{

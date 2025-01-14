@@ -24,7 +24,7 @@
        at least four distinct, nonmissing x-values, a warning is issued and 
        all smoothed values and derivatives are set to \code{NA}. 
 
-       The function \code{\link{probeSmoothing}} can be used to investgate the effect 
+       The function \code{\link{probeSmooths}} can be used to investgate the effect 
        the smoothing parameters \cr (\code{smoothing.method}, \code{df} or  
        \code{lambda}) on the smooth that results.
 }
@@ -222,7 +222,7 @@ byIndv4Times_SplinesGRs(data, response, response.smoothed = NULL,
        \code{na.y.action} is set to \code{omit}.
 }
 \author{Chris Brien}
-\seealso{\code{\link{smoothSpline}}, \code{\link{probeSmoothing}}, \code{\link{byIndv4Times_GRsDiff}}, 
+\seealso{\code{\link{smoothSpline}}, \code{\link{probeSmooths}}, \code{\link{byIndv4Times_GRsDiff}}, 
          \code{\link{smooth.spline}}, \code{\link{predict.smooth.spline}}, \cr
          \code{\link{split}}}
 \references{

@@ -11,7 +11,8 @@
                      (uses \code{byIndv4Intvl_GRsDiff} or \code{byIndv4Intvl_GRsAvg})
                \item \bold{water use traits for a time interval} -- the total water use (WU), 
                      the water use rate (WUR) and the water use index (WUI) over a time 
-                     interval for each individual. (uses \code{byIndv4Intvl_WaterUse})
+                     interval for each individual. (uses \code{byIndv4Intvl_WaterUse so see its 
+                     documentation for further details})
                \item \bold{growth rates for the imaging period overall} -- the average growth rate (AGR 
                      and/or RGR) over the whole imaging period for each individual. 
                      (uses \code{byIndv4Intvl_GRsDiff} or \code{byIndv4Intvl_GRsAvg})

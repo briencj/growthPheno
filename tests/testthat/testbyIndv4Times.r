@@ -118,7 +118,7 @@ test_that("leaf_growthPheno", {
   testthat::expect_equal(sum(is.na(leaf.dat$sLength.3[94:96])), 3)
   
   
-  ##Test omit in fitSpline - Length 3
+  ##Test omit in smoothSpline - Length 3
   leaf.dat <- test
   carts <- levels(leaf.dat$Snapshot.ID.Tag)
   fit <- vector(mode = "list", length = 0)
@@ -127,27 +127,27 @@ test_that("leaf_growthPheno", {
   names(nrows) <- carts
   for (cart in carts)
   {
-    fit[[cart]] <- fitSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
-                             response = "Length.3", response.smoothed = "sLength.3", 
-                             x = "xDays", 
-                             df = 4, na.x.action = "omi", na.y.action = "omit", 
-                             deriv=1, suffices.deriv="AGRdv",  
-                             extra.rate = c(RGRdv = "RGR"))
+    fit[[cart]] <- smoothSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
+                                response = "Length.3", response.smoothed = "sLength.3", 
+                                x = "xDays", 
+                                df = 4, na.x.action = "omi", na.y.action = "omit", 
+                                rates = c("AGR", "RGR"), 
+                                suffices.rates=c("AGRdv", "RGRdv"))
     testthat::expect_equal(nrows[[cart]], nrow(fit[[cart]]$predictions))
   }
   
-  ##Test omit in fitSpline - Length 2 with a 0 length data.frame
+  ##Test omit in smoothSpline - Length 2 with a 0 length data.frame
   fit <- vector(mode = "list", length = 0)
   nrows <- list(11,12,12,12,9,12,0,9)
   names(nrows) <- carts
   for (cart in carts)
   {
-    fit[[cart]] <- fitSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
-                             response = "Length.2", response.smoothed = "sLength.2", 
-                             x = "xDays", 
-                             df = 4, na.x.action = "omi", na.y.action = "omit", 
-                             deriv=1, suffices.deriv="AGRdv",  
-                             extra.rate = c(RGRdv = "RGR"))
+    fit[[cart]] <- smoothSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
+                                response = "Length.2", response.smoothed = "sLength.2", 
+                                x = "xDays", 
+                                df = 4, na.x.action = "omi", na.y.action = "omit", 
+                                rates = c("AGR", "RGR"), 
+                                suffices.rates=c("AGRdv", "RGRdv"))
     testthat::expect_equal(nrows[[cart]], nrow(fit[[cart]]$predictions))
   }
   testthat::expect_equal(ncol(fit[[cart]]$predictions), 4)
@@ -169,7 +169,7 @@ test_that("leaf_growthPheno", {
                                         df = 4, rates.method = "none", na.y.action = "omit")
   
   
-  ##Test omit in fitSpline - Length 2 with a 0 length data.frame
+  ##Test omit in smoothSpline - Length 2 with a 0 length data.frame
   leaf.dat <- test
   carts <- levels(leaf.dat$Snapshot.ID.Tag)
   fit <- vector(mode = "list", length = 0)
@@ -177,7 +177,7 @@ test_that("leaf_growthPheno", {
   names(nrows) <- carts
   for (cart in carts)
   {
-    fit[[cart]] <- fitSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
+    fit[[cart]] <- smoothSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
                              response = "Length.3", response.smoothed = "sLength.3", 
                              x="xDays", correctBoundaries = FALSE,
                              df = 4, na.x.action = "omit", na.y.action = "omit")
@@ -189,10 +189,10 @@ test_that("leaf_growthPheno", {
   names(nrows) <- carts
   for (cart in carts)
   {
-    fitC[[cart]] <- fitSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
-                              response = "Length.3", response.smoothed = "sLength.3", 
-                              x="xDays", correctBoundaries = TRUE,
-                              df = 4, na.x.action = "omit", na.y.action = "omit")
+    fitC[[cart]] <- smoothSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
+                                 response = "Length.3", response.smoothed = "sLength.3", 
+                                 x="xDays", correctBoundaries = TRUE,
+                                 df = 4, na.x.action = "omit", na.y.action = "omit")
     testthat::expect_equal(ncol(fitC[[cart]]$predictions), 2)
     testthat::expect_equal(nrow(fitC[[cart]]$predictions), nrows[[cart]])
   }  
@@ -275,7 +275,7 @@ test_that("leaf_growthPheno", {
 })
 
 
-cat("#### Test correctBoundaries for NCSS in fitSpline using a single plant from Rice germplasm\n")
+cat("#### Test correctBoundaries for NCSS in smoothSpline using a single plant from Rice germplasm\n")
 test_that("area_correctBoundaries", {
   skip_if_not_installed("growthPheno")
   skip_on_cran()
@@ -289,9 +289,9 @@ test_that("area_correctBoundaries", {
   fit$AGR <- c(NA, diff(fit$y)/diff(fit$x))
   fit$RGR <- c(NA, diff(log(fit$y))/diff(fit$x))
   
-  fit$yC <- fitSpline(area.dat, x = "xDays", 
-                      response = "Area1", response.smoothed = "Area1.smooth", 
-                      correctBoundaries = TRUE)$predictions$Area1.smooth
+  fit$yC <- smoothSpline(area.dat, x = "xDays", 
+                         response = "Area1", response.smoothed = "Area1.smooth", 
+                         correctBoundaries = TRUE)$predictions$Area1.smooth
   ggplot(fit) + geom_line(aes(x=x, y=y)) + geom_line(aes(x=x, y=yC), colour = "red")
   fit$AGRC <- c(NA, diff(fit$yC)/diff(fit$x))
   fit$RGRC <- c(NA, diff(log(fit$yC))/diff(fit$x))
@@ -303,10 +303,10 @@ test_that("area_correctBoundaries", {
   
   #specify df
   fit <- area.dat
-  fit$Area1.smooth <- fitSpline(area.dat, x = "xDays", 
-                                response = "Area1", response.smoothed = "Area1.smooth", 
-                                df = 4, 
-                                correctBoundaries = FALSE)$predictions$Area1.smooth
+  fit$Area1.smooth <- smoothSpline(area.dat, x = "xDays", 
+                                   response = "Area1", response.smoothed = "Area1.smooth", 
+                                   df = 4, 
+                                   correctBoundaries = FALSE)$predictions$Area1.smooth
   ggplot(fit) + geom_line(aes(x=xDays, y=Area1)) + geom_line(aes(x=xDays, y=Area1.smooth),
                                                              colour = "blue")
   fit$AGR <- c(NA, diff(fit$Area1.smooth)/diff(fit$xDays))
@@ -319,10 +319,10 @@ test_that("area_correctBoundaries", {
   
   
   #Correct the boundaries
-  fit$Area1.smooth.C <- fitSpline(area.dat, x = "xDays", 
-                                  response = "Area1", response.smoothed = "Area1.smooth", 
-                                  df = 4, 
-                                  correctBoundaries = TRUE)$predictions$Area1.smooth
+  fit$Area1.smooth.C <- smoothSpline(area.dat, x = "xDays", 
+                                     response = "Area1", response.smoothed = "Area1.smooth", 
+                                     df = 4, 
+                                     correctBoundaries = TRUE)$predictions$Area1.smooth
   ggplot(fit) + geom_line(aes(x=xDays, y=Area1)) + 
     geom_line(aes(x=xDays, y=Area1.smooth),colour = "blue") + 
     geom_line(aes(x=xDays, y=Area1.smooth.C), colour = "red")
@@ -456,7 +456,7 @@ test_that("leaf_growthPheno", {
   testthat::expect_equal(sum(is.na(leaf.dat$sLength.3[94:96])), 3)
   
   
-  ##Test omit in fitSpline - Length 3
+  ##Test omit in smoothSpline - Length 3
   leaf.dat <- test
   carts <- levels(leaf.dat$Snapshot.ID.Tag)
   fit <- vector(mode = "list", length = 0)
@@ -465,29 +465,29 @@ test_that("leaf_growthPheno", {
   names(nrows) <- carts
   for (cart in carts)
   {
-    fit[[cart]] <- fitSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
-                             response = "Length.3", response.smoothed = "sLength.3", 
-                             x="xDays", 
-                             spline.type = "PS", lambda = 0.1, npspline.segments = 4, 
-                             na.x.action = "omi", na.y.action = "omit", 
-                             deriv=1, suffices.deriv="AGRdv",  
-                             extra.rate = c(RGRdv = "RGR"))
+    fit[[cart]] <- smoothSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
+                                response = "Length.3", response.smoothed = "sLength.3", 
+                                x="xDays", 
+                                spline.type = "PS", lambda = 0.1, npspline.segments = 4, 
+                                na.x.action = "omi", na.y.action = "omit", 
+                                deriv=1, suffices.deriv="AGRdv",  
+                                extra.rate = c(RGRdv = "RGR"))
     testthat::expect_equal(nrows[[cart]], nrow(fit[[cart]]$predictions))
   }
   
-  ##Test omit in fitSpline - Length 2 with a 0 length data.frame
+  ##Test omit in smoothSpline - Length 2 with a 0 length data.frame
   fit <- list()
   nrows <- list(11,12,12,12,9,12,0,9)
   names(nrows) <- carts
   for (cart in carts)
   {
-    fit[[cart]] <- fitSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
-                             response = "Length.2", response.smoothed = "sLength.2", 
-                             x="xDays", 
-                             spline.type = "PS", lambda = 0.1, npspline.segments = 4, 
-                             na.x.action = "omi", na.y.action = "omit", 
-                             deriv=1, suffices.deriv="AGRdv",  
-                             extra.rate = c(RGRdv = "RGR"))
+    fit[[cart]] <- smoothSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
+                                response = "Length.2", response.smoothed = "sLength.2", 
+                                x="xDays", 
+                                spline.type = "PS", lambda = 0.1, npspline.segments = 4, 
+                                na.x.action = "omi", na.y.action = "omit", 
+                                rates = c("AGR", "RGR"), 
+                                suffices.rates = c("AGRdv", "RGRdv"))
     testthat::expect_equal(nrows[[cart]], nrow(fit[[cart]]$predictions))
   }
   testthat::expect_equal(ncol(fit[[cart]]$predictions), 4)
@@ -511,7 +511,7 @@ test_that("leaf_growthPheno", {
                                         rates.method = "none", na.y.action = "omit")
   
   
-  ##Test omit in fitSpline - Length 2 with a 0 length data.frame
+  ##Test omit in smoothSpline - Length 2 with a 0 length data.frame
   leaf.dat <- test
   carts <- levels(leaf.dat$Snapshot.ID.Tag)
   fit <- vector(mode = "list", length = 0)
@@ -519,7 +519,7 @@ test_that("leaf_growthPheno", {
   names(nrows) <- carts
   for (cart in carts)
   {
-    fit[[cart]] <- fitSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
+    fit[[cart]] <- smoothSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
                              response = "Length.3", response.smoothed = "sLength.3", 
                              x="xDays", correctBoundaries = FALSE,
                              spline.type = "PS", lambda = 0.1, npspline.segments = 4, 
@@ -532,7 +532,7 @@ test_that("leaf_growthPheno", {
   names(nrows) <- carts
   for (cart in carts)
   {
-    fitC[[cart]] <- fitSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
+    fitC[[cart]] <- smoothSpline(subset(leaf.dat, Snapshot.ID.Tag == cart), 
                               response = "Length.3", response.smoothed = "sLength.3", 
                               x="xDays",
                               spline.type = "PS", lambda = 0.1, npspline.segments = 4, 
@@ -623,7 +623,7 @@ test_that("leaf_growthPheno", {
 })
 
 
-cat("#### Test fitSpline using PS with leaf data when there are missing values\n")
+cat("#### Test smoothSpline using PS with leaf data when there are missing values\n")
 test_that("leaf_growthPheno", {
   skip_if_not_installed("growthPheno")
   skip_on_cran()
@@ -639,12 +639,12 @@ test_that("leaf_growthPheno", {
   
   ##Check the contents of the fit.spline object for PS
   carts <- levels(leaf.dat$Snapshot.ID.Tag)
-  fit <- fitSpline(subset(leaf.dat, Snapshot.ID.Tag == carts), 
+  fit <- smoothSpline(subset(leaf.dat, Snapshot.ID.Tag == carts), 
                    response = "Length.2", response.smoothed = "Length.2.smooth", 
                    x="xDays", 
                    spline.type = "PS", lambda = 0.1, npspline.segments = 4, 
                    na.x.action = "exclude", na.y.action = "allx", 
-                   rates.method = "deriv", 
+                   rates = c("AGR", "RGR"), 
                    suffices.rates = c("AGRdv", "RGRdv"))
   testthat::expect_true(all(c(fit$fit.spline$lambda, fit$fit.spline$uncorrected.fit$lambda) == 0.1))
   testthat::expect_true(all(c(fit$fit.spline$npspline.segments, fit$fit.spline$uncorrected.fit$npspline.segments) == 4))

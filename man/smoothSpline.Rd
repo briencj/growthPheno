@@ -157,7 +157,7 @@ smoothSpline(data, response, response.smoothed = NULL, x,
          \item{\code{uncorrected.fit}:}{the object returned by \code{\link{smooth.spline}} for \code{smoothing method} set to \code{NCSS} or by \code{JOPS::psNormal} for \code{PS}.}}
 }
 \author{Chris Brien}
-\seealso{\code{\link{byIndv4Times_SplinesGRs}}, \code{\link{probeSmoothing}}, 
+\seealso{\code{\link{byIndv4Times_SplinesGRs}}, \code{\link{probeSmooths}}, 
          \code{\link{byIndv4Times_GRsDiff}}, \code{\link{smooth.spline}}, \cr
          \code{\link{predict.smooth.spline}}, JOPS.}
 \references{

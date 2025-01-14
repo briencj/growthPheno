@@ -85,8 +85,8 @@ geometric mean of the RGRs for times within the interval; in fact the exponentia
 obtained from the \code{times}. They are taken as the sum of half the time subintervals before and after each time, except for the end points; the end points are taken to be the subintervals at the start and end of the interval.
 }
 \author{Chris Brien}
-\seealso{\code{\link{byIndv4Intvl_GRsDiff}}, \code{\link{byIndv4Intvl_WaterUse}}, \code{\link{splitValueCalculate}}, \code{\link{getTimesSubset}}, \cr 
-         \code{\link{GrowthRates}}, \code{\link{byIndv4Times_SplinesGRs}}, \code{\link{splitContGRdiff}}}
+\seealso{\code{\link{byIndv4Intvl_GRsDiff}}, \code{\link{byIndv4Intvl_WaterUse}}, \code{\link{getTimesSubset}}, \cr 
+         \code{\link{GrowthRates}}, \code{\link{byIndv4Times_SplinesGRs}}}
 \examples{
 data(exampleData)
 longi.dat <- byIndv4Times_SplinesGRs(data = longi.dat, 

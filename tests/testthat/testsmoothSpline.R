@@ -11,7 +11,7 @@ test_that("leaf_smoothSpline", {
   data(testSpline)
   responses <- names(test)[5:ncol(test)]
   
-  ##Test omit in fitSpline - Length 3
+  ##Test omit in smoothSpline- Length 3
   leaf.dat <- test
   carts <- levels(leaf.dat$Snapshot.ID.Tag)
   nrows <- list(6,4,5,3,2,6,1,1)

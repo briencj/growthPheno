@@ -20,7 +20,55 @@ test_that("corrPlot", {
                       })
   responses <- c("PSA","PSA.SV","PSA.TV", "Image.Biomass", "Max.Height","Centre.Mass",
                  "Density", "Compactness.TV", "Compactness.SV")
+  
+  #Both types of plots and printing
   testthat::expect_invisible(plt <- plotCorrmatrix(longi.dat, responses, 
                                                    pairs.sets=list(c(1:4),c(5:7))))
-  testthat::expect_true("ggplot" %in% class(plt))
+  testthat::expect_true("list" %in% class(plt))
+  testthat::expect_equal(names(plt), c("heatmap", "matrixplots"))
+  testthat::expect_true("ggplot" %in% class(plt$heatmap))
+  testthat::expect_true("list" %in% class(plt$matrixplots))
+  testthat::expect_equal(length(plt$matrixplots), 2)
+  testthat::expect_true("ggmatrix" %in% class(plt$matrixplots[[1]]))
+
+  #Both types of plots with no printing
+  testthat::expect_invisible(plt <- plotCorrmatrix(longi.dat, responses, 
+                                                   printPlot = FALSE,
+                                                   pairs.sets=list(c(1:4),c(5:7))))
+  testthat::expect_true("list" %in% class(plt))
+  testthat::expect_equal(names(plt), c("heatmap", "matrixplots"))
+  testthat::expect_true("ggplot" %in% class(plt$heatmap))
+  testthat::expect_true("list" %in% class(plt$matrixplots))
+  testthat::expect_equal(length(plt$matrixplots), 2)
+  testthat::expect_true("ggmatrix" %in% class(plt$matrixplots[[1]]))
+  
+  #Heatmap only with printing
+  testthat::expect_invisible(plt <- plotCorrmatrix(longi.dat, responses, 
+                                                   which.plots = "heatmap",
+                                                   pairs.sets=list(c(1:4),c(5:7))))
+  testthat::expect_true("list" %in% class(plt))
+  testthat::expect_equal(names(plt), c("heatmap", "matrixplots"))
+  testthat::expect_true("ggplot" %in% class(plt$heatmap))
+  testthat::expect_true(is.null(plt$matrixplots))
+  
+
+  #Matrixplots only
+  testthat::expect_invisible(plt <- plotCorrmatrix(longi.dat, responses, 
+                                                   which.plots = "matrixplot",
+                                                   pairs.sets=list(c(1:4),c(5:7))))
+  testthat::expect_true("list" %in% class(plt))
+  testthat::expect_equal(names(plt), c("heatmap", "matrixplots"))
+  testthat::expect_true(is.null(plt$heatmap))
+  testthat::expect_equal(length(plt$matrixplots), 2)
+  testthat::expect_true("ggmatrix" %in% class(plt$matrixplots[[1]]))
+  
+  #Heatmap only with printing
+  testthat::expect_invisible(plt <- plotCorrmatrix(longi.dat, responses, 
+                                                   which.plots = "heatmap", 
+                                                   printPlot = FALSE,
+                                                   pairs.sets=list(c(1:4),c(5:7))))
+  testthat::expect_true("list" %in% class(plt))
+  testthat::expect_equal(names(plt), c("heatmap", "matrixplots"))
+  testthat::expect_true("ggplot" %in% class(plt$heatmap))
+  testthat::expect_true(is.null(plt$matrixplots))
 })

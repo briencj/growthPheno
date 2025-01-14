@@ -77,16 +77,16 @@ byIndv4Intvl_WaterUse(data, water.use = "Water.Use", responses = NULL,
 \details{
 \describe{
 \item{\code{WU}}{ is the water use and is the sum of the water use after \code{start.time} 
-until \code{end.time}. Thus, the water use up to \code{start.time} is not included.} 
+until \code{end.time}. Thus, the water use up to \code{start.time} is not included. Further, 
+if any water use value in the interval is \code{NA}, the interval value will be set to \code{NA}.} 
 \item{\code{WUR}}{ is the Water Use Rate and is \code{WU} divided by the difference 
 between \code{end.time} and \code{start.time}.}
 \item{\code{WUI}}{ is the Water Use Index and is calculated as a \code{response} difference 
-between the start.time and the end.time, which s then divided by the \code{WU}.}
+between the start.time and the end.time, which is then divided by the \code{WU}.}
 }}
 \author{Chris Brien}
 \seealso{\code{\link{byIndv4Intvl_GRsAvg}}, \code{\link{byIndv4Intvl_GRsDiff}}, 
-          \code{\link{splitValueCalculate}}, \code{\link{getTimesSubset}}, \cr
-         \code{\link{GrowthRates}}}
+          \code{\link{getTimesSubset}}, \code{\link{GrowthRates}}}
 \examples{
 data(exampleData)
 WU.WUI_31_35 <- byIndv4Intvl_WaterUse(data = longi.dat, 

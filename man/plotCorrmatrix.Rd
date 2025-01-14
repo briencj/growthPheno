@@ -4,16 +4,17 @@
 \description{Having calculated the correlations a heat map indicating the magnitude of the 
        correlations is produced using \code{ggplot}. In this heat map, the darker the red in 
        a cell then the closer the correlation is to -1, while the deeper the blue in the cell,
-       then the closer the correlation is to 1. A matrix plot of all pairwise 
-       combinations of the variables can be produced. The matrix plot contains a scatter diagram 
-       for each pair, as well as the value of the correlation coefficient. The argument 
-       \code{pairs.sets} can be used to restrict the pairs in the matrix plot to those 
-       combinations within each set. 
+       then the closer the correlation is to 1. Matrix plots of all pairwise 
+       combinations of the variables can be produced that includes the values of the 
+       the correlation coefficients. If \code{pairs.sets} is set, a matrix 
+       plot, along with the values of the correlation coefficients, is produced  for 
+       each of the \code{pair.sets}. That is, the argument \code{pairs.sets} can be used to 
+       restrict the pairs in a matrix plot to those combinations within each set. 
 }
 \usage{
-plotCorrmatrix(data, responses, which.plots = c("heatmap","matrixplot"), 
+plotCorrmatrix(data, responses, which.plots = c("heatmap","matrixplots"), 
                title = NULL, labels = NULL, labelSize = 4, pairs.sets = NULL, 
-               show.sig = FALSE, axis.text.size = 20, ggplotFuncs = NULL, 
+               show.sig = TRUE, axis.text.size = 20, ggplotFuncs = NULL, 
                printPlot = TRUE, ...)
 }
 \arguments{
@@ -22,18 +23,19 @@ plotCorrmatrix(data, responses, which.plots = c("heatmap","matrixplot"),
              \code{data} containing the variables to be correlated.}
  \item{which.plots}{A \code{\link{character}} specifying the plots of the correlations to be 
                     produced. The possibilities are one or both of \code{heatmap} and 
-                    \code{matrixplot}.}
+                    \code{matrixplots}.}
  \item{title}{Title for the plots.}
  \item{labels}{A \code{\link{character}} specifying the labels to be used in the plots. 
                If \code{labels} is \code{NULL}, \code{responses} is used for the \code{labels}.}
  \item{labelSize}{A \code{\link{numeric}} giving the size of the \code{labels} in the 
-                  \code{matrixplot}.}
+                  \code{matrixplots}.}
 \item{pairs.sets}{A \code{\link{list}} each of whose components is a \code{\link{numeric}} giving 
                 the position of the variable names in \code{responses} that are to be included 
-                in the set. All pairs of variables in this pairs.set will be included in a 
-                \code{matrixplot}.}
- \item{show.sig}{A \code{\link{logical}} indicating whether or not to give asterisks on the 
-                 \code{heatmap} indicating the correlations are significantly different from zero.}
+                in the set. All pairs of variables in this pairs.set will be included in  
+                \code{matrixplots}.}
+ \item{show.sig}{A \code{\link{logical}} indicating whetherto give asterisks on the 
+                 \code{heatmap} and \code{matrixplots} that indicate that the correlations are 
+                 significantly different from zero.}
  \item{axis.text.size}{A \code{\link{numeric}} giving the size of the \code{labels} on the axes   
                   of the \code{heatmap}.}
  \item{ggplotFuncs}{A \code{list}, each element of which contains the 
@@ -43,14 +45,14 @@ plotCorrmatrix(data, responses, which.plots = c("heatmap","matrixplot"),
                 These functions are applied in creating the \code{ggplot} 
                 object.}
  \item{printPlot}{A \code{\link{logical}} indicating whether or not to print the 
-                  plot.}
+                  plots.}
  \item{...}{allows passing of arguments to other functions; not used at present.}
 }
-\value{The \code{heatmap} plot, if produced, as an object of class "\code{ggplot}", which 
-       can be plotted using \code{print}; otherwise \code{NULL} is returned.}
+\value{A \code{\link{list}} object that has components \code{heatmap} and \code{matrixplots}.  The component \code{heatmap} will contain the heatmap plot, if produced, as an object of class "\code{ggplot}", which can be plotted using \code{print}; otherwise \code{NULL} is returned. 
+Similarly, if not \code{NULL}, the component \code{matrixplots} will contain a list with one or more components, depending on the setting of \code{pair.sets}, each of which is a scatterplot matrix stored as an object of class "\code{ggmatrix}".}
 \details{The correlations and their p-values are producced using \code{rcorr} 
          from the \code{Hmisc} package. The \code{heatmap} is produced using 
-         \code{ggplot} and the matrixplot is produced using \code{GGally}.
+         \code{ggplot} and the matrixplots are produced using \code{GGally}.
 }
 \author{Chris Brien}
 \seealso{\code{rcorr}, \code{GGally}, \code{ggplot}.}
