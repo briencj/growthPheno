@@ -20,8 +20,9 @@ test_that("prepImageData", {
                              idcolumns = c("Genotype.ID", "Treatment"))
   testthat::expect_equal(nrow(longi.RGB), 2)
   testthat::expect_equal(ncol(longi.RGB), 35)
+  testthat::expect_true("Reps" %in% names(longi.RGB))
   
-  # Area RGB images with some imaging traist and copying Water traits
+  # Area RGB images with some imaging traits and copying Water traits
   raw.RGB.dat <- suppressWarnings(importExcel(file = "./data/rawRGBdatarow.csv",
                                               timeAfterStart = "Time.after.Plantind..d.", 
                                               startTime = "09/01/2017 0:00 AM",
@@ -70,7 +71,7 @@ test_that("prepImageData", {
   
   #Test name change with move to suffix  and supply characters instead of lists
   raw.19.dat <- suppressWarnings(importExcel(file = "./data/raw19datarow.csv",
-                                             cartId = "Snapshot.ID.Tags",
+                                             individualId = "Snapshot.ID.Tags",
                                              startTime = "06/10/2017 0:00 AM",
                                              timeFormat = "%d/%m/%Y %H:%M",
                                              labsCamerasViews = camview.labels, 
@@ -79,7 +80,7 @@ test_that("prepImageData", {
                               names(raw.19.dat)))
   raw.19.dat <- rbind(raw.19.dat, raw.19.dat)
   longi.19 <- prepImageData(data = raw.19.dat, 
-                            cartId = "Snapshot.ID.Tags",
+                            individualId = "Snapshot.ID.Tags",
                             idcolumns = c("Plant.Species", "Mycorrhiza", "Zn"),
                             calcWaterUse = FALSE, 
                             traits = "Area", 
@@ -91,7 +92,7 @@ test_that("prepImageData", {
   
   #Test name change with move to suffix  and pass through just the names to retain
   raw.19.dat <- suppressWarnings(importExcel(file = "./data/raw19datarow.csv",
-                                             cartId = "Snapshot.ID.Tags",
+                                             individualId = "Snapshot.ID.Tags",
                                              startTime = "06/10/2017 0:00 AM",
                                              timeFormat = "%d/%m/%Y %H:%M",
                                              labsCamerasViews = camview.labels, 
@@ -100,7 +101,7 @@ test_that("prepImageData", {
                               names(raw.19.dat)))
   raw.19.dat <- rbind(raw.19.dat, raw.19.dat)
   longi.19 <- prepImageData(data = raw.19.dat, 
-                            cartId = "Snapshot.ID.Tags",
+                            individualId = "Snapshot.ID.Tags",
                             idcolumns = c("Plant.Species", "Mycorrhiza", "Zn"),
                             calcWaterUse = FALSE, 
                             traits = c("Area.SF0", "Area.SL0", "Area.SU0", "Area.TV0"), 
@@ -112,7 +113,7 @@ test_that("prepImageData", {
   
   #Test remove cameraType with move to suffix
   raw.19.dat <- suppressWarnings(importExcel(file = "./data/raw19datarow.csv",
-                                             cartId = "Snapshot.ID.Tags",
+                                             individualId = "Snapshot.ID.Tags",
                                              startTime = "06/10/2017 0:00 AM",
                                              timeFormat = "%d/%m/%Y %H:%M",
                                              cameraType = "RGB", 
@@ -121,7 +122,7 @@ test_that("prepImageData", {
                               "Area.TV_0") %in% names(raw.19.dat)))
   raw.19.dat <- rbind(raw.19.dat, raw.19.dat)
   longi.19 <- prepImageData(data = raw.19.dat, 
-                            cartId = "Snapshot.ID.Tags",
+                            individualId = "Snapshot.ID.Tags",
                             idcolumns = c("Plant.Species", "Mycorrhiza", "Zn"),
                             calcWaterUse = FALSE, 
                             traits = list(t = "Area"), 
@@ -131,5 +132,68 @@ test_that("prepImageData", {
   testthat::expect_equal(ncol(longi.19), 17)
   testthat::expect_lt(abs(longi.19$PSA[1] - 6.73), 1e-02)
   testthat::expect_lt(abs(longi.19$PSA.Side_Far_0[1] - 1.18), 1e-02)
+  
+})
+
+cat("#### Test prepImageData Replicates\n")
+test_that("prepImageData Replicates", {
+  skip_if_not_installed("growthPheno")
+  skip_on_cran()
+  library(dae)
+  library(ggplot2)
+  library(growthPheno)
+  
+  # A set of RGB images with all names using defaults
+  raw.RGB.dat <- suppressWarnings(importExcel(file = "./data/rawRGBdatarow.csv",
+                                              timeAfterStart = "Time.after.Plantind..d.", 
+                                              startTime = "09/01/2017 0:00 AM",
+                                              timeFormat = "%d/%m/%Y %H:%M",
+                                              plotImagetimes = FALSE))
+  testthat::expect_true(all(names(raw.RGB.dat)[c(18,56,94)] == 
+                              c("Area.SV1", "Area.SV2", "Area.TV")))
+  raw.RGB.dat <- rbind(raw.RGB.dat, raw.RGB.dat)
+  longi.RGB.Rep <- prepImageData(data = raw.RGB.dat, 
+                                 timeAfterStart = "Time.after.Plantind..d.", 
+                                 potIDcolumns = c("Genotype.ID", "Treatment", "Replicate"))
+  testthat::expect_equal(nrow(longi.RGB.Rep), 2)
+  testthat::expect_equal(ncol(longi.RGB.Rep), 35)
+  testthat::expect_true(!("Reps" %in% names(longi.RGB.Rep)))
+  testthat::expect_true(is.factor(longi.RGB.Rep$Replicate))
+  
+  longi.RGB.Rep <- prepImageData(data = raw.RGB.dat, 
+                                 timeAfterStart = "Time.after.Plantind..d.", 
+                                 potIDcolumns = c("Genotype.ID", "Treatment"))
+  testthat::expect_equal(nrow(longi.RGB.Rep), 2)
+  testthat::expect_equal(ncol(longi.RGB.Rep), 34)
+  testthat::expect_true(!("Reps" %in% names(longi.RGB.Rep)))
+  testthat::expect_true(!("Replicate" %in% names(longi.RGB.Rep)))
+
+  #Test when no Replicate in data.frame  
+  tmp <- raw.RGB.dat[, -match("Replicate", names(raw.RGB.dat))]
+  testthat::expect_error(
+    longi.RGB.Rep <- prepImageData(data = tmp, 
+                                   timeAfterStart = "Time.after.Plantind..d.", 
+                                   potIDcolumns = c("Genotype.ID", "Treatment", "Replicate")),
+    regexp = "The following variables are not present in data:  Replicate")
+  
+})
+
+
+cat("#### Test prepImageData exampleData\n")
+test_that("prepImageData exampleData", {
+  skip_if_not_installed("growthPheno")
+  skip_on_cran()
+  library(growthPheno)
+
+  data(exampleData)  
+  
+  longi.dat <- prepImageData(data=raw.dat, 
+                           traits= list(all = "Area"), 
+                           labsCamerasViews = list(all = NULL), 
+                           potIDcolumns = c("Genotype.ID", "Treatment.1", "Replicate" ), 
+                           smarthouse.lev=1)
+  testthat::expect_true(all(c("Genotype.ID", "Treatment.1", "Replicate" ) %in% names(longi.dat)))
+  testthat::expect_true(!("Reps" %in% names(longi.dat)))
+  testthat::expect_true(!("Treatment.2" %in% names(longi.dat)))
   
 })

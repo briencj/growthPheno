@@ -12,8 +12,8 @@ The data is the full set of Lanes and Positions from an experiment in a Smarthou
 \tabular{rlll}{
  Column \tab Name        \tab Class   \tab Description \cr
 \cr
-  1 \tab Smarthouse      \tab factor \tab the Smarthouse in which a cart occurs. \cr
-  2 \tab Snapshot.ID.Tag \tab character \tab a unique identifier for each cart in the experiment. \cr
+  1 \tab Smarthouse      \tab factor \tab the Smarthouse in which a individual occurs. \cr
+  2 \tab Snapshot.ID.Tag \tab character \tab a unique identifier for each individual in the experiment. \cr
   3 \tab xDAP            \tab numeric \tab the numbers of days after planting on which the current \cr
     \tab                 \tab         \tab data was observed. \cr
   4 \tab DAST            \tab factor  \tab the numbers of days after the salting treatment on which \cr
@@ -27,15 +27,15 @@ The data is the full set of Lanes and Positions from an experiment in a Smarthou
   9 \tab Position        \tab factor  \tab the Position in the 24 Lane x 24 Positions grid. \cr
  10 \tab cPosn           \tab numeric \tab a centered numeric covaariate for Positions. \cr 
  11 \tab cMainPosn       \tab numeric \tab a centered numeric covaariate for Main plots. \cr
- 12 \tab Zone            \tab factor  \tab the Zone of 4 Lanes to which the current cart belonged. \cr
+ 12 \tab Zone            \tab factor  \tab the Zone of 4 Lanes to which the current individual belonged. \cr
  13 \tab cZone           \tab numeric \tab a centered numeric covariate for Zone. \cr
  14 \tab SHZone          \tab factor  \tab the Zone numbered across the two Smarthouses. \cr
  15 \tab ZLane           \tab factor  \tab the number of the Lane within a Zone. \cr
  16 \tab ZMainunit       \tab factor  \tab the number of the Main plot within a Zone. \cr
- 17 \tab Subunit         \tab factor  \tab the number of a Cart within a Main plot. \cr
+ 17 \tab Subunit         \tab factor  \tab the number of an Individual within a Main plot. \cr
  18 \tab Reps            \tab numeric \tab the replicate number of each Genotype-Salinity combination. \cr
  19 \tab Genotype        \tab factor  \tab the number assigned to the 298 Genotypes  in the experiment. \cr
- 20 \tab Salinity        \tab factor  \tab the Salinity treatment (Control, Salt) allocated to a Cart. \cr
+ 20 \tab Salinity        \tab factor  \tab the Salinity treatment (Control, Salt) allocated to a Individual. \cr
  21 \tab PSA             \tab numeric \tab the Projected shoot area (kpixels). \cr
  22 \tab PSA.AGR         \tab numeric \tab the Absolute Growth Rate for the Projected shoot area (kpixels/day). \cr
  23 \tab PSA.RGR         \tab numeric \tab the Relative Growth Rate for the Projected shoot area (per day). \cr

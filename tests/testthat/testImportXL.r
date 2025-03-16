@@ -56,7 +56,7 @@ test_that("importXLRename", {
   
   #Test do nothing
   raw.19.dat <- suppressWarnings(importExcel(file = "./data/raw19datarow.csv",
-                                             cartId = "Snapshot.ID.Tags",
+                                             individualId = "Snapshot.ID.Tags",
                                              startTime = "06/10/2017 0:00 AM",
                                              timeFormat = "%d/%m/%Y %H:%M",
                                              plotImagetimes = FALSE, 
@@ -66,7 +66,7 @@ test_that("importXLRename", {
   
   #Test do nothing except remove cameraType
   raw.19.dat <- suppressWarnings(importExcel(file = "./data/raw19datarow.csv",
-                                             cartId = "Snapshot.ID.Tags",
+                                             individualId = "Snapshot.ID.Tags",
                                              startTime = "06/10/2017 0:00 AM",
                                              timeFormat = "%d/%m/%Y %H:%M",
                                              prefix2suffix = FALSE,
@@ -80,7 +80,7 @@ test_that("importXLRename", {
   
   #Test name change only
   raw.19.dat <- suppressWarnings(importExcel(file = "./data/raw19datarow.csv",
-                                             cartId = "Snapshot.ID.Tags",
+                                             individualId = "Snapshot.ID.Tags",
                                              startTime = "06/10/2017 0:00 AM",
                                              timeFormat = "%d/%m/%Y %H:%M",
                                              prefix2suffix = FALSE, 
@@ -91,7 +91,7 @@ test_that("importXLRename", {
   
   #Test name change with move to suffix
   raw.19.dat <- suppressWarnings(importExcel(file = "./data/raw19datarow.csv",
-                                             cartId = "Snapshot.ID.Tags",
+                                             individualId = "Snapshot.ID.Tags",
                                              startTime = "06/10/2017 0:00 AM",
                                              timeFormat = "%d/%m/%Y %H:%M",
                                              labsCamerasViews = camview.labels, 
@@ -101,7 +101,7 @@ test_that("importXLRename", {
   
   #Test remove cameraType with move to suffix
   raw.19.dat <- suppressWarnings(importExcel(file = "./data/raw19datarow.csv",
-                                             cartId = "Snapshot.ID.Tags",
+                                             individualId = "Snapshot.ID.Tags",
                                              startTime = "06/10/2017 0:00 AM",
                                              timeFormat = "%d/%m/%Y %H:%M",
                                              cameraType = "RGB", 
@@ -114,7 +114,7 @@ test_that("importXLRename", {
   names(camview.labels) <- c("RGB_Side_Far_0", "RGB_Side_Lower_0", "RGB_Side_Upper_0", 
                              "RGB_TV_0")
   raw.19.dat <- suppressWarnings(importExcel(file = "./data/raw19datarow.csv",
-                                             cartId = "Snapshot.ID.Tags",
+                                             individualId = "Snapshot.ID.Tags",
                                              startTime = "06/10/2017 0:00 AM",
                                              timeFormat = "%d/%m/%Y %H:%M",
                                              labsCamerasViews = camview.labels, 
@@ -128,7 +128,7 @@ test_that("importXLRename", {
   names(camview.labels) <- c("RGB_Side_Far_0", "RGB_Side_Lower_0", "RGB_Side_Upper_0", 
                              "RGB_TV_0")
   raw.19.dat <- suppressWarnings(importExcel(file = "./data/raw19datarow.csv",
-                                             cartId = "Snapshot.ID.Tags",
+                                             individualId = "Snapshot.ID.Tags",
                                              startTime = "06/10/2017 0:00 AM",
                                              timeFormat = "%d/%m/%Y %H:%M",
                                              labsCamerasViews = camview.labels, 

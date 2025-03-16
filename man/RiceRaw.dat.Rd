@@ -7,7 +7,7 @@ The data is half (the first 12 of 24 Lanes) of that from an experiment in a Smar
 
 }
 \usage{data(RiceRaw.dat)}
-\format{A data.frame containing 7392 observations on 33 variables.}
+\format{A data.frame containing 7392 observations on 34 variables.}
 \references{
 Al-Tamimi, N, Brien, C.J., Oakey, H., Berger, B., Saade, S., Ho, Y. S., Schmockel, S. M., Tester, M. and Negrao, S. (2016) New salinity tolerance loci revealed in rice using high-throughput non-invasive phenotyping. \emph{Nature Communications}, \bold{7}, 13342. Retrieved from \doi{10.1038/ncomms13342}.
 }

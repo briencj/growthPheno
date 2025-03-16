@@ -36,7 +36,8 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
   return(name)
 }
 
-"importExcel" <- function(file, sheet = "raw data", sep = ",", cartId = "Snapshot.ID.Tag", 
+"importExcel" <- function(file, sheet = "raw data", sep = ",", 
+                          individualId = "Snapshot.ID.Tag", 
                           imageTimes = "Snapshot.Time.Stamp", 
                           timeAfterStart = "Time.after.Planting..d.", 
                           cameraType = "RGB", keepCameraType = FALSE, 
@@ -53,6 +54,8 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
     stop("timeAfterPlanting has been deprecated; use timeAfterStart")
   if ("planting.time"%in% names(impArgs))
     stop("planting.time has been deprecated; use startTime")
+  if ("cartId"%in% names(impArgs))
+    stop("cartId has been deprecated; use individualId")
   
   #Input the raw imaging data
   if (grepl("csv", file))
@@ -69,8 +72,8 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
   else
     stop("File name does not include csv or xlsx")
   ncinput <- ncol(raw.dat)
-  if (!(cartId %in% names(raw.dat)))
-    stop("cartId not in imported data")
+  if (!(individualId %in% names(raw.dat)))
+    stop("individualId not in imported data")
   if (!(imageTimes%in% names(raw.dat)))
     stop("imageTimes not in imported data")
   
@@ -121,27 +124,28 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
   #Plot the imaging times if required
   if (plotImagetimes)
     plotImagetimes(raw.dat, intervals=timeAfterStart, timePositions = "Hour", 
-                   groupVariable = cartId, ...)
+                   groupVariable = individualId, ...)
   
   #Check unique for Snapshot.ID.Tag, Time.after.Planting..d.
-  combs <- as.vector(table(raw.dat[[cartId]], raw.dat[[timeAfterStart]]))
+  combs <- as.vector(table(raw.dat[[individualId]], raw.dat[[timeAfterStart]]))
   if (any(combs != 1))
     warning(paste("There is not just one observation for",  
                   length(combs[combs != 1]), 
-                  "combination(s) of",cartId,"and", timeAfterStart))
+                  "combination(s) of",individualId,"and", timeAfterStart))
   
-  #Sort data into cartId, Time.after.Planting..d. order and store
+  #Sort data into individualId, Time.after.Planting..d. order and store
   # - may need to be reordered for analysis purposes
-  raw.dat <- raw.dat[order(raw.dat[[cartId]], raw.dat[[timeAfterStart]]), ]
+  raw.dat <- raw.dat[order(raw.dat[[individualId]], raw.dat[[timeAfterStart]]), ]
   return(raw.dat)
 }
 
 
 #Function to reduce imaging responses to those to be retained, forming image.dat
-"prepImageData" <- function(data, cartId = "Snapshot.ID.Tag", 
+"prepImageData" <- function(data, individualId = "Snapshot.ID.Tag", 
                             imageTimes = "Snapshot.Time.Stamp", 
                             timeAfterStart = "Time.after.Planting..d.", 
                             PSAcolumn = "Projected.Shoot.Area..pixels.", 
+                            potIDcolumns = NULL,
                             idcolumns = c("Genotype.ID","Treatment.1"),
                             traits = list(all = c("Area", "Boundary.Points.To.Area.Ratio", 
                                                   "Caliper.Length", "Compactness", 
@@ -151,10 +155,15 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
                             labsCamerasViews = list(all = c("SV1", "SV2", "TV"),
                                                     side = c("SV1", "SV2")), 
                             smarthouse.lev = NULL, 
-                            calcWaterUse = TRUE)
+                            calcWaterUse = TRUE, ...)
 { 
+  #Check arguments
+  impArgs <- match.call()
+  if ("cartId"%in% names(impArgs))
+    stop("cartId has been deprecated; use individualId")
+  
   #Extract variables from data to form data frame of longitudinal data
-  posndatevars <- c(cartId,timeAfterStart,
+  posndatevars <- c(individualId,timeAfterStart,
                     "Smarthouse","Lane","Position",imageTimes)
   imagevars <- NULL
   if (is.list(traits) && !is.null(traits))
@@ -190,6 +199,12 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
     } else
       stop("traits is neither a list nor a character")
   }
+  
+  #If potIDcolumns is set, it overwrites idcolumns
+  if (!is.null(potIDcolumns))
+    idcolumns <- potIDcolumns
+  
+  #Add Water Use traits if calcWaterUse is TRUE
   if (calcWaterUse)
     vars <- c(posndatevars, idcolumns, "Weight.Before","Weight.After","Water.Amount",
               PSAcolumn, imagevars)
@@ -221,26 +236,30 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
   image.dat[facs] <- as.data.frame(lapply(image.dat[facs], FUN = factor))
   
   
-  #Now derive a Reps factor 
+  #Now derive a Reps factor, only if potIDcolumns is not set 
   #+
-  if (all(idcolumns %in% vars))
-  {
-    image.dat <- within(image.dat, 
-                        { 
-                          Reps <- 1
-                          trts <- dae::fac.combine(as.list(image.dat[idcolumns]))
-                        })
-    for (t in levels(image.dat$trts))
-    { 
-      which.indiv <- with(image.dat, 
-                          sort(unique(image.dat[trts==t, cartId])))
-      for (k in 1:length(which.indiv))
-        image.dat[image.dat$trts == t & 
-                    image.dat$Snapshot.ID.Tag == which.indiv[k], "Reps"] <- k
-    }
-    image.dat$Reps <- factor(image.dat$Reps)
-  } else 
-    image.dat$Reps <- NA
+  if (is.null(potIDcolumns)) 
+  { 
+    if (all(idcolumns %in% vars))
+    {
+      image.dat <- within(image.dat, 
+                          { 
+                            Reps <- 1
+                            trts <- dae::fac.combine(as.list(image.dat[idcolumns]))
+                          })
+      for (t in levels(image.dat$trts))
+      { 
+        which.indiv <- with(image.dat, 
+                            sort(unique(image.dat[trts==t, individualId])))
+        for (k in 1:length(which.indiv))
+          image.dat[image.dat$trts == t & 
+                      image.dat$Snapshot.ID.Tag == which.indiv[k], "Reps"] <- k
+      }
+      image.dat$Reps <- factor(image.dat$Reps)
+    } else 
+      image.dat$Reps <- NA
+    idcolumns <- c(idcolumns, "Reps")
+  }
   
   #Form responses that can be calculated by row-wise  operations: 
   image.dat <- calcTimes(image.dat, imageTimes = imageTimes,
@@ -261,14 +280,14 @@ globalVariables(c("Snapshot.ID.Tag", "Snapshot.Time.Stamp", "Time.after.Planting
   
   
   out.posndatevars <- c("Smarthouse","Lane","Position","DAP", "xDAP",
-                        cartId, imageTimes, "Hour", "Reps")
+                        individualId, imageTimes, "Hour")
   imagevars <- c("PSA", imagevars)
   if (calcWaterUse)
     imagevars <- c("Weight.Before","Weight.After","Water.Amount", "WU", imagevars)
   out.vars <- c(out.posndatevars, idcolumns, imagevars)
-  
+
   #Re-order rows and response columns
-  image.dat <- image.dat[order(image.dat[[cartId]], image.dat$DAP), ]
+  image.dat <- image.dat[order(image.dat[[individualId]], image.dat$DAP), ]
   image.dat <- image.dat[out.vars]
   names(image.dat) <- gsub("Area", "PSA", names(image.dat), fixed = TRUE)
   return(image.dat)

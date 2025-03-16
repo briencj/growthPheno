@@ -72,7 +72,7 @@
     \tab values from the smoothed values over values of x. \cr
     \code{\link{plotImagetimes}} 
     \tab Plots the time within an interval versus the interval.\cr 
-    \tab For example, the hour of the day carts are imaged\cr
+    \tab For example, the hour of the day images are taken\cr
     \tab against the days after planting (or some other\cr
     \tab number of days after an event).\cr
     \code{\link{plotProfiles}} 

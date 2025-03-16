@@ -8,10 +8,11 @@
   Also added are \code{\link{factor}}s and explanatory variates that might be of use in an 
   analysis of the data.}
 \usage{
-prepImageData(data, cartId = "Snapshot.ID.Tag", 
+prepImageData(data, individualId = "Snapshot.ID.Tag", 
               imageTimes = "Snapshot.Time.Stamp", 
               timeAfterStart = "Time.after.Planting..d.",
               PSAcolumn = "Projected.Shoot.Area..pixels.", 
+              potIDcolumns = NULL, 
               idcolumns = c("Genotype.ID","Treatment.1"), 
               traits = list(all = c("Area", 
                                     "Boundary.Points.To.Area.Ratio", 
@@ -22,11 +23,12 @@ prepImageData(data, cartId = "Snapshot.ID.Tag",
               labsCamerasViews = list(all = c("SV1", "SV2", "TV"),
                                       side = c("SV1", "SV2")), 
               smarthouse.lev = NULL, 
-              calcWaterUse = TRUE)}
+              calcWaterUse = TRUE, ...)}
 \arguments{
- \item{data}{A \code{\link{data.frame}} containing the columns specified by \code{cartId}, 
-             \code{imageTimes}, \code{timeAfterStart}, \code{PSAcolumn} \code{idcolumns}, \code{traits} and 
-             \code{cameras} along with  the following columns: 
+ \item{data}{A \code{\link{data.frame}} containing the columns specified by \code{individualId}, 
+             \code{imageTimes}, \code{timeAfterStart}, \code{PSAcolumn} and 
+             \code{idcolumns}, provided \code{potIDcolumns} is \code{NULL}, or \code{potIDcolumns},  
+             as well as \code{traits}, \code{cameras} and the following columns: 
           
             Smarthouse, Lane, Position, Weight.Before, Weight.After, Water.Amount, 
             
@@ -53,18 +55,31 @@ prepImageData(data, cartId = "Snapshot.ID.Tag",
             Center.Of.Mass.Y.SV1, Center.Of.Mass.Y.SV2, 
 
             Max.Dist.Above.Horizon.Line.SV1, Max.Dist.Above.Horizon.Line.SV2.}
- \item{cartId}{A \code{\link{character}} giving the name of the column that contains
-               the unique Id for each cart.}
+ \item{individualId}{A \code{\link{character}} giving the name of the column that contains
+               the unique Id for each individual.}
  \item{imageTimes}{A \code{\link{character}} giving the name of the column that contains
-               the time that each cart was imaged.}
+               the time that each individual was imaged.}
  \item{timeAfterStart}{A \code{\link{character}} giving the name of the column that 
                contains the time after some nominated starting time e.g. the number of days 
                after planting.}
  \item{PSAcolumn}{A \code{\link{character}} giving the name of the column that 
                contains the projected shoot area.}
+ \item{potIDcolumns}{A \code{\link{character}} vector giving the names of the columns that 
+                  identify differences between the pots in \code{data} e.g. Genotype.ID, 
+                  Treatment.1, Treatment.2, Replicate. There is no restriction on the names, 
+                  except that they must occur in  \code{data}. Often the combinations of 
+                  values of the columns specified in \code{potIDcolumns} uniquely identifies 
+                  each pot on which \code{data} is based. It is more flexible than 
+                  \code{idcolumns} in that the factor \code{Reps} is not calculated and 
+                  the user can include in \code{potIDcolumns} the name of a column in 
+                  \code{data} that identifies the replicates of the combinations of the 
+                  values in the other columns in \code{potIDcolumns}.}
  \item{idcolumns}{A \code{\link{character}} vector giving the names of the columns that 
-                  identify differences between the plants or carts e.g. Genotype.ID, 
-                  Treatment.1, Treatment.2.}
+                  identify differences (e.g. Genotype.ID, Treatment.1, Treatment.2) 
+                  between the individuals (e.g. plant, pot, cart, plot or unit). 
+                  If \code{potIDcolumns} is \code{NULL}, then 
+                  a factor \code{Reps} is calculated that specifies the replicates of the 
+                  combinations of the values stored in the columns named in \code{idcolumns}.}
  \item{traits}{A \code{\link{character}} or a \code{\link{list}} whose components are  
                   \code{\link{character}}s. Each \code{\link{character}} gives the names of the 
                   columns for imaging \code{traits} whose values are required for each of the 
@@ -82,16 +97,18 @@ prepImageData(data, cartId = "Snapshot.ID.Tag",
                   or a component of \code{labsCamerasViews} is \code{NULL}, then the contents 
                   of the \code{traits} or the coresponding component of \code{traits} are 
                   merely treated as the names of columns to be retained.}
-\item{smarthouse.lev}{A \code{\link{character}} vector giving the levels to use 
+ \item{smarthouse.lev}{A \code{\link{character}} vector giving the levels to use 
             for the Smarthouse \code{\link{factor}}. If \code{NULL} then the unique values in Smarthouse 
             will be used.}
  \item{calcWaterUse}{A \code{\link{logical}} indicating whether to calculate the Water.Loss. If it is 
            \code{FALSE}, \code{Water.Before}, \code{Water.After} and \code{Water.Amount} will not be in 
            the returned \code{\link{data.frame}}. They can be copied across by listing them in a component 
            of \code{traits} and set the corresponding component of \code{cameras} to \code{NULL}.}
+ \item{...}{allows passing of arguments to other functions; not used at present.}
 }
-\value{A \code{\link{data.frame}} containing the columns specified by \code{cartId}, 
-             \code{imageTimes}, \code{timeAfterStart}, \code{idcolumns}, \code{traits} and 
+\value{A \code{\link{data.frame}} containing the columns specified by \code{individualId}, 
+             \code{imageTimes}, \code{timeAfterStart}, \code{potIDcolumns} or, 
+             if \code{potIDcolumns} is \code{NULL}, \code{idcolumns}, \code{traits} and 
              \code{cameras}. The defaults will result in the following columns:
        
        \enumerate{
@@ -100,11 +117,12 @@ prepImageData(data, cartId = "Snapshot.ID.Tag",
          \item Position: \code{\link{factor}} for east/west position in a lane
          \item DAP: \code{\link{factor}} for the number of Days After Planting
          \item xDAP: numeric for the DAP (calculated)
-         \item \code{cartId}: unique code for each cart 
+         \item \code{individualId}: unique code for each individual 
          \item \code{imageTimes}: time at which an image was taken in POSIXct format
          \item Hour: hour of the day, to 2 decimal places, at which the image was taken (calculated)
-         \item Reps: \code{\link{factor}} indexing the replicates for each combination of the \code{\link{factor}}s in \code{idcolumns} (calculated)
-         \item \code{idcolumns}: the columns listed in \code{idcolumns} that have been converted to \code{\link{factor}}s
+         \item \code{potIDcolumns}: the columns listed in \code{potIDcolumns}, after being converted to \code{\link{factor}}s
+         \item Reps: \code{\link{factor}} indexing the replicates for each combination of the \code{\link{factor}}s in \code{idcolumns} (calculated only if \code{potIDcolumns} is \code{NULL})
+         \item \code{idcolumns}: only if \code{potIDcolumns} is \code{NULL}, the columns listed in \code{idcolumns}, after being converted to \code{\link{factor}}s
          \item Weight.Before: weight of the pot before watering (only if \code{calcWaterUse} is \code{TRUE})
          \item Weight.After: weight of the pot after watering (only if \code{calcWaterUse} is \code{TRUE})
          \item Water.Amount: the weight of the water added (= Water.After - Water.Before)  (calculated)
@@ -137,6 +155,12 @@ The columns are copied from \code{data}, except for those columns that are calcu
 \examples{
 data(exampleData)
 longi.dat <- prepImageData(data=raw.dat, smarthouse.lev=1)
+
+longi.dat <- prepImageData(data=raw.dat, 
+                          traits= list(all = "Area"), 
+                          labsCamerasViews = list(all = NULL), 
+                          potIDcolumns = c("Genotype.ID", "Treatment.1", "Replicate" ), 
+                          smarthouse.lev=1)
 
 longi.dat <- prepImageData(data=raw.dat, smarthouse.lev=1, 
                            traits = list(a = "Area", c = "Compactness"),

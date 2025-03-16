@@ -11,7 +11,7 @@ calcTimes(data, imageTimes = NULL, timeFormat = "\%Y-\%m-\%d \%H:\%M",
   \item{data}{A \code{\link{data.frame}} containing any columns specified by 
     \code{imageTimes}, \code{intervals} and \code{timePositions}.}
   \item{imageTimes}{A \code{\link{character}} giving the name of the column that contains
-    the time that each cart was imaged. Note that in importing data into R, spaces 
+    the time that each image was taken. Note that in importing data into R, spaces 
     and nonalphanumeric characters in names are converted to full stops. 
     If \code{imageTimes} is \code{NULL} then no calculations are done.}
  \item{timeFormat}{A \code{character} giving the \code{POSIXct} format of characters 

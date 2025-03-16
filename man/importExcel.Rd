@@ -3,8 +3,9 @@
 \title{Imports an Excel imaging file and allows some renaming of variables}
 \description{Uses \code{readxl} to import a sheet of imaging data produced by the 
   Lemna Tec Scanalyzer. Basically, the data consists of imaging data obtained from a 
-  set of pots or carts over time. There should be a column, which by default is called 
-  \code{Snapshot.ID.Tag}, containing a unique identifier for each cart and a column, 
+  set of individuals (e.g. plant, pot, cart, plot or unit) over time. There should 
+  be a column, which by default is called 
+  \code{Snapshot.ID.Tag}, containing a unique identifier for each individual and a column, 
   which by default is labelled \code{Snapshot.Time.Stamp}, containing 
   the time of imaging for each observation in a row of the sheet. Also, if 
   \code{startTime} is not \code{NULL}, \code{calcTimes} is called to 
@@ -18,7 +19,7 @@
   }
 \usage{
 importExcel(file, sheet="raw data", sep = ",", 
-            cartId = "Snapshot.ID.Tag", 
+            individualId = "Snapshot.ID.Tag", 
             imageTimes = "Snapshot.Time.Stamp", 
             timeAfterStart = "Time.after.Planting..d.", 
             cameraType = "RGB", keepCameraType = FALSE, 
@@ -30,19 +31,19 @@ importExcel(file, sheet="raw data", sep = ",",
  \item{file}{A \code{\link{character}} giving the path and name of the file containing 
              the data.}
  \item{sheet}{A \code{\link{character}} giving the name of the sheet containing 
-             the data, that must include columns whose names are as specified by \code{cartId}, 
-             which uniquely indexes the carts in the experiment, and 
+             the data, that must include columns whose names are as specified by \code{individualId}, 
+             which uniquely indexes the individuals in the experiment, and 
              \code{imageTimes}, which reflects the time of the imaging from 
              which a particular data value was obtained. It is also assumed that a 
              column whose name is specified by \code{timeAfterStart} is in the sheet or that 
              it will be calculated from \code{imageTimes} using the value of 
              \code{startTime} supplied in the function call.}
  \item{sep}{A \code{\link{character}} giving the separator used in a \code{csv} file.}
- \item{cartId}{A \code{\link{character}} giving the name of the column that contains
-               the unique Id for each cart. Note that in importing data into R, spaces 
+ \item{individualId}{A \code{\link{character}} giving the name of the column that contains
+               the unique Id for each individual. Note that in importing data into R, spaces 
                and nonalphanumeric characters in names are converted to full stops.}
  \item{imageTimes}{A \code{\link{character}} giving the name of the column that contains
-               the time that each cart was imaged. Note that in importing data into R, spaces 
+               the time that each individual was imaged. Note that in importing data into R, spaces 
                and nonalphanumeric characters in names are converted to full stops.}
  \item{timeAfterStart}{A \code{\link{character}} giving the name of the column that 
                contains or is to contain the difference between \code{imageTimes} and 
@@ -102,7 +103,7 @@ names(camview.labels) <- c("RGB_Side_Far_0", "RGB_Side_Lower_0",
 filename <- system.file("extdata/raw19datarow.csv", package = "growthPheno", 
                         mustWork = TRUE)
 raw.19.dat <- suppressWarnings(importExcel(file = filename,
-                                           cartId = "Snapshot.ID.Tags",
+                                           individualId = "Snapshot.ID.Tags",
                                            startTime = "06/10/2017 0:00 AM",
                                            timeFormat = "\%d/\%m/\%Y \%H:M", 
                                            labsCamerasViews = camview.labels, 

@@ -1,9 +1,9 @@
 \name{plotImagetimes}
 \alias{plotImagetimes}
-\title{Plots the position of a time within an interval against the interval for each cart}
+\title{Plots the position of a time within an interval against the interval for image}
 \description{Uses \code{ggplot} to produce a plot of the time position within an interval
-             against the interval. For example, one might plot the hour of the day carts 
-             are imaged against the days after planting (or some other number of 
+             against the interval. For example, one might plot the hour of the day images 
+             are taken against the days after planting (or some other number of 
              days after an event). A line is produced for each value of \code{groupVariable} 
              and the colour is varied according to the value of the \code{colourVariable}. 
              Each \code{Smarthouse} is plotted separately. It aids in checking 

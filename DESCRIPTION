@@ -1,6 +1,6 @@
 Package: growthPheno
-Version: 3.1.10
-Date: 2025-01-13
+Version: 3.1.11
+Date: 2025-03-16
 Title: Functional Analysis of Phenotypic Growth Data to Smooth and
         Extract Traits
 Authors@R: person("Chris","Brien", role = c("aut","cre"),

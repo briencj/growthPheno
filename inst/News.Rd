@@ -1,5 +1,15 @@
 \name{news}
 \title{News for Package growthPheno}
+
+\section{growthPheno Version 3.1.11 (2025-03-16)}{
+  \itemize{
+  \item Change the argument \code{cartId} to \code{individualId} in the functions importExcel and prepImageData.
+  \item Correct \code{RiceRaw.dat} so that it has the data for the first 12 lanes as stated in the manual entry; previously, it had the last 12 lanes.
+  \item Include the Replicate column in \code{RiceRaw.dat} and the \code{exampleData} \code{data.frame}s. Update description in the manual.
+  \item Make minor changes to \code{The Rice example} vignette.
+  \item Add \code{potIDcolumns} argument to prepImageData to bypass the generation of the factor \code{Reps} that is associated with the \code{idcolumns} argument. 
+  \item Set class of the \code{uncorrected.fit} that is a component of the \code{PSpline} object produced by smoothSpline to \code{pspfit} so can apply \code{pspfit} methods to it.
+  }}
 \section{growthPheno Version 3.1.10 (2025-01-13)}{
   \itemize{
   \item Deprecate the soft-deprecated functions fitSpline, intervalGRaverage, intervalGRdiff, intervalValueCalculate, intervalWUI, longitudinalPrime, plotLongitudinal, plotMedianDeviations, probeSmoothing, splitContGRdiff, splitSplines and splitValueCalculate.

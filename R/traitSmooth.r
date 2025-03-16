@@ -1044,6 +1044,7 @@ pSpline <- function(vars, npspline.segments, lambda = NULL, ...)
                      npspline.segments = npspline.segments, 
                      uncorrected.fit = fity)  
   class(fit.spline) <- "PSpline"
+  class(fit.spline$uncorrected.fit) <- "pspfit"
   return(fit.spline)
 }
 

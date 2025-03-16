@@ -1,7 +1,7 @@
 \name{designFactors}
 \alias{designFactors}
 \title{Adds the factors and covariates for a blocked, split-unit design}
-\description{Add the following  \code{\link{factor}}s and covariates to a date frame containing imaging data from the Plant Accelerator: Zone, xZone, SHZone, ZLane, ZMainunit, Subunit and xMainPosn. It checks that the numbers of levels of the \code{\link{factor}}s are consistent with the observed numbers of carts and observations.}
+\description{Add the following  \code{\link{factor}}s and covariates to a date frame containing imaging data from the Plant Accelerator: Zone, xZone, SHZone, ZLane, ZMainunit, Subunit and xMainPosn. It checks that the numbers of levels of the \code{\link{factor}}s are consistent with the observed numbers of individuals and measurements taken of them.}
 \usage{
 designFactors(data, insertName = NULL, designfactorMethod = "LanePosition", 
               nzones = 6, nlanesperzone = 4, 
@@ -50,7 +50,7 @@ designFactors(data, insertName = NULL, designfactorMethod = "LanePosition",
          \item cPosn: numeric for the Positions within a Lane, centred by subtracting the mean of the unique Positions}
 }
 \details{
-The \code{\link{factor}}s Zone, ZLane, ZMainunit and Subunit are derived for each Smarthouse based on the values of \code{nzones}, \code{nlanesperzone}, \code{nmainunitsperlane}, \code{nsubunitspermain}, Zone being the blocks in the split-unit design. Thus, the number of carts in each Smarthouse must be the product of these values and the number of observations must be the product of the numbers of smarthouse, carts and imagings for each cart. If this is not the case, it may be able to be achieved by including in \code{data} rows for extra observations that have values for the Snapshot.ID.Tag, Smarthouse, Lane, Position and Time.after.Planting..d. and the remaining columns for these rows have missing values (\code{NA}) Then SHZone is formed by combining Smarthouse and Zone and the covariates cZone, cMainPosn and cPosn calculated. The covariate cZone is calculated from Zone and cMainPosn is formed from the mean of cPosn for each main plot.
+The \code{\link{factor}}s Zone, ZLane, ZMainunit and Subunit are derived for each Smarthouse based on the values of \code{nzones}, \code{nlanesperzone}, \code{nmainunitsperlane}, \code{nsubunitspermain}, Zone being the blocks in the split-unit design. Thus, the number of individuals in each Smarthouse must be the product of these values and the number of observations must be the product of the numbers of smarthouse, indviduals and imagings for each individual. If this is not the case, it may be able to be achieved by including in \code{data} rows for extra observations that have values for the Snapshot.ID.Tag, Smarthouse, Lane, Position and Time.after.Planting..d. and the remaining columns for these rows have missing values (\code{NA}) Then SHZone is formed by combining Smarthouse and Zone and the covariates cZone, cMainPosn and cPosn calculated. The covariate cZone is calculated from Zone and cMainPosn is formed from the mean of cPosn for each main plot.
 }
 \author{Chris Brien}
 \examples{
