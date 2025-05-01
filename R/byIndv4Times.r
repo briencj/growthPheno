@@ -147,7 +147,7 @@
     data <- data[,-match(times.diffs, names(data))]
   if (any(responses.GR %in% names(data)))
     data <- data[,-match(responses.GRs, names(data))]
-  data <- merge(data, tmp, by = c(individuals, times), sort = FALSE, all.x = TRUE)
+  data <- left_join(data, tmp, by = c(individuals, times))
   data  <- data[do.call(order, data),]
   return(data)
 }

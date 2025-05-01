@@ -132,17 +132,17 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
       { 
         for (k in 1:length(suffices.intvl))
         { 
-          indv.dat <- merge(indv.dat, 
-                            byIndv4Intvl_GRsDiff(data = data, responses = r, 
-                                                 individuals = individuals, times = times, 
-                                                 which.rates = grates,
-                                                 suffices.rates = suffices.growth.rates, 
-                                                 sep.rates = sep.growth.rates, 
-                                                 start.time = starts.intvl[k], 
-                                                 end.time = stops.intvl[k], 
-                                                 suffix.interval = suffices.intvl[k], 
-                                                 sep.suffix.interval = sep.suffix.times),
-                            by = individuals, sort = FALSE)
+          indv.dat <- left_join(indv.dat, 
+                                byIndv4Intvl_GRsDiff(data = data, responses = r, 
+                                                     individuals = individuals, times = times, 
+                                                     which.rates = grates,
+                                                     suffices.rates = suffices.growth.rates, 
+                                                     sep.rates = sep.growth.rates, 
+                                                     start.time = starts.intvl[k], 
+                                                     end.time = stops.intvl[k], 
+                                                     suffix.interval = suffices.intvl[k], 
+                                                     sep.suffix.interval = sep.suffix.times),
+                                by = individuals)
         }
       }
     } else # derivatives
@@ -157,25 +157,25 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
       { 
         for (k in 1:length(suffices.intvl))
         { 
-          indv.dat <- merge(indv.dat, 
-                            byIndv4Intvl_GRsAvg(data = data, responses = r, 
-                                                individuals = individuals, times = times, 
-                                                which.rates = grates,
-                                                suffices.rates = suffices.growth.rates, 
-                                                sep.rates = sep.growth.rates, 
-                                                start.time = starts.intvl[k], 
-                                                end.time = stops.intvl[k], 
-                                                suffix.interval = suffices.intvl[k], 
-                                                sep.suffix.interval = sep.suffix.times,
-                                                sep.levels = "_"),
-                            by = individuals, sort = FALSE)
+          indv.dat <- left_join(indv.dat, 
+                                byIndv4Intvl_GRsAvg(data = data, responses = r, 
+                                                    individuals = individuals, times = times, 
+                                                    which.rates = grates,
+                                                    suffices.rates = suffices.growth.rates, 
+                                                    sep.rates = sep.growth.rates, 
+                                                    start.time = starts.intvl[k], 
+                                                    end.time = stops.intvl[k], 
+                                                    suffix.interval = suffices.intvl[k], 
+                                                    sep.suffix.interval = sep.suffix.times,
+                                                    sep.levels = "_"),
+                                by = individuals)
         }
       }
     }
   }
   
   ### Get the water traits
-  if (!is.allnull(water.use4intvl.traits) && !is.allnull(responses4water))
+  if (!is.allnull(water.use4intvl.traits))
   {
     # suffix.rate <- "R"
     # if (grepl(".", water.use4intvl.traits, fixed = TRUE))
@@ -183,9 +183,11 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
     # suffix.index <- "I"
     # if (grepl(".", water.use4intvl.traits, fixed = TRUE))
     #   suffix.index <- ".Index"
-    if (length(water.use4intvl.traits) > 1 && length(responses4water) > 1)
+    if ("WUI" %in% water.trait.types && is.allnull(responses4water))
+      stop("responses4water is NULL and so cannot calculate WUI")
+    if (is.allnull(responses4water) || (length(water.use4intvl.traits) > 1 && length(responses4water) > 1))
     {
-      if (length(water.use4intvl.traits) != length(responses4water))
+      if (!is.allnull(responses4water) && (length(water.use4intvl.traits) != length(responses4water)))
         stop(paste0("If both water.use4intvl.traits and responses4water contain multiple values, the number must be the same so that ",
                     "they can be processed in parallel"))
       #Process water.use4intvl.traits and responses4water in parallel
@@ -193,21 +195,21 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
       { 
         for (k in 1:length(suffices.intvl))
         { 
-          indv.dat <- merge(indv.dat, 
-                            byIndv4Intvl_WaterUse(data = data, 
-                                                  water.use = water.use4intvl.traits[i], 
-                                                  responses = responses4water[i], 
-                                                  individuals = individuals, times = times, 
-                                                  trait.types = water.traits,
-                                                  suffix.rate = suffix.water.rate, 
-                                                  suffix.index = suffix.water.index, 
-                                                  sep.water.traits = sep.water.traits, 
-                                                  sep.responses = sep.growth.rates, 
-                                                  start.time = starts.intvl[k], 
-                                                  end.time = stops.intvl[k], 
-                                                  suffix.interval = suffices.intvl[k], 
-                                                  sep.suffix.interval = sep.suffix.times),
-                            by = individuals, sort = FALSE)
+          indv.dat <- left_join(indv.dat, 
+                                byIndv4Intvl_WaterUse(data = data, 
+                                                      water.use = water.use4intvl.traits[i], 
+                                                      responses = responses4water[i], 
+                                                      individuals = individuals, times = times, 
+                                                      trait.types = water.traits,
+                                                      suffix.rate = suffix.water.rate, 
+                                                      suffix.index = suffix.water.index, 
+                                                      sep.water.traits = sep.water.traits, 
+                                                      sep.responses = sep.growth.rates, 
+                                                      start.time = starts.intvl[k], 
+                                                      end.time = stops.intvl[k], 
+                                                      suffix.interval = suffices.intvl[k], 
+                                                      sep.suffix.interval = sep.suffix.times),
+                                by = individuals)
         }
       }
     } else
@@ -219,20 +221,20 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
         { 
           for (k in 1:length(suffices.intvl))
           { 
-            indv.dat <- merge(indv.dat, 
-                              byIndv4Intvl_WaterUse(data = data, 
-                                                    water.use = w, responses = r, 
-                                                    individuals = individuals, times = times, 
-                                                    trait.types = water.traits,
-                                                    suffix.rate = suffix.water.rate, 
-                                                    suffix.index = suffix.water.index, 
-                                                    sep.water.traits = sep.water.traits, 
-                                                    sep.responses = sep.growth.rates, 
-                                                    start.time = starts.intvl[k], 
-                                                    end.time = stops.intvl[k], 
-                                                    suffix.interval = suffices.intvl[k], 
-                                                    sep.suffix.interval = sep.suffix.times),
-                              by = individuals, sort = FALSE)
+            indv.dat <- left_join(indv.dat, 
+                                  byIndv4Intvl_WaterUse(data = data, 
+                                                        water.use = w, responses = r, 
+                                                        individuals = individuals, times = times, 
+                                                        trait.types = water.traits,
+                                                        suffix.rate = suffix.water.rate, 
+                                                        suffix.index = suffix.water.index, 
+                                                        sep.water.traits = sep.water.traits, 
+                                                        sep.responses = sep.growth.rates, 
+                                                        start.time = starts.intvl[k], 
+                                                        end.time = stops.intvl[k], 
+                                                        suffix.interval = suffices.intvl[k], 
+                                                        sep.suffix.interval = sep.suffix.times),
+                                  by = individuals)
           }
         }
       }
@@ -254,17 +256,17 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
     {  ### Rates for specific intervals from the smoothed data by differencing
       for (r in responses4overall.rates)
       { 
-        indv.dat <- merge(indv.dat, 
-                          byIndv4Intvl_GRsDiff(data = data, responses = r, 
-                                               individuals = individuals, times = times, 
-                                               which.rates = grates, 
-                                               suffices.rates = suffices.growth.rates, 
-                                               sep.rates = sep.growth.rates, 
-                                               start.time = intvl.overall[1], 
-                                               end.time = intvl.overall[2], 
-                                               suffix.interval = suffix.overall, 
-                                               sep.suffix.interval = sep.suffix.times),
-                          by = individuals, sort = FALSE)
+        indv.dat <- left_join(indv.dat, 
+                              byIndv4Intvl_GRsDiff(data = data, responses = r, 
+                                                   individuals = individuals, times = times, 
+                                                   which.rates = grates, 
+                                                   suffices.rates = suffices.growth.rates, 
+                                                   sep.rates = sep.growth.rates, 
+                                                   start.time = intvl.overall[1], 
+                                                   end.time = intvl.overall[2], 
+                                                   suffix.interval = suffix.overall, 
+                                                   sep.suffix.interval = sep.suffix.times),
+                              by = individuals)
       }
     } else # derivatives
     {
@@ -276,25 +278,25 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
              " is/are not in data as is required for the ratesaverages option")
       for (r in responses4overall.rates)
       { 
-        indv.dat <- merge(indv.dat, 
-                          byIndv4Intvl_GRsAvg(data = data, responses = r, 
-                                              individuals = individuals, times = times, 
-                                              which.rates = grates,
-                                              suffices.rates = suffices.growth.rates, 
-                                              sep.rates = sep.growth.rates, 
-                                              start.time = intvl.overall[1], 
-                                              end.time = intvl.overall[2], 
-                                              suffix.interval = suffix.overall, 
-                                              sep.suffix.interval = sep.suffix.times,
-                                              sep.levels = "_"),
-                          by = individuals, sort = FALSE)
+        indv.dat <- left_join(indv.dat, 
+                              byIndv4Intvl_GRsAvg(data = data, responses = r, 
+                                                  individuals = individuals, times = times, 
+                                                  which.rates = grates,
+                                                  suffices.rates = suffices.growth.rates, 
+                                                  sep.rates = sep.growth.rates, 
+                                                  start.time = intvl.overall[1], 
+                                                  end.time = intvl.overall[2], 
+                                                  suffix.interval = suffix.overall, 
+                                                  sep.suffix.interval = sep.suffix.times,
+                                                  sep.levels = "_"),
+                              by = individuals)
       }
     }
   }
   
   
   ### Get the overall water traits
-  if (!is.allnull(water.use4overall.water) && !is.allnull(responses4overall.water))
+  if (!is.allnull(water.use4overall.water))
   {
     # suffix.rate <- "R"
     # if (grepl(".", water.use, fixed = TRUE))
@@ -304,28 +306,33 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
     #   suffix.index <- ".Index"
     if (is.allnull(intvl.overall))
       stop("No times available for overall traits")
-    if (length(water.use4overall.water) > 1 && length(responses4overall.water) > 1)
+    if ("WUI" %in% water.trait.types && is.allnull(responses4overall.water))
+      stop("responses4overall.water is NULL and so cannot calculate WUI")
+    if (is.allnull(responses4overall.water) || 
+        (length(water.use4overall.water) > 1 && length(responses4overall.water) > 1))
     {
-      if (length(water.use4overall.water) != length(responses4overall.water))
+      if (!is.allnull(responses4overall.water) && 
+          (length(water.use4overall.water) != length(responses4overall.water)))
         stop(paste0("If both water.use4overall.water and overallresponses.water contain multiple values, the number must be the same so that ",
                     "they can be processed in parallel"))
       #Process water.use and responses.water in parallel
       for (i in 1:length(water.use4overall.water))
       { 
-        indv.dat <- merge(indv.dat, 
-                          byIndv4Intvl_WaterUse(data = data, 
-                                                water.use = water.use4overall.water[i], responses = responses4overall.water[i], 
-                                                individuals = individuals, times = times, 
-                                                trait.types = water.traits,
-                                                suffix.rate = suffix.water.rate, 
-                                                suffix.index = suffix.water.index, 
-                                                sep.water.traits = sep.water.traits, 
-                                                sep.responses = sep.growth.rates, 
-                                                start.time = intvl.overall[1], 
-                                                end.time = intvl.overall[2], 
-                                                suffix.interval = suffix.overall, 
-                                                sep.suffix.interval = sep.suffix.times),
-                          by = individuals, sort = FALSE)
+        indv.dat <- left_join(indv.dat, 
+                              byIndv4Intvl_WaterUse(data = data, 
+                                                    water.use = water.use4overall.water[i], 
+                                                    responses = responses4overall.water[i], 
+                                                    individuals = individuals, times = times, 
+                                                    trait.types = water.traits,
+                                                    suffix.rate = suffix.water.rate, 
+                                                    suffix.index = suffix.water.index, 
+                                                    sep.water.traits = sep.water.traits, 
+                                                    sep.responses = sep.growth.rates, 
+                                                    start.time = intvl.overall[1], 
+                                                    end.time = intvl.overall[2], 
+                                                    suffix.interval = suffix.overall, 
+                                                    sep.suffix.interval = sep.suffix.times),
+                              by = individuals)
       }
     } else
     {
@@ -334,19 +341,19 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
       {     
         for (r in responses4overall.water)
         { 
-          indv.dat <- merge(indv.dat, 
-                            byIndv4Intvl_WaterUse(data = data, 
-                                                  water.use = w, responses = r, 
-                                                  individuals = individuals, times = times, 
-                                                  trait.types = water.traits,
-                                                  suffix.rate = suffix.water.rate, 
-                                                  sep.water.traits = sep.water.traits, 
-                                                  suffix.index = suffix.water.index, 
-                                                  start.time = intvl.overall[1], 
-                                                  end.time = intvl.overall[2], 
-                                                  suffix.interval = suffix.overall, 
-                                                  sep.suffix.interval = sep.suffix.times),
-                            by = individuals, sort = FALSE)
+          indv.dat <- left_join(indv.dat, 
+                                byIndv4Intvl_WaterUse(data = data, 
+                                                      water.use = w, responses = r, 
+                                                      individuals = individuals, times = times, 
+                                                      trait.types = water.traits,
+                                                      suffix.rate = suffix.water.rate, 
+                                                      sep.water.traits = sep.water.traits, 
+                                                      suffix.index = suffix.water.index, 
+                                                      start.time = intvl.overall[1], 
+                                                      end.time = intvl.overall[2], 
+                                                      suffix.interval = suffix.overall, 
+                                                      sep.suffix.interval = sep.suffix.times),
+                                by = individuals)
         }
       }
     }
@@ -357,15 +364,16 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
   {
     for (r in responses4overall.totals)
     { 
-      indv.dat <- merge(indv.dat, 
-                        byIndv4Intvl_ValueCalc(data = data, 
-                                               response = r, 
-                                               individuals = individuals, times = times, 
-                                               FUN = "sum", addFUN2name = FALSE, 
-                                               start.time = intvl.overall[1], 
-                                               end.time = intvl.overall[2], 
-                                               suffix.interval = suffix.overall, 
-                                               sep.suffix.interval = sep.suffix.times))
+      indv.dat <- left_join(indv.dat, 
+                            byIndv4Intvl_ValueCalc(data = data, 
+                                                   response = r, 
+                                                   individuals = individuals, times = times, 
+                                                   FUN = "sum", addFUN2name = FALSE, 
+                                                   start.time = intvl.overall[1], 
+                                                   end.time = intvl.overall[2], 
+                                                   suffix.interval = suffix.overall, 
+                                                   sep.suffix.interval = sep.suffix.times),
+                            by = individuals)
     }
   }
   
@@ -374,15 +382,15 @@ traitExtractFeatures <- function(data, individuals = "Snapshot.ID.Tag", times = 
   {
     for (r in responses4overall.max)
     { 
-      indv.dat <- merge(indv.dat, 
-                        byIndv4Intvl_ValueCalc(data = data, 
-                                               response = r, 
-                                               individuals = individuals, times = times, 
-                                               FUN = "max", which.obs = FALSE, which.values = times, 
-                                               start.time = intvl.overall[1], 
-                                               end.time = intvl.overall[2], 
-                                               suffix.interval = NULL),
-                        by = individuals, sort = FALSE)
+      indv.dat <- left_join(indv.dat, 
+                            byIndv4Intvl_ValueCalc(data = data, 
+                                                   response = r, 
+                                                   individuals = individuals, times = times, 
+                                                   FUN = "max", which.obs = FALSE, which.values = times, 
+                                                   start.time = intvl.overall[1], 
+                                                   end.time = intvl.overall[2], 
+                                                   suffix.interval = NULL),
+                            by = individuals)
     }
   }
 

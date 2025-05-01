@@ -272,6 +272,21 @@ test_that("tomato_traitExtractFeatures", {
                                                          "PSA.AGR","PSA.RGR","sPSA.AGR","sPSA.RGR","WU","WUR","PSA.WUI",
                                                          "sWU","sWUR","sPSA.sWUI")))
 
+  #'## Extract water traits only
+  indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
+                                   starts.intvl = DAP.starts, stops.intvl = DAP.stops, 
+                                   water.trait.types = "WU",
+                                   water.use4intvl.traits = c("WU","sWU"), 
+                                   water.use4overall.water = c("WU","sWU"), 
+                                   intvl.overall = c(18,51), suffix.overall = "total",
+                                   mergedata = indv.ini)
+  testthat::expect_equal(nrow(indv.dat), 32)
+  testthat::expect_equal(ncol(indv.dat), 7 + (2*6) + 2) #91
+  suffs <- paste(DAP.starts, DAP.stops, sep = "to")
+  testthat::expect_true(all(names(indv.dat)[-(1:7)] == c(as.vector(outer("WU", suffs, paste, sep = ".")),
+                                                         as.vector(outer("sWU", suffs, paste, sep = ".")),
+                                                         "WU.total","sWU.total")))
+  
   #'## Extract single-valued unsmoothed and smoothed traits in parallel for each individual with "_" separator
   indv.dat <- traitExtractFeatures(data = tom.dat, times = "DAP", 
                                    starts.intvl = DAP.starts, stops.intvl = DAP.stops, 

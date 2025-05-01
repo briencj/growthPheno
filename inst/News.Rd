@@ -1,6 +1,10 @@
 \name{news}
 \title{News for Package growthPheno}
 
+\section{growthPheno Version 3.1.12 (2025-05-01)}{
+  \itemize{
+  \item Fix bug in traitExtractFeatures that did not allow the exttraction of water traits WU and WUI with responses4water or responses4overall.water set to the default of \code{NULL}.
+  }}
 \section{growthPheno Version 3.1.11 (2025-03-16)}{
   \itemize{
   \item Change the argument \code{cartId} to \code{individualId} in the functions importExcel and prepImageData.

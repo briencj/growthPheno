@@ -66,6 +66,7 @@ export(AGRdiff,
        validSmoothsFrame,
        WUI)
 import(dae, ggplot2, readxl, RColorBrewer)
+importFrom(dplyr, left_join, full_join, inner_join, right_join)
 importFrom(GGally, ggally_cor, ggpairs, putPlot, wrap)
 importFrom(grDevices, boxplot.stats)
 importFrom(Hmisc, rcorr)
