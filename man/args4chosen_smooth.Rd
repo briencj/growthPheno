@@ -3,14 +3,15 @@
 \title{Creates a \code{list} of the values for the smoothing parameters for 
              which a smooth is to be extracted}
 \description{Creates a \code{\link{list}} of the values for the smoothing parameters for 
-             which a smooth is to be extracted. 
+             which a single smooth is to be extracted. 
              The default settings for these are optimized for \code{\link{traitSmooth}}.}
 \usage{
 args4chosen_smooth(smoothing.methods = "logarithmic", 
                    spline.types = "PS", 
                    df = NULL, 
                    lambdas = NULL,
-                   combinations = "single")}
+                   combinations = "single", 
+                   ...)}
 \arguments{
  \item{smoothing.methods}{A \code{\link{character}} giving the smoothing method 
       for the chosen smooth. The two possibilites are (i) \code{"direct"}, for directly 
@@ -24,10 +25,11 @@ args4chosen_smooth(smoothing.methods = "logarithmic",
       numbers of degrees of freedom of the chosen smooth (trace of the smoother matrix). 
       Lower values result in more smoothing. }
  \item{lambdas}{A named \code{\link{list}} or a \code{\link{numeric}} specifying 
-      the positive penalties for which the chosen smooth is required.}
+      the single positive value of the penalty for which the chosen smooth is required.}
  \item{combinations}{Generally, this argument should be set to \code{single} so that 
-      ony one value should be supplied to the functions arguments. Also, only one of 
+      only one value should be supplied to the functions arguments. Also, only one of 
       \code{df} or \code{lambdas} should be set.}
+ \item{...}{allows arguments to be passed to other functions; not used at present.}
 } 
 \value{A named \code{\link{list}}.}
 \author{Chris Brien}

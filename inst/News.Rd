@@ -1,6 +1,10 @@
 \name{news}
 \title{News for Package growthPheno}
 
+\section{growthPheno Version 3.1.13 (2025-07-22)}{
+  \itemize{
+  \item Add ellipsis to args4chosen_smooth and a check for other than valid args4chosen_smooth arguments.
+  }}
 \section{growthPheno Version 3.1.12 (2025-05-01)}{
   \itemize{
   \item Fix bug in traitExtractFeatures that did not allow the exttraction of water traits WU and WUI with responses4water or responses4overall.water set to the default of \code{NULL}.

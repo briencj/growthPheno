@@ -336,8 +336,12 @@ args4chosen_smooth <- function(smoothing.methods = "logarithmic",
                                spline.types = "PS", 
                                df = NULL, 
                                lambdas = NULL,
-                               combinations = "single")
+                               combinations = "single", 
+                               ...)
 {
+  inargs <- list(...)
+  checkEllipsisArgs("args4chosen_smooth", inargs)
+  
   options <- c("single")
   comb.opt <- options[check.arg.values(combinations, options=options)]
   if (comb.opt != "single")

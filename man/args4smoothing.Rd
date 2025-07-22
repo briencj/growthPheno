@@ -50,7 +50,7 @@
       \code{\link{numeric}}, then it will be converted to a \code{\link{list}} 
       with the single component named \code{PS}.}
  \item{smoothing.segments}{A named \code{\link{list}}, each of whose components 
-      is a numeric pair specifying the first and last values of an 
+      is a two-element numeric specifying the first and last values of an 
       \code{times}-interval whose data is to be subjected as an entity to smoothing 
       using splines. The separate smooths will be combined to form a whole 
       smooth for each individual. If \code{get.rates} includes \code{smoothed} 
@@ -144,6 +144,11 @@
 args4smoothing(smoothing.methods = "direct", 
                spline.types = "NCSS", df = NULL, lambdas = NULL, 
                smoothing.segments = NULL, npspline.segments = NULL, 
+               combinations = "allvalid")
+args4smoothing(smoothing.methods = "direct", 
+               spline.types = "NCSS", df = NULL, lambdas = NULL, 
+               smoothing.segments = list(c(11,20), c(21, 42)), 
+               npspline.segments = NULL, 
                combinations = "allvalid")
 args4smoothing(smoothing.methods = c("log","dir","log"), 
                spline.types = c("NCSS","NCSS","PS"), 
