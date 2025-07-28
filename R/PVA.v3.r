@@ -276,8 +276,8 @@
 #Functions to calculate and plot correlation matrices for a set of responses,
 "plotCorrmatrix" <- function(data, responses, which.plots = c("heatmap","matrixplots"), 
                              title = NULL, labels = NULL, labelSize = 4, pairs.sets = NULL, 
-                             show.sig = TRUE, axis.text.size = 20, ggplotFuncs = NULL, 
-                             printPlot = TRUE, ...)
+                             show.sig = TRUE, cell.text.size = 12, axis.text.size = 20, 
+                             ggplotFuncs = NULL, printPlot = TRUE, ...)
 { 
   #Check responses in data
   if (!all(responses %in% names(data)))
@@ -345,9 +345,15 @@
                                           ifelse(p > 0.01, paste0(round(r, 2), "(*)"),
                                                  ifelse(p > 0.001, paste0(round(r, 2), "(**)"),
                                                         paste0(round(r, 2), "(***)"))))))
-      plt <- plt + geom_text(data=corr, aes(label=sig), size=3)
+      plt <- plt + geom_text(data=corr, 
+                             aes(label=sig), 
+                             size=30.75*cell.text.size, 
+                             size.unit = "pt")
     } else
-      plt <- plt + geom_text(data=corr, aes(label=round(r, 2)), size=4)
+      plt <- plt + geom_text(data=corr, 
+                             aes(label=round(r, 2)), 
+                             size=cell.text.size, 
+                             size.unit = "pt")
     
     if (!is.null(ggplotFuncs))
     {

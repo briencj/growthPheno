@@ -1,6 +1,10 @@
 \name{news}
 \title{News for Package growthPheno}
 
+\section{growthPheno Version 3.1.14 (2025-07-25)}{
+  \itemize{
+  \item Add \code{cell.text.size} argument to plotCorrmatrix.
+  }}
 \section{growthPheno Version 3.1.13 (2025-07-22)}{
   \itemize{
   \item Add ellipsis to args4chosen_smooth and a check for other than valid args4chosen_smooth arguments.

@@ -14,8 +14,8 @@
 \usage{
 plotCorrmatrix(data, responses, which.plots = c("heatmap","matrixplots"), 
                title = NULL, labels = NULL, labelSize = 4, pairs.sets = NULL, 
-               show.sig = TRUE, axis.text.size = 20, ggplotFuncs = NULL, 
-               printPlot = TRUE, ...)
+               show.sig = TRUE, cell.text.size = 12, axis.text.size = 20, 
+               ggplotFuncs = NULL, printPlot = TRUE, ...)
 }
 \arguments{
  \item{data}{A \code{\link{data.frame}} containing the columns of variables to be correlated.}
@@ -36,6 +36,8 @@ plotCorrmatrix(data, responses, which.plots = c("heatmap","matrixplots"),
  \item{show.sig}{A \code{\link{logical}} indicating whetherto give asterisks on the 
                  \code{heatmap} and \code{matrixplots} that indicate that the correlations are 
                  significantly different from zero.}
+ \item{cell.text.size}{A \code{\link{numeric}} giving the size of the text in the cells of the 
+                  \code{heatmap}.}
  \item{axis.text.size}{A \code{\link{numeric}} giving the size of the \code{labels} on the axes   
                   of the \code{heatmap}.}
  \item{ggplotFuncs}{A \code{list}, each element of which contains the 
