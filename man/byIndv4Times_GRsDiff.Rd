@@ -1,7 +1,7 @@
 \name{byIndv4Times_GRsDiff}
 \alias{byIndv4Times_GRsDiff}
-\title{Adds, to a \code{data.frame}, the growth rates calculated for consecutive times 
-       for individuals in a \code{data.frame} in long format by differencing 
+\title{Adds to a \code{data.frame}, the growth rates calculated for consecutive times 
+       for individuals in the \code{data.frame} in long format by differencing 
        response values.}
 \description{Uses \code{\link{AGRdiff}}, \code{\link{PGR}} and 
              \code{\link{RGRdiff}} to calculate growth rates continuously 
@@ -54,7 +54,7 @@ byIndv4Times_GRsDiff(data, responses,
              value in constructing the name for a new rate. For no separator, 
              set to \code{""}.}
  \item{avail.times.diffs}{A \code{\link{logical}} indicating whether there is an 
-             appropriate column of \code{times} diffserences that can be used as 
+             appropriate column of \code{times} differences that can be used as 
              the denominator in computing the growth rates. If \code{TRUE}, it will 
              be assumed that the name of the column is the value of  \code{times} 
              with \code{.diffs} appended. If \code{FALSE}, a column, whose 

@@ -1,6 +1,12 @@
 \name{news}
 \title{News for Package growthPheno}
 
+\section{growthPheno Version 3.1.15 (2025-10-02)}{
+  \itemize{
+  \item Add function byIndv4Times_WUDiff for adding longitudinal water use traits to a data.frame and byIndv4Times_fillRates for propogating rates when the times between observatons are not equal so that there are rate values for the set of equally spaced times.
+  \item Allow calcLagged to be called with functions that have an \code{na.rm} argument.
+  \item Modify warning from smoothSpline concerning runs of three or more missing values.
+  }}
 \section{growthPheno Version 3.1.14 (2025-07-25)}{
   \itemize{
   \item Add \code{cell.text.size} argument to plotCorrmatrix.
@@ -24,7 +30,7 @@
   }}
 \section{growthPheno Version 3.1.10 (2025-01-13)}{
   \itemize{
-  \item Deprecate the soft-deprecated functions fitSpline, intervalGRaverage, intervalGRdiff, intervalValueCalculate, intervalWUI, longitudinalPrime, plotLongitudinal, plotMedianDeviations, probeSmoothing, splitContGRdiff, splitSplines and splitValueCalculate.
+  \item Deprecate the soft-deprecated functons fitSpline, intervalGRaverage, intervalGRdiff, intervalValueCalculate, intervalWUI, longitudinalPrime, plotLongitudinal, plotMedianDeviations, probeSmoothing, splitContGRdiff, splitSplines and splitValueCalculate.
   \item Modify plotCorrmatrix so that arguments \code{show.sig} and \code{printPlot} apply to the \code{matrixplots}, in addition to the \code{heatmap}. Also, arrange for the return of any plots produced in a list object.
   }}
 \section{growthPheno Version 2.1.26 (2024-08-08)}{

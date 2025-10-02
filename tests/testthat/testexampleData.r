@@ -82,7 +82,7 @@ test_that("exampleData_growthPheno", {
   #plotDeviationsBoxes
   testthat::expect_silent(  
     plotDeviationsBoxes(longi.dat, observed = "PSA", smoothed = "sPSA",
-                        x.factor="DAP", df =5))
+                        x.factor="DAP"))
 
   #probeSmooths
   vline <- list(ggplot2::geom_vline(xintercept=29, linetype="longdash", size=1))

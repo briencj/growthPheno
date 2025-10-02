@@ -249,7 +249,7 @@ plotDeviationsBoxes <- function(data, observed, smoothed, x.factor,
                                      facet.labeller = facet.labeller, 
                                      facet.scales = scales.box, 
                                      angle.x = angle.x.box,
-                                     df = degfree, ggplotFuncs = ggplotFuncsDevnBoxes,
+                                     ggplotFuncs = ggplotFuncsDevnBoxes,
                                      printPlot = printPlot)
           plts[[k]][["absolute"]][[by]] <- plt[["absolute"]]
           plts[[k]][["relative"]][[by]] <- plt[["relative"]]
@@ -1270,7 +1270,9 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0, ...)
               x.pred <- x.pred[1:y.nonmiss[length(y.nonmiss)]]
             y.nonmiss <- diff(y.nonmiss)
             if (any(y.nonmiss >= 3))
-              warning("There are runs of 3 or more contiguous y values that are missing")
+              warning(paste("smoothSpline has found runs of 3 or more contiguous", 
+                            "missing y-values - is the current na.y.action setting,", 
+                            paste0("`", na.act.y,"', appropriate?")))
           } else
             x.pred <- NULL
         }

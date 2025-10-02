@@ -1,4 +1,4 @@
-#Functions to produce values for all times for eacfh individual
+#Functions to produce values for all times for each individual
 "byIndv4Times_GRsDiff" <- function(data, responses, 
                                    individuals = "Snapshot.ID.Tag", times = "DAP", 
                                    which.rates = c("AGR","PGR","RGR"), 
@@ -119,7 +119,7 @@
       cols2move <- c(times.diffs, responses.GRs)
     else
       cols2move <- responses.GRs
-    tmp <- split(tmp, f = as.list(tmp[individuals], simplify=FALSE))
+    tmp <- split(tmp, f = as.list(tmp[individuals]))
     tmp <- lapply(tmp,
                   function(x, cols2move, nmove)
                   {
@@ -363,7 +363,7 @@
     smth <- smth[do.call(order, smth), ]
     if (rates.method == "differences" && ntimes2span == 2)
       smth <- byIndv4Times_GRsDiff(data = smth, response.smoothed, 
-                                   individuals=individuals,times=times, 
+                                   individuals = individuals, times = times, 
                                    which.rates = grates, sep.rates = sep.rates, 
                                    ntimes2span = ntimes2span, 
                                    avail.times.diffs = avail.times.diffs)
@@ -371,3 +371,281 @@
   
   return(smth)
 }
+
+
+"byIndv4Times_WaterUse" <- function(data, weight.after = "Weight.After",
+                                  weight.before = NULL, water.added = NULL, 
+                                  responseAGR = NULL, 
+                                  individuals = "Snapshot.ID.Tag", times = "DAP", 
+                                  which.trait.types = c("WU","WUR","WUI"), 
+                                  water.trait.names = c("WU", "WUR", "WUI"),  
+                                  avail.times.diffs = FALSE, 
+                                  ntimes2span = 2)
+{ 
+  options <-c("WU","WUR","WUI")
+  opt <- options[unlist(lapply(which.trait.types, check.arg.values, options=options))]
+  
+  if (all(is.null(c(weight.before, water.added))) && length(c(weight.before, water.added)) != 1)
+    stop("One and only one of weight.before and water.added must be NULL")
+  
+  if (length(which.trait.types) != length(water.trait.names))
+    stop("The lengths of which.trait.types and water.trait.names must be equal")
+
+    #Check that weight.after, weight.before, water.added, individuals and times are in data
+  vars <- c(individuals, times, weight.after, weight.before, water.added, responseAGR)
+  checkNamesInData(vars, data = data)
+  
+  #Check for time.diffs
+  times.diffs <- paste(times, "diffs", sep=".")
+  if (avail.times.diffs)
+  { 
+    if (times.diffs %in% names(data))
+      vars <- c(vars, times.diffs)
+    else
+      stop("The column ", times.diffs, ", expected to contain the times differences, is not in data")
+  } 
+  
+  tmp <- data[vars]
+  tmp <- tmp[do.call(order, tmp), ]
+  lag <- ntimes2span - 1
+  xTime <- convertTimes2numeric(tmp[[times]])
+  miss.days <- sort(unique(xTime))[1:lag]
+  
+  #time.diffs are available - check them
+  if (avail.times.diffs && 
+      !all(is.na(data[[times.diffs]][xTime %in% miss.days])))
+    stop("The times.diffs column in data does not have the appropriate missing values for the ", 
+         "inital times of each individual\n",
+         "Set avail.times.diffs to FALSE to have 'byIndv4Intvl_GRsDiff' calculate them")
+  
+  if (any(is.na(data[[times]])))
+    warning(paste("Some values of ",times,
+                  " are missing, which can result in merge producing a large data.frame", 
+                  sep = ""))
+  if (any(unlist(lapply(as.list(data[individuals]), 
+                        function(f)
+                          any(is.na(f))))))
+    warning(paste("Some values of the factors in individuals are missing, ",
+                  "which can result in merge producing a large data.frame", sep = ""))
+  
+  #Form time differences in a way that every first time is the same Time
+  # - setting first time point to missing results in the growth rates also being NA
+  if (!avail.times.diffs)
+  { 
+    #nspan (t)  2   3    4  5    6  7
+    #nmiss      1   2    3  4    5  6 = lag
+    #posn1      2   2    3  3    4  4 = ceiling((t+1)/2)
+    #(t+1)/2  1.5   2  2.5  3  3.5  4
+    #NA move    0   1    1  2    2  3 = nmiss - (posn1 -1) = floor((t+1) /2) - 1
+    
+#    tmp[times.diffs] <- calcLagged(xTime, operation ="-", lag = lag)
+    tmp[times.diffs] <- xTime - unlist(by(xTime, tmp[individuals], FUN = calcLagged))
+    
+    #Make sure that first times.diffs are NA
+    if (!all(is.na(tmp[[times.diffs]][xTime %in% miss.days])))
+      tmp[[times.diffs]][xTime %in% miss.days] <- NA
+    rownames(tmp) <- NULL
+  }
+  
+  #Calculate the water traits
+  names(water.trait.names) <- which.trait.types
+  #Form WU (because time.diffs is NA for first time, so will the growth rates)
+  tmp.indv <- split(tmp, f = as.list(tmp[individuals]))
+  WU <- lapply(tmp.indv, function(d)
+  {
+    if (is.null(water.added))
+      WU <- WU(weight.after = d[[weight.after]], weight.before = d[[weight.before]],
+               time.diffs = d[[times.diffs]], lag = lag)
+    else
+      WU <- WU(weight.after = d[[weight.after]], water.added = d[[water.added]],
+               time.diffs = d[[times.diffs]], lag = lag)
+    return(WU)
+  })
+  WU <- unsplit(WU, tmp[[individuals]])
+  WU[tmp[[times.diffs]][xTime %in% miss.days]] <- NA
+  
+  if ("WU" %in% which.trait.types)
+    tmp[water.trait.names["WU"]] <- WU
+  
+  
+  #Form WUR (because time.diffs is NA for first time, so will the growth rates)
+  if (any(c("WUR", "WUI") %in% which.trait.types))
+    WUR <- WU/tmp[[times.diffs]]
+  if ("WUR" %in% which.trait.types)
+    tmp[water.trait.names["WUR"]] <- WUR
+  
+  #Form WUI (because time.diffs is NA for first time, so will the growth rates)
+  if ("WUI" %in% which.trait.types)
+  { 
+    if (is.null(responseAGR))
+      stop("WUI is in which.trait.types, but responseAGR is NULL")
+    tmp[water.trait.names["WUI"]] <- WUI(tmp[[responseAGR]], WUR)
+  }
+  
+  #Reposition the GRs, if necessary
+  nmove <- floor((ntimes2span+1) /2) - 1
+  if (nmove > 0)
+  {
+    if (!avail.times.diffs)
+      cols2move <- c(times.diffs, water.trait.names)
+    else
+      cols2move <- water.trait.names
+    tmp <- split(tmp, f = as.list(tmp[individuals]))
+    tmp <- lapply(tmp,
+                  function(x, cols2move, nmove)
+                  {
+                    x[cols2move] <- x[c((nmove+1):nrow(x), 1:nmove), cols2move]
+                    return(x)
+                  },
+                  cols2move = cols2move, nmove = nmove)
+    tmp <- do.call(rbind, tmp)
+  }
+  
+  #Remove NAs in individuals and time.factor in tmp
+  if (any(is.na(tmp[[times]])))
+    tmp <- tmp[!is.na(tmp[[times]]), ]
+  if (any(unlist(lapply(as.list(tmp[individuals]), 
+                        function(f)
+                          any(is.na(f))))))
+    for (f in individuals)
+      tmp <- tmp[!is.na(tmp[f]),]
+  #Keep times.diffs in data if they were used
+  if (avail.times.diffs)
+    tmp <- tmp[,-match(times.diffs, names(tmp))]
+  #Remove unused times.diffs from data so time.diffs used are added from tmp
+  if (!avail.times.diffs && times.diffs %in% names(data))
+    data <- data[,-match(times.diffs, names(data))]
+  if (any(water.trait.names %in% names(data)))
+    data <- data[,-na.omit(match(water.trait.names, names(data)))]
+  data <- dplyr::left_join(data, tmp, by = intersect(names(tmp), names(data)))
+  data  <- data[do.call(order, data),]
+  return(data)
+}
+
+##### I need to check that get missing values at the start of each Snapshot.ID.Tag.
+"byIndv4Times_fillRates" <- function(data, responses = NULL, 
+                                     individuals = "Snapshot.ID.Tag", times = "DAP", 
+                                     avail.times.diffs = FALSE, 
+                                     ntimes2span = 2)
+{ 
+  #Check that responses, individuals, times and, if avail.times.diffs == TRUE, tims.diffs are in data
+  times.diffs <- paste(times, "diffs", sep=".")
+  vars <- c(individuals, times, responses)
+  if (avail.times.diffs) 
+    vars <- c(vars, times.diffs)
+  checkNamesInData(vars, data = data)
+  
+  tmp <- data[vars]
+  tmp <- tmp[do.call(order, tmp), ]
+  lag <- ntimes2span - 1
+  xTim <- convertTimes2numeric(tmp[[times]])
+  miss.days <- sort(unique(xTim))[1:lag]
+  
+  #time.diffs are available - check them
+  if (avail.times.diffs && 
+      !all(is.na(data[[times.diffs]][xTim %in% miss.days])))
+    stop("The times.diffs column in data does not have the appropriate missing values for the ", 
+         "inital times of each individual\n",
+         "Set avail.times.diffs to FALSE to have 'byIndv4Intvl_GRsDiff' calculate them")
+  
+  if (any(is.na(data[[times]])))
+    warning(paste("Some values of ",times,
+                  " are missing, which can result in merge producing a large data.frame", 
+                  sep = ""))
+  if (any(unlist(lapply(as.list(data[individuals]), 
+                        function(f)
+                          any(is.na(f))))))
+    warning(paste("Some values of the factors in individuals are missing, ",
+                  "which can result in merge producing a large data.frame", sep = ""))
+  
+  #Form time differences in a way that every first time is the same Time
+  # - setting first time point to missing results in the growth rates also being NA
+  if (!avail.times.diffs)
+  { 
+    #nspan (t)  2   3    4  5    6  7
+    #nmiss      1   2    3  4    5  6 = lag
+    #posn1      2   2    3  3    4  4 = ceiling((t+1)/2)
+    #(t+1)/2  1.5   2  2.5  3  3.5  4
+    #NA move    0   1    1  2    2  3 = nmiss - (posn1 -1) = floor((t+1) /2) - 1
+    d <- cbind(tmp, xTim)
+    indv <- as.list(d[individuals])
+    d <- split(d, indv)
+    d <- lapply(d, 
+                function(df)
+                {  
+                  df[times.diffs] <- calcLagged(df[["xTim"]], operation ="-", lag = lag)
+                  return(df)
+                })
+    tmp <- unsplit(d, indv)
+    
+    #Make sure that first times.diffs are NA
+    if (!all(is.na(tmp[[times.diffs]][xTim %in% miss.days])))
+      tmp[[times.diffs]][xTim %in% miss.days] <- NA
+    rownames(tmp) <- NULL
+  }
+  
+  #Check whether there are unequal time.diffs and equalization of time diffs with propagation of WUR is required
+  if (all(tmp[times.diffs][!is.na(tmp[times.diffs])] == min(tmp[times.diffs], na.rm = TRUE)))
+    warning("All time differences are equal for ", times, "; no action taken.")
+  else #have unequal time diffs
+  {
+    min.time.diff <- min(tmp[[times.diffs]], na.rm = TRUE)
+    min.time <- min(xTim, na.rm = TRUE)
+    max.time <- max(xTim, na.rm = TRUE)
+    xtimes <- seq(min.time, max.time, by = min.time.diff)
+    indv <- levels(factor(tmp[[individuals]]))
+    #    full.dat <- dae::rep.data.frame(data.frame(xtimes = xtimes), times = length(nindv))
+    full.dat <- data.frame()
+    full.dat <- data.frame(xTimes = rep(xtimes, times = length(indv)))
+    full.dat <- cbind(dae::fac.gen(list(individ = indv), each = length(xtimes)), full.dat)
+    if (is.factor(tmp[[times]]))
+    { 
+      full.dat[times] <- factor(full.dat$xTimes)
+      names(full.dat)[c(1,3)] <- c(individuals, times)
+      xtimes <- "xTimes"
+    } else
+    {
+      names(full.dat) <- c(individuals, times)
+      xtimes <- times
+    }
+    full.dat <- dplyr::left_join(full.dat, tmp, by = c(individuals, times))
+    #Now propagate Rates for DAP.diffs neq min.time.diff - needs to be done independently for each indvidual 
+    indv.full <- as.list(full.dat[individuals])
+    full1 <- split(full.dat, indv.full)
+    propagateRates <- function(df, t, responses) 
+    {
+      time <- df[[xtimes]][t]
+      time.diff <- df[[times.diffs]][t]
+      to <- seq((time-(time.diff-1)), time-1, by = min.time.diff)
+      for (kresp in responses)
+      {
+        df[[kresp]][df[[times]] %in% to] <- df[[kresp]][df[[xtimes]] == time]
+        return(df)
+      }
+    }
+    
+    f1 <- mapply(function(full)
+    {
+      if (any(full[times.diffs] > min.time.diff))
+      {
+        which.bigger <- which(full[times.diffs] > min.time.diff )
+        for (t in which.bigger)
+        {
+          full <- propagateRates(full, t, responses) 
+        }
+      }
+      return(full)
+    }, full = full1, SIMPLIFY = FALSE)
+    full.dat <- unsplit(f1, indv.full)
+    full.dat <- full.dat[vars]
+    data <- data[, -match(responses, names(data))]
+    full.dat <- dplyr::left_join(full.dat[vars], data, by = c(individuals, times))
+    # full.dat[times] <- fac.recast(full.dat[[times]], 
+    #                               levels.order = sort(levels(full.dat[[times]])))
+    # full.dat <- full.dat[order(full.dat[[individuals]],full.dat[[times]]), ]
+    full.dat <- full.dat[c(setdiff(names(full.dat), responses), responses)]
+  }
+  return(full.dat)
+}
+
+

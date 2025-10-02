@@ -1,6 +1,6 @@
 \name{byIndv4Intvl_WaterUse}
 \alias{byIndv4Intvl_WaterUse}
-\title{Calculates, water use traits (WU, WUR, WUI) over a specified time interval 
+\title{Calculates water use traits (WU, WUR, WUI) over a specified time interval 
        for each individual in a \code{data.frame} in long format.}
 \description{Calculates one or more of water use (WU), water use rate (WUR), and, 
        for a set of responses,  water use indices (WUI)s over a specified time 

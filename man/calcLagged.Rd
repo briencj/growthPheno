@@ -10,7 +10,7 @@
              \code{lag} the last \code{lag} values will be \code{NA}. 
              When \code{operation} is \code{NULL}, the values are moved 
                   \code{lag} positions down the vector.}
-\usage{calcLagged(x, operation = NULL, lag = 1)
+\usage{calcLagged(x, operation = NULL, lag = 1, ...)
 }
 \arguments{
  \item{x}{A \code{\link{vector}} containing the values on which the calculations are to be made.}
@@ -19,6 +19,7 @@
                   \code{lag} positions down the vector.}
  \item{lag}{A \code{integer} specifying, for the second value in the pair to be operated on, 
             the number positions it is ahead of or behind the current value.}
+ \item{...}{allows arguments to be passed to other functions; not used at present.}
 } 
 \value{A \code{\link{vector}} containing  the result of applying \code{operation} to 
        values in \code{x}. For positive \code{lag} the first \code{lag} values will 

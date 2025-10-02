@@ -846,3 +846,62 @@ test_that("exampleData_byIndv4Times_SplinesGRs", {
   testthat::expect_true(abs(
     cor(na.omit(data.frame(NCSS = t$sPSA.Accel, PS = PS$sPSA.Accel)))[1,2] - 0.9721318) < 1e-05)
 })
+
+
+cat("#### Test byIndv4Times_WaterUse with small example\n")
+test_that("water797SH_byIndv4Times_WaterUse", {
+  skip_if_not_installed("growthPheno")
+  skip_on_cran()
+  library(growthPheno)
+  
+  data(water779DS.test.dat)
+  
+  t <- byIndv4Times_WaterUse(water.dat, weight.after = "Weight.After",
+                             water.added = "Water.Added",
+                             individuals = "Cell.ID", times = "xDAP",
+                             which.trait.types = "WU", 
+                             water.trait.names = "WU")
+  testthat::expect_true(all.equal(t$WU.check, t$WU))
+  testthat::expect_true(all(t$xDAP.diffs[!is.na(t$xDAP.diffs)] == 1))
+  
+  data(water797SH.test.dat)
+  
+  t <- byIndv4Times_WaterUse(water.dat, weight.before = "Weight.Before",
+                             which.trait.types = "WUR", 
+                             water.trait.names = "WUR")
+  testthat::expect_true(all.equal(t$WU.check, t$WU))
+  testthat::expect_true(all.equal(t$DAP.diffs[1:4], c(NA, 3,1,1)))
+
+
+})
+
+cat("#### Test byIndv4Times_WaterUse with exampleData\n")
+test_that("water_exampleData_byIndv4Times_WaterUse", {
+  skip_if_not_installed("growthPheno")
+  skip_on_cran()
+  library(growthPheno)
+  
+  data(exampleData)
+  longi.dat <- byIndv4Times_WaterUse(data = longi.dat, 
+                                     weight.before = "Weight.Before", 
+                                     individuals = "Snapshot.ID.Tag", 
+                                     times = "DAP", 
+                                     which.trait.types = c("WU","WUR","WUI"), 
+                                     water.trait.names = c("WU", "WUR","WUI"),
+                                     responseAGR = "PSA.AGR")
+  testthat::expect_true(all(c("DAP.diffs","WU","WUR","WUI") %in% names(longi.dat)))
+  testthat::expect_true(all(levels(longi.dat$DAP) == c(28,30:42)))
+  testthat::expect_true(all.equal(longi.dat$DAP.diffs[1:4], c(NA, 2,1,1)))
+  testthat::expect_true((longi.dat$WU[2] - (-25)) < 1e-05)
+  testthat::expect_true((longi.dat$WUR[2] - (-12.5)) < 1e-05)
+  testthat::expect_true((longi.dat$WUI[2] - (--1.274)) < 1e-05)
+  
+  tt <- byIndv4Times_fillRates(data = longi.dat, 
+                                      response = "WUR", 
+                                      individuals = "Snapshot.ID.Tag", 
+                                      times = "DAP", 
+                                      avail.times.diffs = TRUE)
+  testthat::expect_true(all((tt$WUR[2:4] - c(-12.5,-12.5,48)) < 1e-05))
+  testthat::expect_true(all(levels(tt$DAP) == 28:42))
+  
+})

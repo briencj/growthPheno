@@ -32,10 +32,21 @@
 
 "WUI" <- function(response, water)
 { 
-  response.WUI <- ifelse(water != 0, 
-                         response / water, 
-                         NA)
+  water[abs(water) < 1e-03] <- NA_real_ 
+  response.WUI <- response / water
   return(response.WUI)
+}
+
+#Function to calculate water use
+"WU" <-function(weight.after, weight.before = NULL, water.added = NULL, time.diffs, lag = 1)
+{
+  if (!is.null(weight.before))
+  {
+    weight.diffs <- calcLagged(weight.after, operation = NULL, lag = lag) - weight.before
+  } else #weight.added must be non-NULL
+  {
+    weight.diffs <- water.added - calcLagged(weight.after, operation = "-", lag = lag)
+  }
 }
 
 #Functions to calculate a single-valued function, including the observation has the value of the function
@@ -121,13 +132,19 @@
 #Functions to do calculations between successive dates 
 # - does not assume same number time points for all individuals
 #"Replace"  <- function(x, y) {z <- y}
-"calcLagged" <- function(x, operation = NULL, lag=1)
+"calcLagged" <- function(x, operation = NULL, lag=1, ...)
   #This function replaces the observations with values calculated  
   # (i) for positive lag, itself and the value lag observations before it, 
   # (ii) for negative lag, itself and the value lag observations after it.
   #operation specifies calculation to be made on the pair of  values 
   #It returns as many values as are in data, the 1st lag values being NA
 { 
+  #Deal with na.rm argument coming from other general functions that allow for setting na.rm for functions  provided to their FUN argument.
+  na.rm <- FALSE
+  inargs <- list(...)
+  if (length(names(inargs)) && any(c("na.rm") %in% names(inargs)))
+    na.rm <- inargs$na.rm
+  
   n <- length(x)
   nl <- n-abs(lag)
   if (is.null(operation))
