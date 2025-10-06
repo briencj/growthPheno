@@ -523,31 +523,27 @@
 }
 
 ##### I need to check that get missing values at the start of each Snapshot.ID.Tag.
-"byIndv4Times_fillRates" <- function(data, responses = NULL, 
-                                     individuals = "Snapshot.ID.Tag", times = "DAP", 
-                                     avail.times.diffs = FALSE, 
-                                     ntimes2span = 2)
+"byIndv4Times_periodicRates" <- function(data, responses = NULL, 
+                                         individuals = "Snapshot.ID.Tag", 
+                                         times = "DAP", 
+                                         columns2duplicate = NULL, 
+                                         reqd.times.diff = 1, 
+                                         avail.times.diffs = FALSE)
 { 
   #Check that responses, individuals, times and, if avail.times.diffs == TRUE, tims.diffs are in data
   times.diffs <- paste(times, "diffs", sep=".")
-  vars <- c(individuals, times, responses)
+  vars <- c(individuals, times, columns2duplicate, responses)
   if (avail.times.diffs) 
     vars <- c(vars, times.diffs)
   checkNamesInData(vars, data = data)
   
   tmp <- data[vars]
   tmp <- tmp[do.call(order, tmp), ]
-  lag <- ntimes2span - 1
+  lag <- 1
   xTim <- convertTimes2numeric(tmp[[times]])
   miss.days <- sort(unique(xTim))[1:lag]
   
-  #time.diffs are available - check them
-  if (avail.times.diffs && 
-      !all(is.na(data[[times.diffs]][xTim %in% miss.days])))
-    stop("The times.diffs column in data does not have the appropriate missing values for the ", 
-         "inital times of each individual\n",
-         "Set avail.times.diffs to FALSE to have 'byIndv4Intvl_GRsDiff' calculate them")
-  
+  #Check for missing values that can mess up merging
   if (any(is.na(data[[times]])))
     warning(paste("Some values of ",times,
                   " are missing, which can result in merge producing a large data.frame", 
@@ -558,10 +554,18 @@
     warning(paste("Some values of the factors in individuals are missing, ",
                   "which can result in merge producing a large data.frame", sep = ""))
   
+  #time.diffs are available - check them
+  if (avail.times.diffs) 
+  { 
+    if (!all(is.na(data[[times.diffs]][xTim %in% miss.days])))
+      stop("The times.diffs column in data does not have the appropriate missing values for the ", 
+           "inital times of each individual\n",
+           "Set avail.times.diffs to FALSE to have 'byIndv4Intvl_GRsDiff' calculate them")
+    tmp <- cbind(data, xTim)
+  } else
+  { 
   #Form time differences in a way that every first time is the same Time
   # - setting first time point to missing results in the growth rates also being NA
-  if (!avail.times.diffs)
-  { 
     #nspan (t)  2   3    4  5    6  7
     #nmiss      1   2    3  4    5  6 = lag
     #posn1      2   2    3  3    4  4 = ceiling((t+1)/2)
@@ -583,66 +587,75 @@
       tmp[[times.diffs]][xTim %in% miss.days] <- NA
     rownames(tmp) <- NULL
   }
-  
-  #Check whether there are unequal time.diffs and equalization of time diffs with propagation of WUR is required
-  if (all(tmp[times.diffs][!is.na(tmp[times.diffs])] == min(tmp[times.diffs], na.rm = TRUE)))
-    warning("All time differences are equal for ", times, "; no action taken.")
-  else #have unequal time diffs
+  if (!all.equal(tmp[times.diffs]/reqd.times.diff, round(tmp[times.diffs]/reqd.times.diff)))
+    stop("Some of the values in the times.diffs column in data are not integer multiples of reqd.times.diff")
+
+  #Check whether there all the time.diffs are already equal to reqd.times.diff required
+  if (all(tmp[times.diffs][!is.na(tmp[times.diffs])] == reqd.times.diff, na.rm = TRUE))
+  { 
+    warning("All time differences are equal to reqd.times.diff for ", times, "; no action taken.")
+    full.dat <- data
+  } else #have time diffs not equal to rates.times
   {
-    min.time.diff <- min(tmp[[times.diffs]], na.rm = TRUE)
     min.time <- min(xTim, na.rm = TRUE)
     max.time <- max(xTim, na.rm = TRUE)
-    xtimes <- seq(min.time, max.time, by = min.time.diff)
+    xtimes <- seq(min.time, max.time, by = reqd.times.diff)
     indv <- levels(factor(tmp[[individuals]]))
-    #    full.dat <- dae::rep.data.frame(data.frame(xtimes = xtimes), times = length(nindv))
     full.dat <- data.frame()
-    full.dat <- data.frame(xTimes = rep(xtimes, times = length(indv)))
+    full.dat <- data.frame(xTim = rep(xtimes, times = length(indv)))
     full.dat <- cbind(dae::fac.gen(list(individ = indv), each = length(xtimes)), full.dat)
     if (is.factor(tmp[[times]]))
     { 
-      full.dat[times] <- factor(full.dat$xTimes)
+      full.dat[times] <- factor(full.dat$xTim) #add factor fpr times
       names(full.dat)[c(1,3)] <- c(individuals, times)
-      xtimes <- "xTimes"
+      xtimes <- "xTim"
+      full.dat <- dplyr::left_join(full.dat, tmp, by = c(individuals, times, xtimes))
     } else
     {
       names(full.dat) <- c(individuals, times)
       xtimes <- times
+      full.dat <- dplyr::left_join(full.dat, tmp, by = c(individuals, times))
     }
-    full.dat <- dplyr::left_join(full.dat, tmp, by = c(individuals, times))
-    #Now propagate Rates for DAP.diffs neq min.time.diff - needs to be done independently for each indvidual 
+    #Now propagate Rates for DAP.diffs neq reqd.times.diff - needs to be done independently for each individual 
     indv.full <- as.list(full.dat[individuals])
     full1 <- split(full.dat, indv.full)
-    propagateRates <- function(df, t, responses) 
+    propagateRates <- function(df, t, responses, columns2duplicate) 
     {
       time <- df[[xtimes]][t]
       time.diff <- df[[times.diffs]][t]
-      to <- seq((time-(time.diff-1)), time-1, by = min.time.diff)
+      to <- seq((time-(time.diff-1)), time-1, by = reqd.times.diff)
       for (kresp in responses)
       {
-        df[[kresp]][df[[times]] %in% to] <- df[[kresp]][df[[xtimes]] == time]
-        return(df)
+        df[[kresp]][df[[times]] %in% to] <- df[[kresp]][df[[times]] == time]
+      # This makes the times.diffs applicable to the WUR, not the WU that remains.
+      # However, the times.diffs as they stand are more apt for the WU than the equally spaced time 
+      #   differences and so should be kept.
+#        df[[times.diffs]][df[[times]] %in% c(time,to)] <- reqd.times.diff
       }
+      if (!is.null(columns2duplicate))
+      { 
+        for (kcol in columns2duplicate)
+          df[[kcol]][df[[times]] %in% to] <- df[[kcol]][df[[times]] == time]
+      }
+      return(df)
     }
     
     f1 <- mapply(function(full)
     {
-      if (any(full[times.diffs] > min.time.diff))
+      if (any(full[times.diffs] > reqd.times.diff))
       {
-        which.bigger <- which(full[times.diffs] > min.time.diff )
+        which.bigger <- which(full[times.diffs] > reqd.times.diff )
         for (t in which.bigger)
-        {
-          full <- propagateRates(full, t, responses) 
-        }
+          full <- propagateRates(full, t, responses, columns2duplicate) 
       }
       return(full)
     }, full = full1, SIMPLIFY = FALSE)
     full.dat <- unsplit(f1, indv.full)
     full.dat <- full.dat[vars]
-    data <- data[, -match(responses, names(data))]
+    data <- data[, -match(intersect(c(times.diffs, columns2duplicate, responses), 
+                                    names(data)), 
+                          names(data))]
     full.dat <- dplyr::left_join(full.dat[vars], data, by = c(individuals, times))
-    # full.dat[times] <- fac.recast(full.dat[[times]], 
-    #                               levels.order = sort(levels(full.dat[[times]])))
-    # full.dat <- full.dat[order(full.dat[[individuals]],full.dat[[times]]), ]
     full.dat <- full.dat[c(setdiff(names(full.dat), responses), responses)]
   }
   return(full.dat)

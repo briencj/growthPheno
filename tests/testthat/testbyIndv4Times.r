@@ -872,7 +872,26 @@ test_that("water797SH_byIndv4Times_WaterUse", {
   testthat::expect_true(all.equal(t$WU.check, t$WU))
   testthat::expect_true(all.equal(t$DAP.diffs[1:4], c(NA, 3,1,1)))
 
-
+  tt <- byIndv4Times_periodicRates(data = t, 
+                                   response = "WUR")
+  tt <- within(tt, xDAP <- dae::as.numfac(DAP))
+  testthat::expect_equal(names(tt), c("Snapshot.ID.Tag", "DAP", "xDAP", 
+                                      "Weight.Before", "Weight.After", 
+                                      "Water.Amount", "WUR.check", "WUR"))
+  testthat::expect_true(all((tt$WUR[2:5] - c(28.6666667,28.6666667, 28.6666667, 22)) < 1e-05))
+  testthat::expect_true(all(levels(tt$DAP) == 15:62))
+  testthat::expect_true(all(tt$xDAP[1:(62-14)] == 15:62))
+  
+  t <- t[, -match("DAP.diffs", names(t))]
+  tt <- byIndv4Times_periodicRates(data = t, 
+                                   response = "WUR")
+  tt <- within(tt, xDAP <- dae::as.numfac(DAP))
+  testthat::expect_equal(names(tt), c("Snapshot.ID.Tag", "DAP", "xDAP", 
+                                      "Weight.Before", "Weight.After", 
+                                      "Water.Amount", "WUR.check", "WUR"))
+  testthat::expect_true(all((tt$WUR[2:5] - c(28.6666667,28.6666667, 28.6666667, 22)) < 1e-05))
+  testthat::expect_true(all(levels(tt$DAP) == 15:62))
+  testthat::expect_true(all(tt$xDAP[1:(62-14)] == 15:62))
 })
 
 cat("#### Test byIndv4Times_WaterUse with exampleData\n")
@@ -896,12 +915,40 @@ test_that("water_exampleData_byIndv4Times_WaterUse", {
   testthat::expect_true((longi.dat$WUR[2] - (-12.5)) < 1e-05)
   testthat::expect_true((longi.dat$WUI[2] - (--1.274)) < 1e-05)
   
-  tt <- byIndv4Times_fillRates(data = longi.dat, 
-                                      response = "WUR", 
-                                      individuals = "Snapshot.ID.Tag", 
-                                      times = "DAP", 
-                                      avail.times.diffs = TRUE)
-  testthat::expect_true(all((tt$WUR[2:4] - c(-12.5,-12.5,48)) < 1e-05))
+  tt <- byIndv4Times_periodicRates(data = longi.dat, 
+                                   response = "WUR", 
+                                   individuals = "Snapshot.ID.Tag", 
+                                   times = "DAP", 
+                                   avail.times.diffs = TRUE)
+  testthat::expect_true(all((tt$WUR[2:4] - c(-12.5, -12.5, 48)) < 1e-05))
   testthat::expect_true(all(levels(tt$DAP) == 28:42))
+
+  tt <- byIndv4Times_periodicRates(data = longi.dat, 
+                                   response = "WUR", 
+                                   individuals = "Snapshot.ID.Tag", 
+                                   times = "xDAP", 
+                                   columns2duplicate = c("Smarthouse", "Lane", "Position", 
+                                                         "Genotype.ID", "Treatment.1", 
+                                                         "Replicate", "Zone", "cZone", "SHZone", 
+                                                         "ZLane", "ZMainunit", "Subunit",
+                                                         "cMainPosn", "cPosn"),
+                                   avail.times.diffs = FALSE)
+  testthat::expect_true(all((tt$WUR[2:4] - c(-12.5, -12.5, 48)) < 1e-05))
+  testthat::expect_true(all(tt$xDAP[1:15] == 28:42))
   
+  names(longi.dat)[match("DAP.diffs", names(longi.dat))] <- "xDAP.diffs"
+  tt <- byIndv4Times_periodicRates(data = longi.dat, 
+                                   response = "WUR", 
+                                   individuals = "Snapshot.ID.Tag", 
+                                   times = "xDAP", 
+                                   columns2duplicate = c("Smarthouse", "Lane", "Position", 
+                                                         "Genotype.ID", "Treatment.1", 
+                                                         "Replicate", "Zone", "cZone", "SHZone", 
+                                                         "ZLane", "ZMainunit", "Subunit",
+                                                         "cMainPosn", "cPosn"),
+                                   avail.times.diffs = TRUE)
+  testthat::expect_true(all((tt$WUR[2:4] - c(-12.5, -12.5, 48)) < 1e-05))
+  testthat::expect_true(all(tt$xDAP[1:15] == 28:42))
+  tt <- within(tt, DAP <-factor(xDAP))
+  testthat::expect_true(all(levels(tt$DAP) == 28:42))
 })

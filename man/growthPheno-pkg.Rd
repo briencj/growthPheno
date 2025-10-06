@@ -123,10 +123,10 @@
     \tab Adds, to a data.frame, water use traits calculated \cr
     \tab for consecutive times for individuals in a data.frame \cr 
     \tab in long format by differencing response values. \cr
-    \code{\link{byIndv4Times_fillRates }}
-    \tab Adds, to a \code{data.frame}, times and rates values to produce \cr
-    \tab a set of equally spaced times with values for the rates for \cr
-    \tab the inserted times.  \cr
+    \code{\link{byIndv4Times_periodicRates }}
+    \tab Adds the necessary times and rates values to a \cr
+    \tab data.frame to make a set of periodic, or equally spaced, \cr 
+    \tab rates.  \cr
     \code{\link{byIndv4Times_SplinesGRs}}
     \tab For a response in a \code{data.frame} in long format, \cr 
     \tab computes, for a single set of smoothing parameters, \cr 
