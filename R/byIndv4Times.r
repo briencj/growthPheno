@@ -388,8 +388,10 @@
   if (all(is.null(c(weight.before, water.added))) && length(c(weight.before, water.added)) != 1)
     stop("One and only one of weight.before and water.added must be NULL")
   
-  if (length(which.trait.types) != length(water.trait.names))
-    stop("The lengths of which.trait.types and water.trait.names must be equal")
+  if (length(water.trait.names) < length(which.trait.types))
+    stop("The length of water.trait.names must be at least that of which.trait.types.")
+  else
+    water.trait.names <- water.trait.names[1:(length(which.trait.types))]
 
     #Check that weight.after, weight.before, water.added, individuals and times are in data
   vars <- c(individuals, times, weight.after, weight.before, water.added, responseAGR)

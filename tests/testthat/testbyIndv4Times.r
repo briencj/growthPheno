@@ -859,8 +859,7 @@ test_that("water797SH_byIndv4Times_WaterUse", {
   t <- byIndv4Times_WaterUse(water.dat, weight.after = "Weight.After",
                              water.added = "Water.Added",
                              individuals = "Cell.ID", times = "xDAP",
-                             which.trait.types = "WU", 
-                             water.trait.names = "WU")
+                             which.trait.types = "WU")
   testthat::expect_true(all.equal(t$WU.check, t$WU))
   testthat::expect_true(all(t$xDAP.diffs[!is.na(t$xDAP.diffs)] == 1))
   

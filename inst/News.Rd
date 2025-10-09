@@ -1,12 +1,16 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 3.1.17 (2025-10-09)}{
+  \itemize{
+  \item Modifed function the behaviour of the \code{water.trait.names} argument for byIndv4Times_WaterUse so that it only hast to be longer than the value for the arguement \code{which.water.traits}; any names in excess of the number specified by \code{which.water.traits} will be ignored.
+  }}
 \section{growthPheno Version 3.1.16 (2025-10-06)}{
   \itemize{
   \item Renanmed function byIndv4Times_fillRates byIndv4Times_periodicRates and modified it to include the arguments \code{reqd.times.diff} to allow the specification of the time difference for the set of equally spaced times and \code{columns2duplicate} so that columns other than the \code{responses} can be duplicated.
   }}
 \section{growthPheno Version 3.1.15 (2025-10-02)}{
   \itemize{
-  \item Add function byIndv4Times_WUDiff for adding longitudinal water use traits to a data.frame and function  byIndv4Times_fillRates for propogating rates when the times between observatons are not equal so that there are rate values for the set of equally spaced times.
+  \item Add function byIndv4Times_WaterUse for adding longitudinal water use traits to a data.frame and function  byIndv4Times_fillRates for propogating rates when the times between observatons are not equal so that there are rate values for the set of equally spaced times.
   \item Allow calcLagged to be called with functions that have an \code{na.rm} argument.
   \item Modify warning from smoothSpline concerning runs of three or more missing values.
   }}

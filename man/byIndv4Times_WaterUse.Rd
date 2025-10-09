@@ -59,7 +59,10 @@ byIndv4Times_WaterUse(data, weight.after = "Weight.After",
              \code{"WU"}, \code{"WUR"} and \code{"WUI"}.}
  \item{water.trait.names}{A \code{\link{character}} giving the names of the  
              columns in \code{data} for the water traits listed in 
-             \code{which.trait.types}.}
+             \code{which.trait.types}. The length of the supplied value for 
+             \code{water.trait.names} must be at least as long as that for 
+             \code{which.trait.types}. The names will be assigned in order to the 
+             traits in \code{which.trait.types}.}
  \item{avail.times.diffs}{A \code{\link{logical}} indicating whether there is an 
              appropriate column of \code{times} differences that can be used as 
              the denominator in computing the growth rates. If \code{TRUE}, it will 
