@@ -1715,6 +1715,17 @@ predict.pSpline <- function(object, x, npspline.segments, deriv = 0, ...)
         stop("the smoothing.segments are not a set of non-overlapping, successive intervals")
     }
     
+    #Check that for overlapping smoothing segments and give an error or a warning depending on get.rates
+    if (!all(diff(unlist(smoothing.segments)) > 0))
+    { 
+      if (!("none" %in% get.which))
+        stop("rates.method must be `none` when times values occur in more than one smoothing segment")
+      else
+        warning("The values for some times occur in multiple smoothing segments and so some individuals ",
+                "will have multiple rows in the returned data.frame, one for each segment in which the ",
+                "times occur.")
+    }
+    
     v <- unique(id.cols)
     v <- setdiff(v, c("Type","TunePar","TuneVal","Tuning","Method")) #remove names yet to come
     

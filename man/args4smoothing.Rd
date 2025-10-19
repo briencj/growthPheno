@@ -50,10 +50,13 @@
       \code{\link{numeric}}, then it will be converted to a \code{\link{list}} 
       with the single component named \code{PS}.}
  \item{smoothing.segments}{A named \code{\link{list}}, each of whose components 
-      is a two-element numeric specifying the first and last values of an 
+      is a two-element numeric specifying the first and last values of a 
       \code{times}-interval whose data is to be subjected as an entity to smoothing 
       using splines. The separate smooths will be combined to form a whole 
-      smooth for each individual. If \code{get.rates} includes \code{smoothed} 
+      smooth for each individual. If  \code{smoothing.segments} involve sets of 
+      overlapping \code{times}, then the \code{get.rates} argument of 
+      \code{\link{traitSmooth}} must be \code{none} or \code{FALSE}. If the 
+      \code{get.rates} argument of \code{\link{traitSmooth}} includes \code{smoothed} 
       or is \code{TRUE}, \code{rates.method} is \code{differences} and 
       \code{ntimes2span} is 2, the smoothed growth rates will be computed over 
       the set of segments; otherwise, they will be computed within segments. 

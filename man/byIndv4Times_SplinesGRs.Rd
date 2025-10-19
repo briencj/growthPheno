@@ -72,11 +72,12 @@ byIndv4Times_SplinesGRs(data, response, response.smoothed = NULL,
       smoothing the \code{log}-transformed \code{response} and then 
       back-transforming by taking the exponentional of the fitted values.}
  \item{smoothing.segments}{A named \code{\link{list}}, each of whose components 
-      is a numeric pair specifying the first and last values of an 
+      is a numeric pair specifying the first and last values of a 
       \code{times}-interval whose data is to be subjected as an entity to smoothing 
       using splines. The separate smooths will be combined to form a whole 
-      smooth for each individual. If \code{get.rates} is \code{TRUE}, 
-      \code{rates.method} is \code{differences} and \code{ntimes2span} is 2, 
+      smooth for each individual. If  \code{smoothing.segments} involve sets of 
+      overlapping \code{times}, then \code{rates.method} must be \code{none}. 
+      If \code{rates.method} is \code{differences} and \code{ntimes2span} is 2, 
       the smoothed growth rates will be computed over the set of segments; 
       otherwise, they will be computed within segments. 
       If \code{smoothing.segments} is \code{NULL}, the data is not 

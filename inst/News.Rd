@@ -1,5 +1,10 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 3.1.18 (2025-10-19)}{
+  \itemize{
+  \item Add a check for overlapping times in the \code{smoothing.segments} argument of the functions byIndv4Times_SplinesGRs and  args4smoothing, the latter when used to supply arguments to the functions probeSmooths and traitSmooth. An error will be issued if the \code{rates.method} or \code{get.rates} is 
+  not "none". Otherwise, a warning will be issued that there will be multiple smoothed values for each \code{individuals} for some \code{times}.
+  }}
 \section{growthPheno Version 3.1.17 (2025-10-09)}{
   \itemize{
   \item Modifed function the behaviour of the \code{water.trait.names} argument for byIndv4Times_WaterUse so that it only hast to be longer than the value for the arguement \code{which.water.traits}; any names in excess of the number specified by \code{which.water.traits} will be ignored.

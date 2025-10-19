@@ -222,6 +222,39 @@ test_that("tomato_traitExtractFeatures", {
   testthat::expect_equal(nrow(tom.dat), 1120)
   testthat::expect_equal(ncol(tom.dat), 20)
   
+  #Test with overlapping segments and rates.method = "differences",
+  DAP.segs <- list(c(DAP.endpts[1]-1, 39), 
+                   c(38, DAP.endpts[nDAP.endpts]))
+  #Add PSA rates and smooth PSA, also producing sPSA rates
+  tmp.dat <- testthat::expect_error(
+    byIndv4Times_SplinesGRs(data = tomato.dat, 
+                            response = "PSA", response.smoothed = "sPSA", 
+                            times = "DAP", rates.method = "differences", 
+                            smoothing.method = "log", 
+                            spline.type = "PS", lambda = 1, 
+                            smoothing.segments = DAP.segs),
+    regexp = "rates.method must be `none` when times values occur in more than one smoothing segment")
+  
+  #Test with overlapping segments and rates.method = "none",
+  #Add PSA rates and smooth PSA, also producing sPSA rates
+  tmp.dat <- testthat::expect_warning(
+    byIndv4Times_SplinesGRs(data = tomato.dat, 
+                            response = "PSA", response.smoothed = "sPSA", 
+                            times = "DAP", rates.method = "none", 
+                            smoothing.method = "log", 
+                            spline.type = "PS", lambda = 1, 
+                            smoothing.segments = DAP.segs),
+    regexp = paste0("The values for some times occur in multiple smoothing.segments and so some individuals ",
+                    "will have multiple rows in the returned data.frame, one for each segment in which the ",
+                    "times occur."))
+  testthat::expect_true(all(table(tmp.dat$DAP) %in% c(32,64)))
+  testthat::expect_equal(nrow(tmp.dat), 1184)
+  table(with(tmp.dat, tmp.dat[c(DAP %in% 38:39),]$DAP))
+  tmp <- with(tmp.dat, tmp.dat[c(DAP %in% 38:39),c("DAP","sPSA")])
+  tmp$DAP <- factor(tmp$DAP)
+  testthat::expect_true(all(table(tmp$DAP) == 64))
+  testthat::expect_true(all(diff(tmp$sPSA) != 0))
+  
   ### Omit responses for the outlier plant
   omit <- with(tom.dat, Zn==90 & AMF=="+" & Block ==4)
   responses.all <- names(tom.dat)[match("Weight.After", names(tom.dat)):length(tom.dat)]
