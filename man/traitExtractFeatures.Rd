@@ -109,7 +109,7 @@ traitExtractFeatures(data, individuals = "Snapshot.ID.Tag", times = "DAP",
              \code{differences} option will  be more efficient than \code{ratesaverages}.}
  \item{growth.rates}{A \code{\link{character}} specifying which growth rates are 
              to be obtained for the intervals specified by \code{starts.intvl} and 
-             \code{stops.intvl}. It should contain one of both of \code{"AGR"} and 
+             \code{stops.intvl}. It should contain one of or both of \code{"AGR"} and 
              \code{"RGR"}.} 
  \item{suffices.growth.rates}{A \code{\link{character}} giving the suffices appended to  
              \code{responses4intvl.rates} in constructung the column names for the 

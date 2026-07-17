@@ -6,3 +6,5 @@
 ^CRANlogs$
 ^README.*$
 ^\tests\testthat\testthat-problems.rds$
+^\.positai$
+^\.claude$

@@ -123,7 +123,7 @@
     \tab Adds, to a data.frame, water use traits calculated \cr
     \tab for consecutive times for individuals in a data.frame \cr 
     \tab in long format by differencing response values. \cr
-    \code{\link{byIndv4Times_periodicRates }}
+    \code{\link{byIndv4Times_periodicRates}}
     \tab Adds the necessary times and rates values to a \cr
     \tab data.frame to make a set of periodic, or equally spaced, \cr 
     \tab rates.  \cr

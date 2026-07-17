@@ -1,5 +1,14 @@
 \name{news}
 \title{News for Package growthPheno}
+\section{growthPheno Version 3.1.20 (2026-07-16)}{
+  \itemize{
+  \item Correct date in DESCRIPTION file.
+  }}
+\section{growthPheno Version 3.1.19 (2026-07-15)}{
+  \itemize{
+  \item Correct typos in the manual.
+  \item Revise foor R 4.6.1.
+  }}
 \section{growthPheno Version 3.1.18 (2025-10-19)}{
   \itemize{
   \item Add a check for overlapping times in the \code{smoothing.segments} argument of the functions byIndv4Times_SplinesGRs and  args4smoothing, the latter when used to supply arguments to the functions probeSmooths and traitSmooth. An error will be issued if the \code{rates.method} or \code{get.rates} is 
